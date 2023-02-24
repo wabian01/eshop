@@ -1,4 +1,4 @@
-import {product1,product2,product3,bestsell1,bestsell2,bestsell3,bestsell4} from '../assets'
+import {product1,product2,product3,bestsell1,bestsell2,bestsell3,bestsell4,bestsell5,collection1,collection2,info1,info2,info3} from '../assets'
 
 export const navLinks = [
     {
@@ -109,4 +109,47 @@ export const navLinks = [
       star:5,
       link : bestsell4,
     },
+    {
+      id: "bestsell5",
+      title: "Emotion Mini Dress",
+      cost: "$100.00",
+      star:5,
+      link : bestsell5,
+    },
   ];
+
+  export const listCollections =[
+    {
+      id:"collecttion1",
+      title:"FIND THE BEST COLLECTION AROUND THE WORLD",
+      button:"Shop Now",
+      link: collection1,
+    },
+    {
+      id:"collecttion2",
+      title:"AWESOME T-SHIRTS, CROP TOPS AND MORE...",
+      button:"VIEW COLLECTION",
+      link: collection2,
+    }
+  ]
+
+  export const listInfors = [
+    {
+      id:"info1",
+      title:"Ensuring Customer Success",
+      des: "April 25, 2020",
+      link: info1,
+    },
+    {
+      id:"info2",
+      title:"We can make your business shine!",
+      des: "April 25, 2020",
+      link: info2,
+    },
+    {
+      id:"info3",
+      title:"Our development is your success",
+      des: "April 25, 2020",
+      link: info3,
+    },
+  ]

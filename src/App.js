@@ -1,4 +1,4 @@
-import {Navbar,Panel,Listclothes,Bestsell} from './components/'
+import {Navbar,Panel,Listclothes,Bestsell,Collection,Info,Shipper,Footer} from './components/'
 
 function App() {
   return (
@@ -7,6 +7,10 @@ function App() {
         <Panel></Panel>
         <Listclothes></Listclothes>
         <Bestsell></Bestsell>
+        <Collection></Collection>
+        <Info></Info>
+        <Shipper></Shipper>
+        <Footer></Footer>
     </div>
   );
 }
