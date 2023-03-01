@@ -1,18 +1,32 @@
 {
   "files": {
-    "main.css": "/static/css/main.fee482da.css",
-    "main.js": "/static/js/main.f32320c4.js",
-    "static/js/787.3bed6155.chunk.js": "/static/js/787.3bed6155.chunk.js",
-    "static/media/logo.svg": "/static/media/logo.96bd98a165ba7cb5f2ef39b5307251c4.svg",
-    "static/media/close.svg": "/static/media/close.eeb14ca346e8d434b63846f86cadb2c6.svg",
-    "static/media/menu.svg": "/static/media/menu.bf5e57a4b9aa1404c9e5d1299132da3b.svg",
-    "index.html": "/index.html",
-    "main.fee482da.css.map": "/static/css/main.fee482da.css.map",
-    "main.f32320c4.js.map": "/static/js/main.f32320c4.js.map",
-    "787.3bed6155.chunk.js.map": "/static/js/787.3bed6155.chunk.js.map"
+    "main.css": "./static/css/main.cf75d995.css",
+    "main.js": "./static/js/main.21a986bd.js",
+    "static/js/787.3bed6155.chunk.js": "./static/js/787.3bed6155.chunk.js",
+    "static/media/product2.jpg": "./static/media/product2.7fddb29d3125c1866465.jpg",
+    "static/media/product1.jpg": "./static/media/product1.91db3ea623e89eaa275b.jpg",
+    "static/media/info1.jpg": "./static/media/info1.b8742b61e7c080521ce1.jpg",
+    "static/media/collection2.jpg": "./static/media/collection2.582d7b43c3190d24cff6.jpg",
+    "static/media/product3.jpg": "./static/media/product3.73d0471ba6449ab492b3.jpg",
+    "static/media/bestsell1.jpg": "./static/media/bestsell1.e808c6439ec4cefb2bad.jpg",
+    "static/media/collection1.jpg": "./static/media/collection1.f8a301d29915499da107.jpg",
+    "static/media/info2.jpg": "./static/media/info2.b27b9e78dd22249a6f7f.jpg",
+    "static/media/bestsell2.jpg": "./static/media/bestsell2.751fe7d406fe17c4dbc5.jpg",
+    "static/media/bestsell3.jpg": "./static/media/bestsell3.77b81177d4978ef49b06.jpg",
+    "static/media/slick.svg": "./static/media/slick.2630a3e3eab21c607e21.svg",
+    "static/media/slick.eot": "./static/media/slick.a4e97f5a2a64f0ab1323.eot",
+    "static/media/logo.svg": "./static/media/logo.96bd98a165ba7cb5f2ef39b5307251c4.svg",
+    "static/media/slick.ttf": "./static/media/slick.c94f7671dcc99dce43e2.ttf",
+    "static/media/slick.woff": "./static/media/slick.295183786cd8a1389865.woff",
+    "static/media/close.svg": "./static/media/close.eeb14ca346e8d434b63846f86cadb2c6.svg",
+    "static/media/menu.svg": "./static/media/menu.bf5e57a4b9aa1404c9e5d1299132da3b.svg",
+    "index.html": "./index.html",
+    "main.cf75d995.css.map": "./static/css/main.cf75d995.css.map",
+    "main.21a986bd.js.map": "./static/js/main.21a986bd.js.map",
+    "787.3bed6155.chunk.js.map": "./static/js/787.3bed6155.chunk.js.map"
   },
   "entrypoints": [
-    "static/css/main.fee482da.css",
-    "static/js/main.f32320c4.js"
+    "static/css/main.cf75d995.css",
+    "static/js/main.21a986bd.js"
   ]
 }
