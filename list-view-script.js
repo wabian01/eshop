@@ -1,4 +1,3 @@
-<script type="text/javascript">
     Vue.component('list-view', {
         template: '#list-view',
         props: ['object','body_area','item_search_string','item_filter_attributes','task','screen','refresh_rate','status_ref','status_sort','json_holder','list_data_object'],
@@ -1325,4 +1324,3 @@
         }
 
     });
-</script>
