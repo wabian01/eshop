@@ -25,7 +25,7 @@
                         vi:{second:"giây",mitute:"phút",hour:"giờ",day:"ngày",month:"tháng",year:"năm"},
                         en:{second:"second",mitute:"mitute",hour:"hour",day:"day",month:"month",year:"year"}
                     },
-                lang:"<?php echo explode("_", Yii::app()->language)[0]; ?>",
+                lang:vm.lang,
                 timeLast:'',
                 checktime:'',
             }

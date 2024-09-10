@@ -132,7 +132,7 @@
                 }, 10);
             }
             let that = this;
-            let lang = "<?php echo explode("_", Yii::app()->language)[0]; ?>";
+            let lang = vm.lang;
 
             let body_area_bg = JSON.parse(JSON.stringify(this.body_area));
 
