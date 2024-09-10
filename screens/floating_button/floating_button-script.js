@@ -1,4 +1,3 @@
-<script type="text/javascript">
     Vue.component('floating_button', {
         template: '#floating_button',
         props: ['object','screen','task','json_holder','refresh_rate'],
@@ -228,4 +227,3 @@
             }
         }
     })
-</script>

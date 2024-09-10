@@ -1,4 +1,3 @@
-<script>
     Vue.component('html-view', {
         template: '#html-view',
         props: ['body_area','item_data', 'object','task','bottom_area_code','json_holder','status_ref','list_data_object','update_theme_css'],
@@ -567,4 +566,3 @@
             },
         }
     });
-</script>

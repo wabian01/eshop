@@ -1,4 +1,3 @@
-<script type="text/javascript">
     Vue.component('button-group', {
         template: '#button-group',
         props: ['object','body_area','task','status_ref','item_data','json_holder','refresh_rate','list_data_object'],        
@@ -649,4 +648,3 @@
             
         }
     })
-</script>

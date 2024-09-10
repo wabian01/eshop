@@ -1,4 +1,3 @@
-<script type="text/javascript">
 
     Vue.component('list-item', {
         template: '#list-item',
@@ -22,7 +21,7 @@
                 divkit:false,
                 checkABDivkit:true,
                 flatRuntimeAttributes:{},
-                lang : "<?php echo explode("_", Yii::app()->language)[0]; ?>",
+                lang : vm.lang,
                 heightrow:'',
                 shadow_item:(vm.newtemplate ?'':'background: #fff;box-shadow: rgba(50, 50, 93, 0.25) 0px 2px 5px -1px, rgba(0, 0, 0, 0.3) 0px 1px 3px -1px;margin-top: 6px; padding: 0 4px 4px 4px !important;')+'width:100%;',
                 hasSecondary:false,
@@ -120,7 +119,7 @@
                         return;
                     }
                 }
-                let lang = "<?php echo explode("_", Yii::app()->language)[0]; ?>";
+                let lang = vm.lang;
                 if(lang == 'vi'){
                     this.notfound = '<img src="/metronic6/images/notfound.svg" width="120px"><h3 class="text-center" style="color:#737373;font-weight:400;">Chưa có thông tin để hiển thị</h3>'
                 }else{
@@ -576,7 +575,7 @@
                                    
                                     }
                                     if(attributes.hasOwnProperty('title') && this.list_item[attributes.title].length>0){
-                                        let lang = "<?php echo explode("_", Yii::app()->language)[0]; ?>";
+                                        let lang = vm.lang;
                                         if(lang==='vi'){
                                             this.list_item[attributes.title] = this.list_item[attributes.title].replace(/<en>.*<\/en>/,'')
                                         }else{
@@ -587,7 +586,7 @@
                                     let description_html = ''
                                     if(attributes.hasOwnProperty('description') && attributes.description.toString().indexOf('##')>-1){
                                         description_html = attributes.description
-                                        let lang = "<?php echo explode("_", Yii::app()->language)[0]; ?>";
+                                        let lang = vm.lang;
                                         if(lang==='vi'){
                                             description_html = description_html.replace(/<en>.*<\/en>/,'')
                                         }else{
@@ -640,7 +639,7 @@
                                     let description_html = ''
                                     if(attributes.hasOwnProperty('description') && attributes.description.toString().indexOf('##')>-1){
                                         description_html = attributes.description
-                                        let lang = "<?php echo explode("_", Yii::app()->language)[0]; ?>";
+                                        let lang = vm.lang;
                                         if(lang==='vi'){
                                             description_html = description_html.replace(/<en>.*<\/en>/,'')
                                         }else{
@@ -747,7 +746,7 @@
                             }
 
                             if(this.screen_item_new.item_template.template_default.type == "web-page"){
-                                let lang = "<?php echo explode("_", Yii::app()->language)[0]; ?>";
+                                let lang = vm.lang;
                                 let webpage = JSON.parse(JSON.stringify(this.screen_item_new.item_template.template_default.attributes)).content
                                 if(lang==='vi'){
                                     webpage = webpage.replace(/<en>.*<\/en>/,'')
@@ -788,7 +787,7 @@
                                 let secondary_action = ''
                                 if(attributes.hasOwnProperty('description') && attributes.description.toString().indexOf('##')>-1){
                                     description_html = attributes.description
-                                    let lang = "<?php echo explode("_", Yii::app()->language)[0]; ?>";
+                                    let lang = vm.lang;
                                     if(lang==='vi'){
                                         description_html = description_html.replace(/<en>.*<\/en>/,'')
                                     }else{
@@ -853,7 +852,7 @@
                                    
                                     }
                                     if(attributes.hasOwnProperty('title') && this.list_item[attributes.title].length>0){
-                                        let lang = "<?php echo explode("_", Yii::app()->language)[0]; ?>";
+                                        let lang = vm.lang;
                                         if(lang==='vi'){
                                             this.list_item[attributes.title] = this.list_item[attributes.title].replace(/<en>.*<\/en>/,'')
                                         }else{
@@ -864,7 +863,7 @@
                                     let description_html = ''
                                     if(attributes.hasOwnProperty('description') && attributes.description.toString().indexOf('##')>-1){
                                         description_html = attributes.description
-                                        let lang = "<?php echo explode("_", Yii::app()->language)[0]; ?>";
+                                        let lang = vm.lang;
                                         if(lang==='vi'){
                                             description_html = description_html.replace(/<en>.*<\/en>/,'')
                                         }else{
@@ -918,7 +917,7 @@
                                     let description_html = ''
                                     if(attributes.hasOwnProperty('description') && attributes.description.toString().indexOf('##')>-1){
                                         description_html = attributes.description
-                                        let lang = "<?php echo explode("_", Yii::app()->language)[0]; ?>";
+                                        let lang = vm.lang;
                                         if(lang==='vi'){
                                             description_html = description_html.replace(/<en>.*<\/en>/,'')
                                         }else{
@@ -989,7 +988,7 @@
                             }
                         }
                         if(this.screen_item_new.item_template.template_default.type == "web-page"){
-                            let lang = "<?php echo explode("_", Yii::app()->language)[0]; ?>";
+                            let lang = vm.lang;
                             let webpage = JSON.parse(JSON.stringify(this.screen_item_new.item_template.template_default.attributes)).content
                             if(lang==='vi'){
                                 webpage = webpage.replace(/<en>.*<\/en>/,'')
@@ -1439,7 +1438,7 @@
                                         imgSrc ="/metronic6/images/rta_nophoto.webp"
                                     }
                                     if(attributes.hasOwnProperty('title') && this.list_item[attributes.title].length>0){
-                                        let lang = "<?php echo explode("_", Yii::app()->language)[0]; ?>";
+                                        let lang = vm.lang;
                                         if(lang==='vi'){
                                             this.list_item[attributes.title] = this.list_item[attributes.title].replace(/<en>.*<\/en>/,'')
                                         }else{
@@ -1450,7 +1449,7 @@
                                     let description_html = ''
                                     if(attributes.hasOwnProperty('description') && attributes.description.toString().indexOf('##')>-1){
                                         description_html = attributes.description
-                                        let lang = "<?php echo explode("_", Yii::app()->language)[0]; ?>";
+                                        let lang = vm.lang;
                                         if(lang==='vi'){
                                             description_html = description_html.replace(/<en>.*<\/en>/,'')
                                         }else{
@@ -1503,7 +1502,7 @@
                                     let description_html = ''
                                     if(attributes.hasOwnProperty('description') && attributes.description.toString().indexOf('##')>-1){
                                         description_html = attributes.description
-                                        let lang = "<?php echo explode("_", Yii::app()->language)[0]; ?>";
+                                        let lang = vm.lang;
                                         if(lang==='vi'){
                                             description_html = description_html.replace(/<en>.*<\/en>/,'')
                                         }else{
@@ -1608,7 +1607,7 @@
                                 this.item_content =  itemJSONString;
                             }
                             if(this.screen_item_new.item_template.templates[dynmicNumber].layout.type == "web-page"){
-                                let lang = "<?php echo explode("_", Yii::app()->language)[0]; ?>";
+                                let lang = vm.lang;
                                 let webpage = JSON.parse(JSON.stringify(this.screen_item_new.item_template.templates[dynmicNumber].layout.attributes)).content
                                 if(lang==='vi'){
                                     webpage = webpage.replace(/<en>.*<\/en>/,'')
@@ -1685,7 +1684,7 @@
                         }
                         else if(this.screen_item_new.item_onclick[i].type == 'detail'){
                             try{
-                                var temp = <?php $t = explode("_", Yii::app()->language); echo $t[0]; ?>;
+                                var temp = vm.lang;
                             }
                             catch(err){
                                 if(String(err).indexOf('en is not defined')){
@@ -1967,7 +1966,7 @@
                 var that= this
                 schema = JSON.parse(schema_temp)
                 let schema_lang = schema.schema
-                let lang = "<?php echo explode("_", Yii::app()->language)[0]; ?>";
+                let lang = vm.lang;
                 if(schema.hasOwnProperty('schema_by_locale')){
                     if(schema.schema_by_locale.hasOwnProperty(lang)){
                         schema_lang = schema.schema_by_locale[lang]
@@ -2032,7 +2031,7 @@
                 }
                 schema = JSON.parse(schema_temp)
                 let schema_lang = schema.schema
-                let lang = "<?php echo explode("_", Yii::app()->language)[0]; ?>";
+                let lang = vm.lang;
                 if(schema.hasOwnProperty('schema_by_locale')){
                     if(schema.schema_by_locale.hasOwnProperty(lang)){
                         schema_lang = schema.schema_by_locale[lang]
@@ -2073,4 +2072,3 @@
             },
         }
     });
-</script>

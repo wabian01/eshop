@@ -1,4 +1,3 @@
-<script type="text/javascript">
     var table_lang = {
         "processing": "Đang xử lý...",
         "aria": {
@@ -926,4 +925,3 @@
             refresh_rate:  function(value){},
         }   
     })
-</script>

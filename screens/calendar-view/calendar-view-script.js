@@ -1,4 +1,3 @@
-<script type="text/javascript">
     Vue.component('calendar-view', {
         template: '#calendar-view',
         props: ['object','body_area','task','id_random','list_data_object'],
@@ -496,4 +495,3 @@
             }
         }
     });
-</script>

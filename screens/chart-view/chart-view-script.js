@@ -1,4 +1,3 @@
-<script type="text/javascript">
     Vue.component('chart-view', {
         template: '#chart-view',
         props: ['object', 'body_area','task','item_filter_attributes','refresh_rate','skip_object','status_ref','list_data_object'],
@@ -24,7 +23,7 @@
             }
         },
         created: function () {
-            this.lang = "<?php echo explode("_", Yii::app()->language)[0]; ?>";
+            this.lang = vm.lang;
             if(this.object.hasOwnProperty('rule') && this.object.rule.length>0 && typeof(this.object.rule)=='object'){
                 this.stateRule = true;
             }
@@ -945,4 +944,3 @@
             },
         }
     });
-</script>

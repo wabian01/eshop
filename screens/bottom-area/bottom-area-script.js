@@ -1,4 +1,3 @@
-<script type="text/javascript">
     Vue.component('bottom-area', {
         template: '#bottom-area',
         props: ['object','bottom_area',"scroll_to_end","task","screen",'checkcompo','list_data_object','status_ref'],
@@ -99,4 +98,3 @@
             }
         }
     })
-</script>
