@@ -366,7 +366,7 @@
                     if (badge_icon.content == "") {
                         contentBIcon = ""
                     } else {
-                        let lang = vm.lang
+                        let lang = "<?php echo explode("_", Yii::app()->language)[0]; ?>";
                         if (lang == 'vi') {
                             if (badge_icon.content.includes('vi')) {
                                 badge_icon.content.replace(/<vi>(.*)<\/vi>/, function(key1,key2) {
@@ -1912,7 +1912,7 @@
                         vm.statusPopup = false;
                     }
                 }else{
-                    
+                    toastr.error("<?php echo Yii::t('app','Screen definition not found')?>");
                 }
             },
             getInstance: function(event){
@@ -2012,7 +2012,7 @@
                         datajson = JSON.parse(jsondata);
                     
                         if(Object.keys(datajson).length == 0) {
-                            
+                            toastr.error("<?php echo Yii::t('app','No records found.')?>")
                         }
                     
                     if(Object.keys(datajson).length > 1){
@@ -2412,7 +2412,7 @@
                         vm.multiObject=multiOB;
                         $('#multiObject').modal('show')
                     }else{
-                        let lang = vm.lang
+                        let lang = "<?php echo explode("_", Yii::app()->language)[0]; ?>";
                         toastr.error(lang == "en" ? "The module "+aliasCode+" not found" :"Không tìm thấy "+aliasCode);
                     }
                     vm.objects = object_temp;
@@ -2450,7 +2450,7 @@
                     }
                     vm.openTask(object,"tabs", "center|start","center|start",null,this.item_button.where,this.item_button.post,this.item_button.get,[true,this.task],screenCode)
                 }else{
-                    
+                    toastr.error("<?php echo Yii::t('app','Screen definition not found')?>");
                 }
                 vm.objects = object_temp;
             },
@@ -2571,7 +2571,7 @@
                 form_object_code = form_object_code[form_object_code.length-1];
                 let screen_code = object_code +"-"+hash('hvst');
                 // Support language tag
-                let lang = vm.lang
+                let lang = "<?php echo explode("_", Yii::app()->language)[0]; ?>";
                 if (lang == 'vi') {
                     if (this.item_button.template.includes('vi')) {
                         this.item_button.template.replace(/<vi>(.*)<\/vi>/, function(key1,key2) {
