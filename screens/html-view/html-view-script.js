@@ -1,4 +1,4 @@
-    Vue.component('html-view', {
+Vue.component('html-view', {
         template: '#html-view',
         props: ['body_area','item_data', 'object','task','bottom_area_code','json_holder','status_ref','list_data_object','update_theme_css'],
         data: function () {
@@ -73,7 +73,6 @@
                     }, 100);
                     return
                 }
-                this.onUpdate();
             }
             else{
                 this.getdata = true
@@ -222,6 +221,7 @@
                 let get = null;
                 let elasticsearch = "";
                 let data = JSON.parse(JSON.stringify(this.list_data_object));
+                that.dataOnUpdate=data;
                 try {
                     data.sort(function(b, a) {
                         if(new Date(jsonPath(a,that.object.key_attribute))!='Invalid Date' && isNaN(Number(jsonPath(a,that.object.key_attribute))) ){
@@ -375,158 +375,6 @@
                     }, 1000);
                 } catch (error) {}
             },
-            onUpdate(){
-                let that = this;
-                let order = "";
-                let where = 'true';
-                let get = null;
-                let elasticsearch = "";
-                if (typeof  this.object.query_params != 'undefined' && this.object.query_params != null) {
-                    if (typeof  this.object.query_params.where != 'undefined' && this.object.query_params.where != null) {
-                        where = this.object.query_params.where;
-                    }
-                    if (typeof  this.object.query_params.get != 'undefined' && this.object.query_params.get != null) {
-                        get = this.object.query_params.get;
-                    }
-                    if(typeof  this.object.query_params.post_body != 'undefined' && this.object.query_params.post_body != null){
-                        elasticsearch = this.object.query_params.post_body;
-                    }
-                }
-                if(this.task.hasOwnProperty('where') != -1 && this.task.where != null && this.task.where.length > 0){
-                    if(where != 'true'){
-                        where = '(' + where + ') AND ' + this.task.where
-                    }
-                    else{
-                        where = this.task.where
-                    }
-                }
-                if(this.task.hasOwnProperty('get') != -1 && this.task.get != null){
-                    if(get != null){
-                        Object.assign(get,this.task.get)
-                    }
-                    else{
-                        get = this.task.get
-                    }
-                }
-                if(this.task.hasOwnProperty('post') && this.task.post != null){
-                    elasticsearch = this.task.post;
-                }
-                if(this.object.dm_type == "Elasticsearch" && get != null && get !== "" && typeof(get) == 'string'){
-                    get=JSON.parse(get);
-                }
-                elasticsearch = elasticsearch.replace(/\/\*(.*?)\*\//g,"")
-                elasticsearch = elasticsearch.replace(/\/\d\*(.*?)\*\d\//g,"")
-                if(this.object.dm_type == "Elasticsearch" && elasticsearch != "" && typeof(elasticsearch) == 'string'){
-                    elasticsearch=JSON.parse(elasticsearch)
-                }
-                if(this.screen_item.hasOwnProperty('filterConfig') && Object.keys(this.screen_item.filterConfig).length > 0){
-                    if(this.screen_item.filterConfig.hasOwnProperty('sortCol')!=true){
-                        this.screen_item.filterConfig['sortCol'] = this.object.key_attribute;
-                    }
-                    if(this.screen_item.filterConfig.hasOwnProperty('order')!=true){
-                        this.screen_item.filterConfig['order'] = 'ASC';
-                    }
-                    order = "`"+this.screen_item.filterConfig['sortCol']+"` "+this.screen_item.filterConfig['order']+"";
-                }
-                else if(this.screen_item.hasOwnProperty('sort')){
-                    order = "`"+this.screen_item.sort.column+"` "+this.screen_item.sort.order+"";
-                }
-                else{
-                    order = "`"+this.object.key_attribute+"` ASC";
-                }
-                let api_normal
-                if(that.object.dm_type=="Custom"){ 
-                    api_normal = that.object.path_normal
-                    for (var key in vm.flatRuntimeAttributes) {
-                        if (vm.flatRuntimeAttributes.hasOwnProperty(key)) {
-                            api_normal = api_normal.replace(new RegExp('##'+key+'##','g'),vm.flatRuntimeAttributes[key].toString().replace(/[\r\n\t]+/g," "));
-                            api_normal = api_normal.replace('"','\"');
-                        }
-                    }
-                    for (var key in vm.current.parent) {
-                        if (vm.current.parent.hasOwnProperty(key)) {
-                            api_normal = vm.current.parent[key] != null ? (api_normal.replace(new RegExp('##'+key+'##','g'),vm.current.parent[key].toString().replace(/[\r\n\t]+/g," "))) : api_normal;
-                            api_normal = api_normal.replace('"','\"');
-                        }
-                    }
-                    get = this.object.query_params.get ? this.object.query_params.get : ""
-                    get = this.task.get ? this.task.get : get
-                }
-                $.ajax({
-                    url:that.object.dm_host + (that.object.dm_type=="V1" ? '/api/download/query' : that.object.dm_type=="V2" ? "/api/dm/getData" : that.object.dm_type=="Chained" ? '/api/dm/getChainedData' : that.object.dm_type=="Custom" ? "/" + api_normal : "/" +that.object.dm_name + '/_search'),
-                    headers: that.object.dm_type == "Custom" ? {
-                        'Accept': 'application/json',
-                        'Content-Type': 'application/json',
-                        'Authorization': 'Bearer '+vm.flatRuntimeAttributes['user.access_token']
-                    }:false,
-                    type: (that.object.dm_type == "Elasticsearch" &&  elasticsearch !="" ) ? 'POST' : 'GET',
-                    dataType:'json',
-                    contentType: (that.object.dm_type == "Elasticsearch" &&  elasticsearch != "" ) ? 'application/json' : false,
-                    data: (that.object.dm_type=="V1" || that.object.dm_type=="V2") ? 
-                    {
-                        token:that.object.token,
-                        dm_name:that.object.dm_name,
-                        where:where,
-                        download:0,
-                        mode:'query',
-                        format:'json',
-                        order: order,
-                        ...get
-                    } : that.object.dm_type=="Chained" ?
-                    {
-                        chain_name:that.object.dm_name,
-                        token:that.object.token,
-                        type:'group',
-                        begin_at:'root',
-                        conditions:where,
-                        ...get
-                    } : that.object.dm_type=="Custom" ? 
-                    {
-                        page: 1,
-                        perPage: 99999,
-                        ...get
-                    }: (that.object.dm_type == "Elasticsearch" &&  elasticsearch !="" ) ? JSON.stringify(elasticsearch) : {...get},
-                    success: function(data){  
-                        if( (that.object.dm_type=="Elasticsearch" && !that.object.hasOwnProperty('data_path')) || (that.object.dm_type=="Elasticsearch" && that.object.hasOwnProperty('data_path') && (that.object.data_path=='' || that.object.data_path==null))){
-                            let elasticsearch_data=JSON.parse(JSON.stringify(data));
-                            data=jsonPath(elasticsearch_data,'hits.hits[*]._source')
-                        }
-                        if(that.object.dm_type=="Elasticsearch" && that.object.hasOwnProperty('data_path') && that.object.data_path!='' && that.object.data_path!=null){
-                            let elasticsearch_data=JSON.parse(JSON.stringify(data));
-                            data=jsonPath(elasticsearch_data.aggregations,that.object.data_path)
-                        }    
-                        if(that.object.dm_type=="Custom"){
-                            data=jsonPath(data,that.object.data_path)
-                        }      
-                        if(that.object.hasOwnProperty('rule') && that.object.rule.length>0 && data.length>0 && typeof(that.object.rule)=='object'){
-                            vm.configRule(data,that.object.rule)
-                        }
-                        try {
-                            data.sort(function(b, a) {
-                                if(new Date(jsonPath(a,that.object.key_attribute))!='Invalid Date' && isNaN(Number(jsonPath(a,that.object.key_attribute))) ){
-                                    return new Date(jsonPath(b,that.object.key_attribute))-new Date(jsonPath(a,that.object.key_attribute));
-                                }else if(!isNaN(parseFloat(jsonPath(a,that.object.key_attribute)))){
-                                    return (parseFloat(jsonPath(b,that.object.key_attribute)))-(parseFloat(jsonPath(a,that.object.key_attribute)));
-                                }else{
-                                    return (String(jsonPath(b,that.object.key_attribute))).localeCompare(String((jsonPath(a,that.object.key_attribute))));
-                                }
-                            })
-                        } catch (error) {} 
-                        that.dataOnUpdate=data;
-                        $(".sk-circle").css({'display': 'none'  });
-                        if(that.screen_item.screenCode==vm.activeScreenCode || (that.task.code===9999 && vm.activeScreenCom[that.object.code]==that.screen_item.screenCode)){
-                            that.handleReplacements();
-                        }
-                    },
-                    error:function(error){
-                        that.item_data=[];
-                        $(".sk-circle").css({'display': 'none'  });
-                        if(that.screen_item.screenCode==vm.activeScreenCode || (that.task.code===9999 && vm.activeScreenCom[that.object.code]==that.screen_item.screenCode)){
-                            that.handleReplacements();
-                        }
-                    }
-                })
-            }
         },
         watch: {
             update_theme_css(){
@@ -544,7 +392,7 @@
             status_ref(){
                 if(this.visualizehtml){
                     this.updateData = true
-                    this.onUpdate();
+                    this.handleDataObject();
                 }else{
                     this.handleDataObject()
                 }
