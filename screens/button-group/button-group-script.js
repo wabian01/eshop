@@ -1,4 +1,4 @@
-    Vue.component('button-group', {
+Vue.component('button-group', {
         template: '#button-group',
         props: ['object','body_area','task','status_ref','item_data','json_holder','refresh_rate','list_data_object'],        
         data: function(){
@@ -295,7 +295,7 @@
                                 }
                             }
                         return  $.ajax({
-                                url: button.source.replace("./","<?php echo AppEnv::BASE_URL ?>"+"/"),
+                                url: button.source.replace("./",window.location.origin+"/"),
                                 type: "GET",
                                 contentType: "application/json",
                                 dataType: "json",
