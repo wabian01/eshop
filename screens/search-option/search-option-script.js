@@ -446,6 +446,7 @@ Vue.component('search-option', {
                         drops:that.drop<=100 ? 'down' : 'up',
                         opens: "left",
                         locale: { applyLabel: 'OK' }
+                        
                     });
                     $('#daterange_'+that.id).on('apply.daterangepicker', function(ev, picker) {
                         $(this).parent().next().val(picker.startDate.format('YYYY-MM-DD') + ' -> ' + picker.endDate.format('YYYY-MM-DD'))
