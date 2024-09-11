@@ -711,15 +711,18 @@ Vue.component('search-view', {
                     let that = this;
                     
                     data = this.handleDataBinding(data)
-
                     if(data.hasOwnProperty('request')){
+                        let url = data.url
+                        let type = data.request.method != undefined ? data.request.method: 'GET'
+                        let dara_param =  (data.request.method != undefined && data.request.method.toLowerCase() == 'get') ? JSON.parse(data.request.body) : data.request.body
+                        let contentType = (data.request.method != undefined && data.request.method.toLowerCase() == 'post')? 'application/json' : false
                         $.ajax({
 
-                            url: data.url,
-                            type: data.request.method != undefined ? data.request.method: 'GET',
-                            data: (data.request.method != undefined && data.request.method.toLowerCase() == 'get') ? JSON.parse(data.request.body) : data.request.body ,
-                            contentType: (data.request.method != undefined && data.request.method.toLowerCase() == 'post')? 'application/json' : false,
-                            
+                            url: url,
+                            type: type,
+                            data: dara_param,
+                            contentType: contentType,
+
                             dataType: "json",
                             success: function (json) {
                                 if(data.hasOwnProperty('jsonpath')){
