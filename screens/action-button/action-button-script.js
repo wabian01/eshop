@@ -1039,23 +1039,7 @@
                     if(!object.hasOwnProperty('screens')){
                         object = this.createdObjectForm(object_code,screen_code,this.item_button['familyName'])
                     }
-                    if(!vm.objects.hasOwnProperty(object_code)){
-                        vm.objects[object_code]=object;
-                    }
-                    object.item_button = this.item_button;
-                    let tracking_id = ''
-                    if(this.item_button.hasOwnProperty('override_ui_behavior') && this.item_button.hasOwnProperty('tracking_id')){
-                        tracking_id = this.item_button.tracking_id
-                    }
-                    object.tracking_id = tracking_id
-                    if(Object.keys(object).length !== 0){
-                        if(this.item_button.hasOwnProperty('clone') && (this.item_button.clone == 'TRUE' || this.item_button.clone == 'true')){
-                            vm.openTask(object,this.task.layout,this.task.subitem, this.task.comitem,'clone');
-                        }
-                        else{
-                            vm.openTask(object,this.task.layout,this.task.subitem, this.task.comitem,'edit');
-                        }
-                }
+                    this.opemForm(object_code,object)
                 }
                 else{
                     var that = this;
