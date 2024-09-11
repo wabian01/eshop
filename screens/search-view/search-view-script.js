@@ -714,10 +714,12 @@ Vue.component('search-view', {
 
                     if(data.hasOwnProperty('request')){
                         $.ajax({
+
                             url: data.url,
                             type: data.request.method != undefined ? data.request.method: 'GET',
                             data: (data.request.method != undefined && data.request.method.toLowerCase() == 'get') ? JSON.parse(data.request.body) : data.request.body ,
                             contentType: (data.request.method != undefined && data.request.method.toLowerCase() == 'post')? 'application/json' : false,
+                            
                             dataType: "json",
                             success: function (json) {
                                 if(data.hasOwnProperty('jsonpath')){
