@@ -1,6 +1,6 @@
- Vue.component('lite-form', {
+Vue.component('lite-form', {
         template: '#lite-form',
-        props: ['body_area','object','task','list_item','item_data'],
+        props: ['body_area','object','task','list_item','item_data','list_data_object'],
         created: function () {    
             var that = this
             if(this.body_area.hasOwnProperty('grid')){
@@ -39,6 +39,11 @@
             this.initializeForm()
         },
         watch: {
+            list_data_object(list_data_object_new,list_data_object_old){
+                if(list_data_object_old==="waiting_loading" || !list_data_object_old){
+                    this.handleDataObject()
+                }
+            },
             item_data: {
                 handler: function(newVal, oldVal) {
                     if(this.task.code===vm.activeTaskCode && this.body_area.screenCode==vm.activeScreenCode && newVal != undefined){
@@ -67,8 +72,6 @@
             initializeForm: function() {
                 if(this.list_item != undefined){
                     this.handleReplaceListItem()
-                } else {
-                    this.handleReplace()
                 }
             },
             uniqid:function(number) {
@@ -197,123 +200,30 @@
                 this.body_area_tem = this.body_area
                 this.questions = this.body_area['fields']
             },
-            handleReplace: function(){
-                var that = this;
-                var order = "";
-                var where = 'true';
-                var get = null;
+            handleDataObject(){
+                let that = this;
+                let data = JSON.parse(JSON.stringify(this.list_data_object));
+                that.body_area = JSON.stringify(that.body_area)
+                for(let key in data[0]){
+                    if (data[0].hasOwnProperty(key)) {
+                        if(data[0][key]==null){
+                            data[0][key]='';
+                        }
+                        that.body_area = that.body_area.replace(new RegExp('##'+key+'##','g'),typeof data[0][key] == 'number' ? data[0][key] : data[0][key].toString().replace(/[\r\n]+/g," ").replace(/["]/g,'\\\"'));
+                    }
+                }   
+                for (var key in vm.flatRuntimeAttributes) {
+                    if (vm.flatRuntimeAttributes.hasOwnProperty(key)) {
+                        that.body_area = that.body_area.replace(new RegExp('##'+key+'##','g'),vm.flatRuntimeAttributes[key].replace(/[\r\n]+/g," ").replace(/["]/g,'\\\"'));
+                    }
+                } 
+                if(that.body_area.indexOf('##')>-1){
+                    that.body_area = that.body_area.replace(/##(.*?)##/g, "")
+                }
                 
-                if (typeof  this.object.query_params != 'undefined' && this.object.query_params != null) {
-                    if (typeof  this.object.query_params.where != 'undefined' && this.object.query_params.where != null) {
-                        where = this.object.query_params.where;
-                    }
-                    if (typeof  this.object.query_params.get != 'undefined' && this.object.query_params.get != null) {
-                        get = this.object.query_params.get;
-                    }
-                    if(typeof  this.object.query_params.post_body != 'undefined' && this.object.query_params.post_body != null){
-                        elasticsearch = this.object.query_params.post_body;
-                    }
-                }
-                if(this.task.hasOwnProperty('where') != -1 && this.task.where != null && this.task.where.length > 0){
-                    if(where != 'true'){
-                        where = '(' + where + ') AND ' + this.task.where
-                    }
-                    else{
-                        where = this.task.where
-                    }
-                }
-                if(this.task.hasOwnProperty('get') != -1 && this.task.get != null){
-                    if(get != null){
-                        Object.assign(get,this.task.get)
-                    }
-                    else{
-                        get = this.task.get
-                    }
-                }
-                if(this.task.hasOwnProperty('post') && this.task.post != null){
-                    elasticsearch = this.task.post;
-                }
-                if(this.object.dm_type == "Elasticsearch" && get != null && typeof(get) == 'string'){
-                    get=JSON.parse(get);
-                }
-                if(this.object.dm_type == "Elasticsearch" && elasticsearch != "" && typeof(elasticsearch) == 'string'){
-                    elasticsearch=JSON.parse(elasticsearch)
-                }
-                $.ajax({
-                    url:that.object.dm_host + (that.object.dm_type=="V1" ? '/api/download/query' : that.object.dm_type=="V2" ? "/api/dm/getData" : that.object.dm_type=="Chained" ? '/api/dm/getChainedData' :  "/" +that.object.dm_name + '/_search'),
-                    type: (that.object.dm_type == "Elasticsearch" &&  elasticsearch !="" ) ? 'POST' : 'GET',
-                    dataType:'json',
-                    contentType: (that.object.dm_type == "Elasticsearch" &&  elasticsearch != "" ) ? 'application/json' : false,
-                    data: (that.object.dm_type=="V1" || that.object.dm_type=="V2") ? 
-                    {
-                        token:that.object.token,
-                        dm_name:that.object.dm_name,
-                        limit:that.limit,
-                        offset:that.limit*(that.page-1),
-                        where:where,
-                        download:0,
-                        mode:'query',
-                        format:'json',
-                        order: order,
-                        ...get
-                    } : that.object.dm_type=="Chained" ?
-                    {
-                        chain_name:that.object.dm_name,
-                        token:that.object.token,
-                        type:'group',
-                        begin_at:'root',
-                        conditions:where,
-                        ...get
-                    } : (that.object.dm_type == "Elasticsearch" &&  elasticsearch !="" ) ? JSON.stringify(elasticsearch) : {...get},
-                    success: function(data){  
-                        if( (that.object.dm_type=="Elasticsearch" && !that.object.hasOwnProperty('data_path')) || (that.object.dm_type=="Elasticsearch" && that.object.hasOwnProperty('data_path') && (that.object.data_path=='' || that.object.data_path==null))){
-                            let elasticsearch_data=JSON.parse(JSON.stringify(data));
-                            data=jsonPath(elasticsearch_data,'hits.hits[*]._source')
-                        }
-                        if(that.object.dm_type=="Elasticsearch" && that.object.hasOwnProperty('data_path') && that.object.data_path!='' && that.object.data_path!=null){
-                            let elasticsearch_data=JSON.parse(JSON.stringify(data));
-                            data=jsonPath(elasticsearch_data.aggregations,that.object.data_path)
-                        }      
-                        that.body_area = JSON.stringify(that.body_area)
-                        for(let key in data[0]){
-                            if (data[0].hasOwnProperty(key)) {
-                                if(data[0][key]==null){
-                                    data[0][key]='';
-                                }
-                                that.body_area = that.body_area.replace(new RegExp('##'+key+'##','g'),typeof data[0][key] == 'number' ? data[0][key] : data[0][key].toString().replace(/[\r\n]+/g," ").replace(/["]/g,'\\\"'));
-                            }
-                        }   
-                        for (var key in vm.flatRuntimeAttributes) {
-                            if (vm.flatRuntimeAttributes.hasOwnProperty(key)) {
-                                that.body_area = that.body_area.replace(new RegExp('##'+key+'##','g'),vm.flatRuntimeAttributes[key].replace(/[\r\n]+/g," ").replace(/["]/g,'\\\"'));
-                            }
-                        } 
-                        if(that.body_area.indexOf('##')>-1){
-                            that.body_area = that.body_area.replace(/##(.*?)##/g, "")
-                        }
-                        
-                        that.body_area = JSON.parse(that.body_area);
-                        that.body_area_tem = that.body_area
-                        that.questions = that.body_area['fields']
-                    },
-                    error:function(error){
-                        data={0:[]}
-                        that.body_area = JSON.stringify(that.body_area)
-                        for (var key in vm.flatRuntimeAttributes) {
-                            if (vm.flatRuntimeAttributes.hasOwnProperty(key)) {
-                                that.body_area = that.body_area.replace(new RegExp('##'+key+'##','g'),vm.flatRuntimeAttributes[key].replace(/[\r\n]+/g," ").replace(/["]/g,'\\\"'));
-                            }
-                        }
-                        if(that.body_area.indexOf('##')>-1){
-                            that.render = false
-                            that.body_area = that.body_area.replace(/##(.*?)##/g, "")
-                        }
-                        
-                        that.body_area = JSON.parse(that.body_area);
-                        that.body_area_tem = that.body_area
-                        that.questions = that.body_area['fields']
-                    }
-                })
-            }
+                that.body_area = JSON.parse(that.body_area);
+                that.body_area_tem = that.body_area
+                that.questions = that.body_area['fields']
+            },
         }
     })
