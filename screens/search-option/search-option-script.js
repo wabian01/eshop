@@ -446,7 +446,7 @@ Vue.component('search-option', {
                         drops:that.drop<=100 ? 'down' : 'up',
                         opens: "left",
                         locale: { applyLabel: 'OK' }
-                        
+
                     });
                     $('#daterange_'+that.id).on('apply.daterangepicker', function(ev, picker) {
                         $(this).parent().next().val(picker.startDate.format('YYYY-MM-DD') + ' -> ' + picker.endDate.format('YYYY-MM-DD'))
@@ -495,23 +495,24 @@ Vue.component('search-option', {
                         if($('#daterange_'+that.id).offset().top>100){
                             that.drop=$('#daterange_'+that.id).offset().top;
                         }
-                    $('#daterange_'+that.id).daterangepicker({
-                        autoUpdateInput: false,
-                        showDropdowns: true,
-                        drops:that.drop<=300 ? 'down' : 'up',
-                        opens: "left",
-                        locale: { applyLabel: 'OK' }
-                    });
+                        $('#daterange_'+that.id).daterangepicker({
+                            autoUpdateInput: false,
+                            showDropdowns: true,
+                            drops:that.drop<=300 ? 'down' : 'up',
+                            opens: "left",
+                            locale: { applyLabel: 'OK' }
+                        });
 
-                    $('#daterange_'+that.id).on('apply.daterangepicker', function(ev, picker) {
-                        $(this).parent().next().val(picker.startDate.format('YYYY-MM-DD') + ' -> ' + picker.endDate.format('YYYY-MM-DD'))
-                        $('.myBtn').trigger('click');
-                    });
+                        $('#daterange_'+that.id).on('apply.daterangepicker', function(ev, picker) {
+                            $(this).parent().next().val(picker.startDate.format('YYYY-MM-DD') + ' -> ' + picker.endDate.format('YYYY-MM-DD'))
+                            $('.myBtn').trigger('click');
+                        });
 
-                    $('#daterange_'+that.id).on('cancel.daterangepicker', function(ev, picker) {
-                        $(this).parent().next().val('')
-                    });
-                    that.cssDateTime()
+                        that.cssDateTime()
+
+                        $('#daterange_'+that.id).on('cancel.daterangepicker', function(ev, picker) {
+                            $(this).parent().next().val('')
+                        });
                     
                     }
 
