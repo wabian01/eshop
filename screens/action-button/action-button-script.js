@@ -415,1118 +415,152 @@
                 if( button_description.hasOwnProperty("show_text") && typeof(button_description.show_text) == 'string' ) {
                     button_description.show_text = Boolean(button_description.show_text)
                 }
+                let font_icon = ''
                 switch(this.item_button.type) {
                     case "act_call":
                     case "act_sms":
                         return true
-                    case 'act_share':
-                        if(this.styleButton != ""){
-                            if(this.isBigIcon != ""){  
-                                if(button_description.hasOwnProperty('icon_color_background') && button_description.icon_color_background != ""){
-                                    this.styleButton = 'style=\''+this.styleButton+" background-color:"+button_description.icon_color_background+" !important;'"
-                                    icon += '<i class="isShowIcon fa fa-bar-chart" aria-hidden="true" style="'+this.styleIconDisable+'color:black"></i> ';
-                                }
-                                else{
-                                    this.styleButton = 'style=\''+this.styleButton+this.styleAll+"'";
-                                    icon += '<i class="isShowIcon fa fa-bar-chart" aria-hidden="true" style="'+this.styleIconDisable+'color:#00c5dc"></i> ';
-                                }
-                                if(this.item_button.hasOwnProperty('imageUrl')){
-                                    iconfont = icon.replace('isShowIcon', 'isShowIcon d-none');
-                                    icon = '<img src="'+this.item_button.imageUrl+'" onerror="this.onerror=null;$(this).addClass(\'d-none\');$(this).next().removeClass(\'d-none\');" style="'+this.styleIconDisable+'width:1rem;"></i> '+iconfont;
-                                }
-                                this.button_content = '<button '+disabled+' type="button" class="btn"'+this.styleButton+'>'+(button_description.hasOwnProperty('show_icon') ? ((button_description.show_icon == true || button_description.show_icon == 'true') == true ? icon: '') :icon)+'</button><p style="'+this.styleAll+'overflow: hidden;text-overflow: ellipsis;margin: 6px;display: -webkit-box;-webkit-box-orient: vertical;-webkit-line-clamp:'+((button_description.hasOwnProperty('max_text_line') && button_description.max_text_line!=null)?button_description.max_text_line:1)+';">'+(button_description.hasOwnProperty('show_text') ? button_description.show_text == true ? this.item_button['label']: '' :this.item_button['label'])+'</p>';
-                            }
-                            else if(button_description.hasOwnProperty('type') && button_description.type === 'custom'){
-                                if (this.item_button.hasOwnProperty("badge_icon") && this.item_button.badge_icon !== "") {
-                                    this.styleButton = 'style=\''+this.styleButton+this.styleAll+"display:flex; position:relative;'";
-                                } else {
-                                    this.styleButton = 'style=\''+this.styleButton+this.styleAll+"display:flex;'";
-                                }
-                                icon += '<i class="isShowIcon fa fa-bar-chart" aria-hidden="true" style="'+this.styleIconDisable+this.styleIcon+this.stylefontasome+'color:#00c5dc; margin:auto;"></i> '
-                                if(this.item_button.hasOwnProperty('imageUrl')){
-
-                                    let icon_size_more  = 'height:'+((button_description.hasOwnProperty('icon_size') && button_description.icon_size !== "") ? (button_description.icon_size == "large" ? "25px;" : (button_description.icon_size == "medium" ? "24px" : "")) : "")+';'
-                                        icon_size_more += 'min-width:'+((button_description.hasOwnProperty('icon_size') && button_description.icon_size !== "") ? (button_description.icon_size == "large" ? "25px;" : (button_description.icon_size == "medium" ? "24px" : "")) : "")+';'
-                                        this.styleIcon += icon_size_more
-                                    
-                                    iconfont = icon.replace('isShowIcon', 'isShowIcon d-none');
-                                    icon = '<img src="'+this.item_button.imageUrl+'" onerror="this.onerror=null;$(this).addClass(\'d-none\');$(this).next().removeClass(\'d-none\');" style="'+this.styleIconDisable+this.styleIcon+'margin-bottom:3px;"></i> '+iconfont;
-                                }
-                                if(button_description.hasOwnProperty('icon_alignment')){
-                                    switch (button_description.icon_alignment) {
-                                        case 'end':
-                                            this.button_content = '<button '+disabled+' type="button" class="btn default"'+this.styleButton+'><span style="'+this.styleAll+'width:100%;overflow: hidden;text-overflow: ellipsis;padding:0 5px;display: -webkit-box;-webkit-box-orient: vertical;white-space: break-spaces;word-wrap: break-word;margin: auto;-webkit-line-clamp:'+((button_description.hasOwnProperty('max_text_line') && button_description.max_text_line!=null)?button_description.max_text_line:(1+";white-space: unset !important"))+';">'+(button_description.hasOwnProperty('show_text') ? button_description.show_text == true ? this.item_button['label']: '' :this.item_button['label'])+' </span>'+(button_description.hasOwnProperty('show_icon') ? ((button_description.show_icon == true || button_description.show_icon == 'true') == true ? icon: '') :icon)+'</button>';
-                                            break;
-                                        case 'top':
-                                            this.styleButton = this.styleButton.replace('text-align:start;','').replace('display:flex;','')
-                                            this.button_content = '<button '+disabled+' type="button" class="btn default"'+this.styleButton+'>'+(button_description.hasOwnProperty('show_icon') ? ((button_description.show_icon == true || button_description.show_icon == 'true') == true ? icon: '') :icon)+'<span style="'+this.styleAll+'width:100%;overflow: hidden;text-overflow: ellipsis;padding:0 5px;display:block;"> '+(button_description.hasOwnProperty('show_text') ? button_description.show_text == true ? this.item_button['label']: '' :this.item_button['label'])+' </span></button>';
-                                            break;
-                                        case 'bottom':
-                                            this.styleButton = this.styleButton.replace('text-align:start;','').replace('display:flex;','')
-                                            this.button_content = '<button '+disabled+' type="button" class="btn default"'+this.styleButton+'><span style="'+this.styleAll+'width:100%;overflow: hidden;text-overflow: ellipsis;padding:0 5px;display:block;"> '+(button_description.hasOwnProperty('show_text') ? button_description.show_text == true ? this.item_button['label']: '' :this.item_button['label'])+' </span>'+(button_description.hasOwnProperty('show_icon') ? ((button_description.show_icon == true || button_description.show_icon == 'true') == true ? icon: '') :icon)+'</button>';
-                                            break;
-                                    
-                                        default:
-                                            this.button_content = '<button '+disabled+' type="button" class="btn default"'+this.styleButton+'>'+(button_description.hasOwnProperty('show_icon') ? ((button_description.show_icon == true || button_description.show_icon == 'true') == true ? icon: '') :icon)+'<span style="'+this.styleAll+'width:100%;overflow: hidden;text-overflow: ellipsis;padding:0 5px;display: -webkit-box;-webkit-box-orient: vertical;white-space: break-spaces;word-wrap: break-word;margin: auto;-webkit-line-clamp:'+((button_description.hasOwnProperty('max_text_line') && button_description.max_text_line!=null)?button_description.max_text_line:(1+";white-space: unset !important"))+';">'+(button_description.hasOwnProperty('show_text') ? button_description.show_text == true ? this.item_button['label']: '' :this.item_button['label'])+' </span></button>';
-                                            break;
-                                    }
-                                }else{
-                                    if (this.item_button.hasOwnProperty("badge_icon") && this.item_button.badge_icon !== "") {
-                                        this.button_content = '<button '+disabled+' type="button" class="btn default"'+this.styleButton+'>'+(button_description.hasOwnProperty('show_icon') ? ((button_description.show_icon == true || button_description.show_icon == 'true') == true ? icon: '') :icon)+'<span style="'+this.styleAll+'width:100%;overflow: hidden;text-overflow: ellipsis;padding:0 5px;display: -webkit-box;-webkit-box-orient: vertical;white-space: break-spaces;word-wrap: break-word;margin: auto;-webkit-line-clamp:'+((button_description.hasOwnProperty('max_text_line') && button_description.max_text_line!=null)?button_description.max_text_line:(1+";white-space: unset !important"))+';">'+(button_description.hasOwnProperty('show_text') ? button_description.show_text == true ? this.item_button['label']: '' :this.item_button['label'])+' </span><span style="background:'+bgBIcon+'; box-shadow:'+shadowBIcon+'; color:'+txtBIcon+'; display:'+showBIcon+'; border:'+borderColorBIcon+'; width:fit-content; height:fit-content; position:absolute; top:-10px; right:-10px; justify-content:center; align-items:center; text-transform: none; padding: 3px 7px !important" class="badge">'+contentBIcon+'</span></button>';
-                                    } else {
-                                        this.button_content = '<button '+disabled+' type="button" class="btn default"'+this.styleButton+'>'+(button_description.hasOwnProperty('show_icon') ? ((button_description.show_icon == true || button_description.show_icon == 'true') == true ? icon: '') :icon)+'<span style="'+this.styleAll+'width:100%;overflow: hidden;text-overflow: ellipsis;padding:0 5px;display: -webkit-box;-webkit-box-orient: vertical;white-space: break-spaces;word-wrap: break-word;margin: auto;-webkit-line-clamp:'+((button_description.hasOwnProperty('max_text_line') && button_description.max_text_line!=null)?button_description.max_text_line:(1+";white-space: unset !important"))+';">'+(button_description.hasOwnProperty('show_text') ? button_description.show_text == true ? this.item_button['label']: '' :this.item_button['label'])+' </span></button>';
-                                    }
-                                }
-                            }
-                            else{
-                                this.styleButton = 'style=\''+this.styleButton+this.styleAll+"display:flex;'";
-                                icon += '<i class="isShowIcon fa fa-bar-chart" aria-hidden="true" style="'+this.styleIconDisable+this.stylefontasome+'color:#00c5dc"></i> '
-                                if(this.item_button.hasOwnProperty('imageUrl')){
-                                    iconfont = icon.replace('isShowIcon', 'isShowIcon d-none');
-                                    icon = '<img src="'+this.item_button.imageUrl+'" onerror="this.onerror=null;$(this).addClass(\'d-none\');$(this).next().removeClass(\'d-none\');" style="'+this.styleIconDisable+'height:1rem;width:1rem;margin-bottom:3px;"></i> '+iconfont;
-                                }
-                                this.button_content = '<button '+disabled+' type="button" class="btn default"'+this.styleButton+'>'+(button_description.hasOwnProperty('show_icon') ? ((button_description.show_icon == true || button_description.show_icon == 'true') == true ? icon: '') :icon)+'<span style="'+this.styleAll+'width:100%;overflow: hidden;text-overflow: ellipsis;padding:0 5px;"> '+(button_description.hasOwnProperty('show_text') ? button_description.show_text == true ? this.item_button['label']: '' :this.item_button['label'])+' </span></button>';
-                            }
-                        }
-                        else{
-                            icon='<i class="isShowIcon fa fa-bar-chart" aria-hidden="true" style="'+this.styleIconDisable+this.stylefontasome+'color:#00c5dc;padding:1px !important;"></i> ';
-                            if(this.item_button.hasOwnProperty('imageUrl')){
-                                iconfont = icon.replace('isShowIcon', 'isShowIcon d-none');
-                                icon = '<img src="'+this.item_button.imageUrl+'" onerror="this.onerror=null;$(this).addClass(\'d-none\');$(this).next().removeClass(\'d-none\');" style="'+this.styleIconDisable+'height:1rem;width:1rem;margin-bottom:3px;"></i> '+iconfont;
-                            }
-                            this.button_content = '<button '+disabled+' type="button" style="'+this.styleAll+'padding: 3px 9px !important; border-radius: 5px !important;'+''+'" class="btn default">'+icon+'<span style="'+this.styleAll+'padding:0 5px;width:100%;">'+(button_description.hasOwnProperty('show_text') ? button_description.show_text == true ? this.item_button['label']: '' :this.item_button['label'])+'</span></button>';
-                        }
+                    case "act_share":
+                    case "act_dm_view":
+                    case "act_open_module":
+                    case "act_exit":
+                    case "act_open_html_screen":
+                        font_icon = 'fa fa-bar-chart'
                         break
                     case "act_call_cloudphone":
                         if (typeof makeCall === "function" && this.item_button['phone'] !== "undefined") {
                             let phoneNumber = this.item_button['phone'].replace(new RegExp('##','g'),"")
-                            if(this.styleButton != ""){
-                                if(this.isBigIcon != ""){
-                                    if(button_description.hasOwnProperty('icon_color_background') && button_description.icon_color_background != ""){
-                                        this.styleButton = 'style=\''+this.styleButton+" background-color:"+button_description.icon_color_background+" !important;'"
-                                        icon += '<i class="isShowIcon fa fa-phone" style="'+this.styleIconDisable+'color:black"></i> ';
-                                    }
-                                    else{
-                                        this.styleButton = 'style=\''+this.styleButton+this.styleAll+"'";
-                                        icon += '<i class="isShowIcon fa fa-phone" style="'+this.styleIconDisable+'"></i> ';
-                                    }
-                                    if(this.item_button.hasOwnProperty('imageUrl')){
-                                        iconfont = icon.replace('isShowIcon', 'isShowIcon d-none');
-                                        icon = '<img src="'+this.item_button.imageUrl+'" onerror="this.onerror=null;$(this).addClass(\'d-none\');$(this).next().removeClass(\'d-none\');" style="'+this.styleIconDisable+'width:1rem;"></i> '+iconfont;
-                                    }
-                                    this.button_content = '<button '+disabled+' type="button" class="btn"'+this.styleButton+'>'+(button_description.hasOwnProperty('show_icon') ? ((button_description.show_icon == true || button_description.show_icon == 'true') ? icon: '') :icon)+'</button><p style="'+this.styleAll+'overflow: hidden;text-overflow: ellipsis;margin: 6px;display: -webkit-box;-webkit-box-orient: vertical;-webkit-line-clamp:'+((button_description.hasOwnProperty('max_text_line') && button_description.max_text_line!=null)?button_description.max_text_line:1)+';">'+(button_description.hasOwnProperty('show_text') ? button_description.show_text == true ? (this.item_button['label'].length > 0 ? this.item_button['label'] : phoneNumber): '' :(this.item_button['label'].length > 0 ? this.item_button['label'] : phoneNumber))+'</p>';
-                                }
-                                else if(button_description.hasOwnProperty('type') && button_description.type === 'custom'){
-                                    if (this.item_button.hasOwnProperty("badge_icon") && this.item_button.badge_icon !== "") {
-                                        this.styleButton = 'style=\''+this.styleButton+this.styleAll+"display:flex; position:relative;'";
-                                    } else {
-                                        this.styleButton = 'style=\''+this.styleButton+this.styleAll+"display:flex;'";
-                                    }
-                                    icon += '<i class="isShowIcon fa fa-phone" style="'+this.styleIconDisable+this.styleIcon+this.stylefontasome+'margin:auto;"></i> ';
-                                    if(this.item_button.hasOwnProperty('imageUrl')){
-
-                                        let icon_size_more  = 'height:'+((button_description.hasOwnProperty('icon_size') && button_description.icon_size !== "") ? (button_description.icon_size == "large" ? "25px;" : (button_description.icon_size == "medium" ? "24px" : "")) : "")+';'
-                                        icon_size_more += 'min-width:'+((button_description.hasOwnProperty('icon_size') && button_description.icon_size !== "") ? (button_description.icon_size == "large" ? "25px;" : (button_description.icon_size == "medium" ? "24px" : "")) : "")+';'
-                                        this.styleIcon += icon_size_more
-
-                                        iconfont = icon.replace('isShowIcon', 'isShowIcon d-none');
-                                        icon = '<img src="'+this.item_button.imageUrl+'" onerror="this.onerror=null;$(this).addClass(\'d-none\');$(this).next().removeClass(\'d-none\');" style="'+this.styleIconDisable+this.styleIcon+'margin-bottom:3px;"></i> '+iconfont;
-                                    }
-                                    if(button_description.hasOwnProperty('icon_alignment')){
-                                        switch (button_description.icon_alignment) {
-                                            case 'end':
-                                                this.button_content = '<button '+disabled+' type="button" class="btn default"'+this.styleButton+'><span style="'+this.styleAll+'width:100%;overflow: hidden;text-overflow: ellipsis;padding:0 5px;display: -webkit-box;-webkit-box-orient: vertical;white-space: break-spaces;word-wrap: break-word;margin: auto;-webkit-line-clamp:'+((button_description.hasOwnProperty('max_text_line') && button_description.max_text_line!=null)?button_description.max_text_line:(1+";white-space: unset !important"))+';">'+(button_description.hasOwnProperty('show_text') ? button_description.show_text == true ? this.item_button['label']: '' :this.item_button['label'])+' </span>'+(button_description.hasOwnProperty('show_icon') ? ((button_description.show_icon == true || button_description.show_icon == 'true') == true ? icon: '') :icon)+'</button>';
-                                                break;
-                                            case 'top':
-                                                this.button_content = '<button '+disabled+' type="button" class="btn default"'+this.styleButton+'>'+(button_description.hasOwnProperty('show_icon') ? ((button_description.show_icon == true || button_description.show_icon == 'true') == true ? icon: '') :icon)+'<span style="'+this.styleAll+'width:100%;overflow: hidden;text-overflow: ellipsis;padding:0 5px;display:block;"> '+(button_description.hasOwnProperty('show_text') ? button_description.show_text == true ? this.item_button['label']: '' :this.item_button['label'])+' </span></button>';
-                                                break;
-                                            case 'bottom':
-                                                this.button_content = '<button '+disabled+' type="button" class="btn default"'+this.styleButton+'><span style="'+this.styleAll+'width:100%;overflow: hidden;text-overflow: ellipsis;padding:0 5px;display:block;"> '+(button_description.hasOwnProperty('show_text') ? button_description.show_text == true ? this.item_button['label']: '' :this.item_button['label'])+' </span>'+(button_description.hasOwnProperty('show_icon') ? ((button_description.show_icon == true || button_description.show_icon == 'true') == true ? icon: '') :icon)+'</button>';
-                                                break;
-                                        
-                                            default:
-                                                this.button_content = '<button '+disabled+' type="button" class="btn default"'+this.styleButton+'>'+(button_description.hasOwnProperty('show_icon') ? ((button_description.show_icon == true || button_description.show_icon == 'true') == true ? icon: '') :icon)+'<span style="'+this.styleAll+'width:100%;overflow: hidden;text-overflow: ellipsis;padding:0 5px;display: -webkit-box;-webkit-box-orient: vertical;white-space: break-spaces;word-wrap: break-word;margin: auto;-webkit-line-clamp:'+((button_description.hasOwnProperty('max_text_line') && button_description.max_text_line!=null)?button_description.max_text_line:(1+";white-space: unset !important"))+';">'+(button_description.hasOwnProperty('show_text') ? button_description.show_text == true ? this.item_button['label']: '' :this.item_button['label'])+' </span></button>';
-                                                break;
-                                        }
-                                    }else{
-                                        if (this.item_button.hasOwnProperty("badge_icon") && this.item_button.badge_icon !== "") {
-                                            this.button_content = '<button '+disabled+' type="button" class="btn default"'+this.styleButton+'>'+(button_description.hasOwnProperty('show_icon') ? ((button_description.show_icon == true || button_description.show_icon == 'true') == true ? icon: '') :icon)+'<span style="'+this.styleAll+'width:100%;overflow: hidden;text-overflow: ellipsis;padding:0 5px;display: -webkit-box;-webkit-box-orient: vertical;white-space: break-spaces;word-wrap: break-word;margin: auto;-webkit-line-clamp:'+((button_description.hasOwnProperty('max_text_line') && button_description.max_text_line!=null)?button_description.max_text_line:(1+";white-space: unset !important"))+';">'+(button_description.hasOwnProperty('show_text') ? button_description.show_text == true ? this.item_button['label']: '' :this.item_button['label'])+' </span><span style="background:'+bgBIcon+'; box-shadow:'+shadowBIcon+'; color:'+txtBIcon+'; display:'+showBIcon+'; border:'+borderColorBIcon+'; width:fit-content; height:fit-content; position:absolute; top:-10px; right:-10px; justify-content:center; align-items:center; text-transform: none; padding: 3px 7px !important" class="badge">'+contentBIcon+'</span></button>';
-                                        } else {
-                                            this.button_content = '<button '+disabled+' type="button" class="btn default"'+this.styleButton+'>'+(button_description.hasOwnProperty('show_icon') ? ((button_description.show_icon == true || button_description.show_icon == 'true') == true ? icon: '') :icon)+'<span style="'+this.styleAll+'width:100%;overflow: hidden;text-overflow: ellipsis;padding:0 5px;display: -webkit-box;-webkit-box-orient: vertical;white-space: break-spaces;word-wrap: break-word;margin: auto;-webkit-line-clamp:'+((button_description.hasOwnProperty('max_text_line') && button_description.max_text_line!=null)?button_description.max_text_line:(1+";white-space: unset !important"))+';">'+(button_description.hasOwnProperty('show_text') ? button_description.show_text == true ? this.item_button['label']: '' :this.item_button['label'])+' </span></button>';
-                                        }  
-                                    }
-                                }
-                                else{
-                                    this.styleButton = 'style=\''+this.styleButton+this.styleAll+"display:flex;'";
-                                    icon += '<i class="isShowIcon fa fa-phone" style="'+this.styleIconDisable+this.stylefontasome+'"></i> ';
-                                    if(this.item_button.hasOwnProperty('imageUrl')){
-                                        iconfont = icon.replace('isShowIcon', 'isShowIcon d-none');
-                                        icon = '<img src="'+this.item_button.imageUrl+'" onerror="this.onerror=null;$(this).addClass(\'d-none\');$(this).next().removeClass(\'d-none\');" style="'+this.styleIconDisable+'height:1rem;width:1rem;margin-bottom:3px;"></i> '+iconfont;
-                                    }
-                                    this.button_content = '<button '+disabled+' type="button" class="btn default"'+this.styleButton+'>'+(button_description.hasOwnProperty('show_icon') ? ((button_description.show_icon == true || button_description.show_icon == 'true') ? icon: '') :icon)+'<span style="'+this.styleAll+'width:100%;overflow: hidden;text-overflow: ellipsis;padding:0 5px;"> '+(button_description.hasOwnProperty('show_text') ? button_description.show_text == true ? ((this.item_button.hasOwnProperty('label')&&this.item_button['label'].length > 0) ? this.item_button['label'] : phoneNumber): '' :((this.item_button.hasOwnProperty('label')&&this.item_button['label'].length > 0) ? this.item_button['label'] : phoneNumber))+' </span></button>';
-                                }
+                            if(!this.item_button.label){
+                                this.item_button.label = phoneNumber
                             }
-                            else{
-                                icon ='<i class="isShowIcon fa fa-phone" style="'+this.styleIconDisable+this.stylefontasome+'color:green"></i> '
-                                if(this.item_button.hasOwnProperty('imageUrl')){
-                                    iconfont = icon.replace('isShowIcon', 'isShowIcon d-none');
-                                    icon = '<img src="'+this.item_button.imageUrl+'" onerror="this.onerror=null;$(this).addClass(\'d-none\');$(this).next().removeClass(\'d-none\');" style="'+this.styleIconDisable+'height:1rem;width:1rem;margin-bottom:3px;"></i> '+iconfont;
-                                }
-                               this.button_content = '<button '+disabled+' type="button" style="'+this.styleAll+'padding: 3px 9px !important; border-radius: 5px !important;'+'" class="btn default">'+icon+'<span style="'+this.styleAll+'padding:0 5px;width:100%;">'+(button_description.hasOwnProperty('show_text') ? button_description.show_text == true ? ((this.item_button.hasOwnProperty('label')&&this.item_button['label'].length > 0) ? this.item_button['label'] : phoneNumber): '' :((this.item_button.hasOwnProperty('label')&&this.item_button['label'].length > 0) ? this.item_button['label'] : phoneNumber))+'</span></button>';                                
-                            }
-                            this.button_icon += 'fa fa-phone';
+                            font_icon = 'fa fa-phone'
                         }
                         break
 
                     case "act_call_api":
-                        if(this.styleButton != ""){
-                            if(this.isBigIcon != ""){
-                                if(button_description.hasOwnProperty('icon_color_background') && button_description.icon_color_background != ""){
-                                    this.styleButton = 'style=\''+this.styleButton+" background-color:"+button_description.icon_color_background+" !important;'"
-                                    icon += '<i class="isShowIcon fa fa-cloud-download" style="'+this.styleIconDisable+'color:black"></i> ';
-                                }
-                                else{
-                                    this.styleButton = 'style=\''+this.styleButton+this.styleAll+"'";
-                                    icon += '<i class="isShowIcon fa fa-cloud-download" style="'+this.styleIconDisable+'"></i> ';
-                                }
-                                if(this.item_button.hasOwnProperty('imageUrl')){
-                                    iconfont = icon.replace('isShowIcon', 'isShowIcon d-none');
-                                    icon = '<img src="'+this.item_button.imageUrl+'" onerror="this.onerror=null;$(this).addClass(\'d-none\');$(this).next().removeClass(\'d-none\');" style="'+this.styleIconDisable+'width:1rem;margin-bottom:3px;"></i> '+iconfont;
-                                }
-                                this.button_content = '<button '+disabled+' type="button" class="btn"'+this.styleButton+'>'+(button_description.hasOwnProperty('show_icon') ? ((button_description.show_icon == true || button_description.show_icon == 'true') ? icon: '') :icon)+'</button><p style="'+this.styleAll+'overflow: hidden;text-overflow: ellipsis;margin: 6px;display: -webkit-box;-webkit-box-orient: vertical;-webkit-line-clamp:'+((button_description.hasOwnProperty('max_text_line') && button_description.max_text_line!=null)?button_description.max_text_line:1)+';">'+(button_description.hasOwnProperty('show_text') ? button_description.show_text == true ? this.item_button['label']: '' :this.item_button['label'])+'</p>';
-                            }
-                            else if(button_description.hasOwnProperty('type') && button_description.type === 'custom'){
-                                if (this.item_button.hasOwnProperty("badge_icon") && this.item_button.badge_icon !== "") {
-                                    this.styleButton = 'style=\''+this.styleButton+this.styleAll+"display:flex; position:relative;'";
-                                } else {
-                                    this.styleButton = 'style=\''+this.styleButton+this.styleAll+"display:flex;'";
-                                }
-                                icon += '<i class="isShowIcon fa fa-cloud-download" style="'+this.styleIconDisable+this.styleIcon+this.stylefontasome+'margin:auto;"></i> ';
-                                if(this.item_button.hasOwnProperty('imageUrl')){
-
-                                    let icon_size_more  = 'height:'+((button_description.hasOwnProperty('icon_size') && button_description.icon_size !== "") ? (button_description.icon_size == "large" ? "25px;" : (button_description.icon_size == "medium" ? "24px" : "")) : "")+';'
-                                        icon_size_more += 'min-width:'+((button_description.hasOwnProperty('icon_size') && button_description.icon_size !== "") ? (button_description.icon_size == "large" ? "25px;" : (button_description.icon_size == "medium" ? "24px" : "")) : "")+';'
-                                        this.styleIcon += icon_size_more
-                                    
-                                    iconfont = icon.replace('isShowIcon', 'isShowIcon d-none');
-                                    icon = '<img src="'+this.item_button.imageUrl+'" onerror="this.onerror=null;$(this).addClass(\'d-none\');$(this).next().removeClass(\'d-none\');" style="'+this.styleIconDisable+this.styleIcon+'margin-bottom:3px;"></i> '+iconfont;
-                                }
-                                if(button_description.hasOwnProperty('icon_alignment')){
-                                    switch (button_description.icon_alignment) {
-                                        case 'end':
-                                            this.button_content = '<button '+disabled+' type="button" class="btn default"'+this.styleButton+'><span style="'+this.styleAll+'width:100%;overflow: hidden;text-overflow: ellipsis;padding:0 5px;display: -webkit-box;-webkit-box-orient: vertical;white-space: break-spaces;word-wrap: break-word;margin: auto;-webkit-line-clamp:'+((button_description.hasOwnProperty('max_text_line') && button_description.max_text_line!=null)?button_description.max_text_line:(1+";white-space: unset !important"))+';">'+(button_description.hasOwnProperty('show_text') ? button_description.show_text == true ? this.item_button['label']: '' :this.item_button['label'])+' </span>'+(button_description.hasOwnProperty('show_icon') ? ((button_description.show_icon == true || button_description.show_icon == 'true') == true ? icon: '') :icon)+'</button>';
-                                            break;
-                                        case 'top':
-                                            this.styleButton = this.styleButton.replace('text-align:start;','').replace('display:flex;','')
-                                            this.button_content = '<button '+disabled+' type="button" class="btn default"'+this.styleButton+'>'+(button_description.hasOwnProperty('show_icon') ? ((button_description.show_icon == true || button_description.show_icon == 'true') == true ? icon: '') :icon)+'<span style="'+this.styleAll+'width:100%;overflow: hidden;text-overflow: ellipsis;padding:0 5px;display:block;"> '+(button_description.hasOwnProperty('show_text') ? button_description.show_text == true ? this.item_button['label']: '' :this.item_button['label'])+' </span></button>';
-                                            break;
-                                        case 'bottom':
-                                            this.styleButton = this.styleButton.replace('text-align:start;','').replace('display:flex;','')
-                                            this.button_content = '<button '+disabled+' type="button" class="btn default"'+this.styleButton+'><span style="'+this.styleAll+'width:100%;overflow: hidden;text-overflow: ellipsis;padding:0 5px;display:block;"> '+(button_description.hasOwnProperty('show_text') ? button_description.show_text == true ? this.item_button['label']: '' :this.item_button['label'])+' </span>'+(button_description.hasOwnProperty('show_icon') ? ((button_description.show_icon == true || button_description.show_icon == 'true') == true ? icon: '') :icon)+'</button>';
-                                            break;
-                                    
-                                        default:
-                                            this.button_content = '<button '+disabled+' type="button" class="btn default"'+this.styleButton+'>'+(button_description.hasOwnProperty('show_icon') ? ((button_description.show_icon == true || button_description.show_icon == 'true') == true ? icon: '') :icon)+'<span style="'+this.styleAll+'width:100%;overflow: hidden;text-overflow: ellipsis;padding:0 5px;display: -webkit-box;-webkit-box-orient: vertical;white-space: break-spaces;word-wrap: break-word;margin: auto;-webkit-line-clamp:'+((button_description.hasOwnProperty('max_text_line') && button_description.max_text_line!=null)?button_description.max_text_line:(1+";white-space: unset !important"))+';">'+(button_description.hasOwnProperty('show_text') ? button_description.show_text == true ? this.item_button['label']: '' :this.item_button['label'])+' </span></button>';
-                                            break;
-                                    }
-                                }else{
-                                    if (this.item_button.hasOwnProperty("badge_icon") && this.item_button.badge_icon !== "") {
-                                        this.button_content = '<button '+disabled+' type="button" class="btn default"'+this.styleButton+'>'+(button_description.hasOwnProperty('show_icon') ? ((button_description.show_icon == true || button_description.show_icon == 'true') == true ? icon: '') :icon)+'<span style="'+this.styleAll+'width:100%;overflow: hidden;text-overflow: ellipsis;padding:0 5px;display: -webkit-box;-webkit-box-orient: vertical;white-space: break-spaces;word-wrap: break-word;margin: auto;-webkit-line-clamp:'+((button_description.hasOwnProperty('max_text_line') && button_description.max_text_line!=null)?button_description.max_text_line:(1+";white-space: unset !important"))+';">'+(button_description.hasOwnProperty('show_text') ? button_description.show_text == true ? this.item_button['label']: '' :this.item_button['label'])+' </span><span style="background:'+bgBIcon+'; box-shadow:'+shadowBIcon+'; color:'+txtBIcon+'; display:'+showBIcon+'; border:'+borderColorBIcon+'; width:fit-content; height:fit-content; position:absolute; top:-10px; right:-10px; justify-content:center; align-items:center; text-transform: none; padding: 3px 7px !important" class="badge">'+contentBIcon+'</span></button>';
-                                    } else {
-                                        this.button_content = '<button '+disabled+' type="button" class="btn default"'+this.styleButton+'>'+(button_description.hasOwnProperty('show_icon') ? ((button_description.show_icon == true || button_description.show_icon == 'true') == true ? icon: '') :icon)+'<span style="'+this.styleAll+'width:100%;overflow: hidden;text-overflow: ellipsis;padding:0 5px;display: -webkit-box;-webkit-box-orient: vertical;white-space: break-spaces;word-wrap: break-word;margin: auto;-webkit-line-clamp:'+((button_description.hasOwnProperty('max_text_line') && button_description.max_text_line!=null)?button_description.max_text_line:(1+";white-space: unset !important"))+';">'+(button_description.hasOwnProperty('show_text') ? button_description.show_text == true ? this.item_button['label']: '' :this.item_button['label'])+' </span></button>';
-                                    }    
-                                }
-                            }
-                            else{
-                                this.styleButton = 'style=\''+this.styleButton+this.styleAll+"display:flex;'";
-                                icon += '<i class="isShowIcon fa fa-cloud-download" style="'+this.styleIconDisable+this.stylefontasome+'"></i> ';
-                                if(this.item_button.hasOwnProperty('imageUrl')){
-                                    iconfont = icon.replace('isShowIcon', 'isShowIcon d-none');
-                                    icon = '<img src="'+this.item_button.imageUrl+'" onerror="this.onerror=null;$(this).addClass(\'d-none\');$(this).next().removeClass(\'d-none\');" style="'+this.styleIconDisable+'height:1rem;width:1rem;margin-bottom:3px;"></i> '+iconfont;
-                                }
-                                this.button_content = '<button '+disabled+' type="button" class="btn default"'+this.styleButton+'>'+(button_description.hasOwnProperty('show_icon') ? ((button_description.show_icon == true || button_description.show_icon == 'true') ? icon: '') :icon)+'<span style="'+this.styleAll+'width:100%;overflow: hidden;text-overflow: ellipsis;padding:0 5px;"> '+(button_description.hasOwnProperty('show_text') ? button_description.show_text == true ? this.item_button['label']: '' :this.item_button['label'])+' </span></button>';
-                            }
-                        }
-                        else{
-                            icon = '<i class="isShowIcon fa fa-cloud-download" style="'+this.styleIconDisable+this.stylefontasome+'color:#716aca"></i> '
-                            if(this.item_button.hasOwnProperty('imageUrl')){
-                                iconfont = icon.replace('isShowIcon', 'isShowIcon d-none');
-                                icon = '<img src="'+this.item_button.imageUrl+'" onerror="this.onerror=null;$(this).addClass(\'d-none\');$(this).next().removeClass(\'d-none\');" style="'+this.styleIconDisable+'height:1rem;width:1rem;margin-bottom:3px;"></i> '+iconfont;
-                            }
-                            this.button_content = '<button '+disabled+' type="button" style="'+this.styleAll+'padding: 3px 9px !important; border-radius: 5px !important;'+'" class="btn default"> '+icon+'<span style="'+this.styleAll+'padding:0 5px;width:100%;">'+(button_description.hasOwnProperty('show_text') ? button_description.show_text == true ? this.item_button['label']: '' :this.item_button['label'])+'</span></button>';
-                        }
-                        this.button_icon += 'fa fa-cloud-download';
+                        font_icon = 'fa fa-cloud-download'
                         break
 
                     case "act_fill_form":
-                        if(this.styleButton != ""){
-                            if(this.isBigIcon != ""){
-                                if(button_description.hasOwnProperty('icon_color_background') && button_description.icon_color_background != ""){
-                                    this.styleButton = 'style=\''+this.styleButton+" background-color:"+button_description.icon_color_background+" !important;'"
-                                    icon += '<i class="isShowIcon fa fa-calendar-plus-o" style="'+this.styleIconDisable+'color:black"></i> ';
-                                }
-                                else{
-                                    this.styleButton = 'style=\''+this.styleButton+this.styleAll+"'";
-                                    icon += '<i class="isShowIcon fa fa-calendar-plus-o" style="'+this.styleIconDisable+'"></i> ';
-                                }
-                                if(this.item_button.hasOwnProperty('imageUrl')){
-                                    iconfont = icon.replace('isShowIcon', 'isShowIcon d-none');
-                                    icon = '<img src="'+this.item_button.imageUrl+'" onerror="this.onerror=null;$(this).addClass(\'d-none\');$(this).next().removeClass(\'d-none\');" style="'+this.styleIconDisable+'width:1rem;"></i> '+iconfont;
-                                }
-                                if (this.item_button.hasOwnProperty("badge_icon") && this.item_button.badge_icon !== "") {
-                                    this.button_content = '<button '+disabled+' type="button" class="btn"'+this.styleButton+'>'+(button_description.hasOwnProperty('show_icon') ? (button_description.show_icon == true || button_description.show_icon == 'true') ? icon: '' :icon)+'<span style="background:'+bgBIcon+'; box-shadow:'+shadowBIcon+'; color:'+txtBIcon+'; display:'+showBIcon+'; border:'+borderColorBIcon+'; width:fit-content; height:fit-content; position:absolute; top:-10px; right:-10px; justify-content:center; align-items:center; text-transform: none; padding: 3px 7px !important" class="badge">'+contentBIcon+'</span></button><p style="'+this.styleAll+'overflow: hidden;text-overflow: ellipsis;margin: 6px;display: -webkit-box;-webkit-box-orient: vertical;-webkit-line-clamp:'+((button_description.hasOwnProperty('max_text_line') && button_description.max_text_line!=null)?button_description.max_text_line:1)+';">'+(button_description.hasOwnProperty('show_text') ? button_description.show_text == true ? this.item_button['label']: '' :this.item_button['label'])+'</p>';
-                                } else {
-                                    this.button_content = '<button '+disabled+' type="button" class="btn"'+this.styleButton+'>'+(button_description.hasOwnProperty('show_icon') ? (button_description.show_icon == true || button_description.show_icon == 'true') ? icon: '' :icon)+'</button><p style="'+this.styleAll+'overflow: hidden;text-overflow: ellipsis;margin: 6px;display: -webkit-box;-webkit-box-orient: vertical;-webkit-line-clamp:'+((button_description.hasOwnProperty('max_text_line') && button_description.max_text_line!=null)?button_description.max_text_line:1)+';">'+(button_description.hasOwnProperty('show_text') ? button_description.show_text == true ? this.item_button['label']: '' :this.item_button['label'])+'</p>';
-                                }
-                            }
-                            else if(button_description.hasOwnProperty('type') && button_description.type === 'custom'){
-                                if (this.item_button.hasOwnProperty("badge_icon") && this.item_button.badge_icon !== "") {
-                                    this.styleButton = 'style=\''+this.styleButton+this.styleAll+"display:flex; position:relative;'";
-                                } else {
-                                    this.styleButton = 'style=\''+this.styleButton+this.styleAll+"display:flex;'";
-                                }
-                                icon += '<i class="isShowIcon fa fa-calendar-plus-o" style="'+this.styleIconDisable+this.styleIcon+this.stylefontasome+'margin:auto;"></i> '
-                                if(this.item_button.hasOwnProperty('imageUrl')){
-
-                                    let icon_size_more  = 'height:'+((button_description.hasOwnProperty('icon_size') && button_description.icon_size !== "") ? (button_description.icon_size == "large" ? "25px;" : (button_description.icon_size == "medium" ? "24px" : "")) : "")+';'
-                                        icon_size_more += 'min-width:'+((button_description.hasOwnProperty('icon_size') && button_description.icon_size !== "") ? (button_description.icon_size == "large" ? "25px;" : (button_description.icon_size == "medium" ? "24px" : "")) : "")+';'
-                                        this.styleIcon += icon_size_more
-
-                                    iconfont = icon.replace('isShowIcon', 'isShowIcon d-none');
-                                    icon = '<img src="'+this.item_button.imageUrl+'" onerror="this.onerror=null;$(this).addClass(\'d-none\');$(this).next().removeClass(\'d-none\');" style="'+this.styleIconDisable+this.styleIcon+'margin-bottom:3px;"></i> '+iconfont;
-                                }
-                                if(button_description.hasOwnProperty('icon_alignment')){
-                                    switch (button_description.icon_alignment) {
-                                        case 'end':
-                                            this.button_content = '<button '+disabled+' type="button" class="btn default"'+this.styleButton+'><span style="'+this.styleAll+'width:100%;overflow: hidden;text-overflow: ellipsis;padding:0 5px;display: -webkit-box;-webkit-box-orient: vertical;white-space: break-spaces;word-wrap: break-word;margin: auto;-webkit-line-clamp:'+((button_description.hasOwnProperty('max_text_line') && button_description.max_text_line!=null)?button_description.max_text_line:(1+";white-space: unset !important"))+';">'+(button_description.hasOwnProperty('show_text') ? button_description.show_text == true ? this.item_button['label']: '' :this.item_button['label'])+' </span>'+(button_description.hasOwnProperty('show_icon') ? ((button_description.show_icon == true || button_description.show_icon == 'true') == true ? icon: '') :icon)+'</button>';
-                                            break;
-                                        case 'top':
-                                            this.styleButton = this.styleButton.replace('text-align:start;','').replace('display:flex;','')
-                                            if (this.item_button.hasOwnProperty("badge_icon") && this.item_button.badge_icon !== "") {
-                                                this.button_content = '<button '+disabled+' type="button" class="btn default"'+this.styleButton+'>'+(button_description.hasOwnProperty('show_icon') ? ((button_description.show_icon == true || button_description.show_icon == 'true') == true ? icon: '') :icon)+'<span style="'+this.styleAll+'width:100%;overflow: hidden;text-overflow: ellipsis;padding:0 5px;display:block;"> '+(button_description.hasOwnProperty('show_text') ? button_description.show_text == true ? this.item_button['label']: '' :this.item_button['label'])+' </span><span style="background:'+bgBIcon+'; box-shadow:'+shadowBIcon+'; color:'+txtBIcon+'; display:'+showBIcon+'; border:'+borderColorBIcon+'; width:fit-content; height:fit-content; position:absolute; top:-10px; right:-10px; justify-content:center; align-items:center; text-transform: none; padding: 3px 7px !important" class="badge">'+contentBIcon+'</span></button>';
-                                            } else {
-                                                this.button_content = '<button '+disabled+' type="button" class="btn default"'+this.styleButton+'>'+(button_description.hasOwnProperty('show_icon') ? ((button_description.show_icon == true || button_description.show_icon == 'true') == true ? icon: '') :icon)+'<span style="'+this.styleAll+'width:100%;overflow: hidden;text-overflow: ellipsis;padding:0 5px;display:block;"> '+(button_description.hasOwnProperty('show_text') ? button_description.show_text == true ? this.item_button['label']: '' :this.item_button['label'])+' </span></button>';
-                                            }
-                                            break;
-                                        case 'bottom':
-                                            this.styleButton = this.styleButton.replace('text-align:start;','').replace('display:flex;','')
-                                            this.button_content = '<button '+disabled+' type="button" class="btn default"'+this.styleButton+'><span style="'+this.styleAll+'width:100%;overflow: hidden;text-overflow: ellipsis;padding:0 5px;display:block;"> '+(button_description.hasOwnProperty('show_text') ? button_description.show_text == true ? this.item_button['label']: '' :this.item_button['label'])+' </span>'+(button_description.hasOwnProperty('show_icon') ? ((button_description.show_icon == true || button_description.show_icon == 'true') == true ? icon: '') :icon)+'</button>';
-                                            break;
-                                    
-                                        default:
-                                            this.button_content = '<button '+disabled+' type="button" class="btn default"'+this.styleButton+'>'+(button_description.hasOwnProperty('show_icon') ? ((button_description.show_icon == true || button_description.show_icon == 'true') == true ? icon: '') :icon)+'<span style="'+this.styleAll+'width:100%;overflow: hidden;text-overflow: ellipsis;padding:0 5px;display: -webkit-box;-webkit-box-orient: vertical;white-space: break-spaces;word-wrap: break-word;margin: auto;-webkit-line-clamp:'+((button_description.hasOwnProperty('max_text_line') && button_description.max_text_line!=null)?button_description.max_text_line:(1+";white-space: unset !important"))+';">'+(button_description.hasOwnProperty('show_text') ? button_description.show_text == true ? this.item_button['label']: '' :this.item_button['label'])+' </span></button>';
-                                            break;
-                                    }
-                                }else{
-                                    if (this.item_button.hasOwnProperty("badge_icon") && this.item_button.badge_icon !== "") {
-                                        this.button_content = '<button '+disabled+' type="button" class="btn default"'+this.styleButton+'>'+(button_description.hasOwnProperty('show_icon') ? ((button_description.show_icon == true || button_description.show_icon == 'true') == true ? icon: '') :icon)+'<span style="'+this.styleAll+'width:100%;overflow: hidden;text-overflow: ellipsis;padding:0 5px;display: -webkit-box;-webkit-box-orient: vertical;white-space: break-spaces;word-wrap: break-word;margin: auto;-webkit-line-clamp:'+((button_description.hasOwnProperty('max_text_line') && button_description.max_text_line!=null)?button_description.max_text_line:(1+";white-space: unset !important"))+';">'+(button_description.hasOwnProperty('show_text') ? button_description.show_text == true ? this.item_button['label']: '' :this.item_button['label'])+' </span><span style="background:'+bgBIcon+'; box-shadow:'+shadowBIcon+'; color:'+txtBIcon+'; display:'+showBIcon+'; border:'+borderColorBIcon+'; width:fit-content; height:fit-content; position:absolute; top:-10px; right:-10px; justify-content:center; align-items:center; text-transform: none; padding: 3px 7px !important" class="badge">'+contentBIcon+'</span></button>';
-                                    } else {
-                                        this.button_content = '<button '+disabled+' type="button" class="btn default"'+this.styleButton+'>'+(button_description.hasOwnProperty('show_icon') ? ((button_description.show_icon == true || button_description.show_icon == 'true') == true ? icon: '') :icon)+'<span style="'+this.styleAll+'width:100%;overflow: hidden;text-overflow: ellipsis;padding:0 5px;display: -webkit-box;-webkit-box-orient: vertical;white-space: break-spaces;word-wrap: break-word;margin: auto;-webkit-line-clamp:'+((button_description.hasOwnProperty('max_text_line') && button_description.max_text_line!=null)?button_description.max_text_line:(1+";white-space: unset !important"))+';">'+(button_description.hasOwnProperty('show_text') ? button_description.show_text == true ? this.item_button['label']: '' :this.item_button['label'])+' </span></button>';
-                                    }
-                                }
-                            }
-                            else{
-                                this.styleButton = 'style=\''+this.styleButton+this.styleAll+"display:flex;'";
-                                icon += '<i class="isShowIcon fa fa-calendar-plus-o" style="'+this.styleIconDisable+this.stylefontasome+'"></i> '
-                                if(this.item_button.hasOwnProperty('imageUrl')){
-                                    iconfont = icon.replace('isShowIcon', 'isShowIcon d-none');
-                                    icon = '<img src="'+this.item_button.imageUrl+'" onerror="this.onerror=null;$(this).addClass(\'d-none\');$(this).next().removeClass(\'d-none\');" style="'+this.styleIconDisable+'height:1rem;width:1rem;margin-bottom:3px;"></i> '+iconfont;
-                                }
-                                if (this.item_button.hasOwnProperty("badge_icon") && this.item_button.badge_icon !== "") {
-                                    this.button_content = '<button '+disabled+' type="button" class="btn default"'+this.styleButton+'>'+(button_description.hasOwnProperty('show_icon') ? ((button_description.show_icon == true || button_description.show_icon == 'true') ? icon: '') :icon)+'<span style="'+this.styleAll+'width:100%;overflow: hidden;text-overflow: ellipsis;padding:0 5px;"> '+(button_description.hasOwnProperty('show_text') ? button_description.show_text == true ? this.item_button['label']: '' :this.item_button['label'])+' </span><span style="background:'+bgBIcon+'; box-shadow:'+shadowBIcon+'; color:'+txtBIcon+'; display:'+showBIcon+'; border:'+borderColorBIcon+'; width:fit-content; height:fit-content; position:absolute; top:-10px; right:-10px; justify-content:center; align-items:center; text-transform: none; padding: 3px 7px !important" class="badge">'+contentBIcon+'</span></button>';
-                                } else {
-                                    this.button_content = '<button '+disabled+' type="button" class="btn default"'+this.styleButton+'>'+(button_description.hasOwnProperty('show_icon') ? ((button_description.show_icon == true || button_description.show_icon == 'true') ? icon: '') :icon)+'<span style="'+this.styleAll+'width:100%;overflow: hidden;text-overflow: ellipsis;padding:0 5px;"> '+(button_description.hasOwnProperty('show_text') ? button_description.show_text == true ? this.item_button['label']: '' :this.item_button['label'])+' </span></button>';
-                                }
-                            }
-                        }
-                        else{
-                            icon = '<i class="isShowIcon fa fa-calendar-plus-o" style="'+this.styleIconDisable+this.stylefontasome+'padding:3px !important;"></i> '
-                            if(this.item_button.hasOwnProperty('imageUrl')){
-                                iconfont = icon.replace('isShowIcon', 'isShowIcon d-none');
-                                    icon = '<img src="'+this.item_button.imageUrl+'" onerror="this.onerror=null;$(this).addClass(\'d-none\');$(this).next().removeClass(\'d-none\');" style="'+this.styleIconDisable+'height:1rem;width:1rem;margin-bottom:3px;"></i> '+iconfont;
-                            }
-                            if (this.item_button.hasOwnProperty("badge_icon") && this.item_button.badge_icon !== "") {
-                                this.button_content = '<button '+disabled+' type="button" style="'+this.styleAll+'padding: 3px 9px !important; border-radius: 5px !important;'+'" class="btn default">'+icon+'<span style="'+this.styleAll+'padding:0 5px;width:100%;">'+(button_description.hasOwnProperty('show_text') ? button_description.show_text == true ? this.item_button['label']: '' :this.item_button['label'])+'</span><span style="background:'+bgBIcon+'; box-shadow:'+shadowBIcon+'; color:'+txtBIcon+'; display:'+showBIcon+'; border:'+borderColorBIcon+'; width:fit-content; height:fit-content; position:absolute; top:-10px; right:-10px; justify-content:center; align-items:center; text-transform: none; padding: 3px 7px !important" class="badge">'+contentBIcon+'</span></button>';
-                            } else {
-                                this.button_content = '<button '+disabled+' type="button" style="'+this.styleAll+'padding: 3px 9px !important; border-radius: 5px !important;'+'" class="btn default">'+icon+'<span style="'+this.styleAll+'padding:0 5px;width:100%;">'+(button_description.hasOwnProperty('show_text') ? button_description.show_text == true ? this.item_button['label']: '' :this.item_button['label'])+'</span></button>';
-                            }    
-                        }
-                        this.button_icon += 'fa fa-calendar-plus-o';
-                        break
-
                     case "act_get_instance":
-                        if(this.styleButton != ""){
-                            if(this.isBigIcon != ""){
-                                if(button_description.hasOwnProperty('icon_color_background') && button_description.icon_color_background != ""){
-                                    this.styleButton = 'style=\''+this.styleButton+" background-color:"+button_description.icon_color_background+" !important;'"
-                                    icon += '<i class="isShowIcon fa fa-calendar-plus-o" style="'+this.styleIconDisable+'color:black"></i> ';
-                                }
-                                else{
-                                    this.styleButton = 'style=\''+this.styleButton+this.styleAll+"'";
-                                    icon += '<i class="isShowIcon fa fa-calendar-plus-o" style="'+this.styleIconDisable+'"></i> ';
-                                }
-                                if(this.item_button.hasOwnProperty('imageUrl')){
-                                    iconfont = icon.replace('isShowIcon', 'isShowIcon d-none');
-                                    icon = '<img src="'+this.item_button.imageUrl+'" onerror="this.onerror=null;$(this).addClass(\'d-none\');$(this).next().removeClass(\'d-none\');" style="'+this.styleIconDisable+'width:1rem;"></i> '+iconfont;
-                                }
-                                this.button_content = '<button '+disabled+' type="button" class="btn"'+this.styleButton+'>'+(button_description.hasOwnProperty('show_icon') ? ((button_description.show_icon == true || button_description.show_icon == 'true') ? icon: '') :icon)+'</button><p style="'+this.styleAll+'overflow: hidden;text-overflow: ellipsis;margin: 6px;display: -webkit-box;-webkit-box-orient: vertical;-webkit-line-clamp:'+((button_description.hasOwnProperty('max_text_line') && button_description.max_text_line!=null)?button_description.max_text_line:1)+';">'+(button_description.hasOwnProperty('show_text') ? button_description.show_text == true ? this.item_button['label']: '' :this.item_button['label'])+'</p>';
-                            }
-                            else if(button_description.hasOwnProperty('type') && button_description.type === 'custom'){
-                                if (this.item_button.hasOwnProperty("badge_icon") && this.item_button.badge_icon !== "") {
-                                    this.styleButton = 'style=\''+this.styleButton+this.styleAll+"display:flex; position:relative;'";
-                                } else {
-                                    this.styleButton = 'style=\''+this.styleButton+this.styleAll+"display:flex;'";
-                                }
-                                icon += '<i class="isShowIcon fa fa-calendar-plus-o" style="'+this.styleIconDisable+this.styleIcon+this.stylefontasome+'margin:auto;"></i> ';
-                                if(this.item_button.hasOwnProperty('imageUrl')){
-
-                                    let icon_size_more  = 'height:'+((button_description.hasOwnProperty('icon_size') && button_description.icon_size !== "") ? (button_description.icon_size == "large" ? "25px;" : (button_description.icon_size == "medium" ? "24px" : "")) : "")+';'
-                                        icon_size_more += 'min-width:'+((button_description.hasOwnProperty('icon_size') && button_description.icon_size !== "") ? (button_description.icon_size == "large" ? "25px;" : (button_description.icon_size == "medium" ? "24px" : "")) : "")+';'
-                                        this.styleIcon += icon_size_more
-                                    
-                                    iconfont = icon.replace('isShowIcon', 'isShowIcon d-none');
-                                    icon = '<img src="'+this.item_button.imageUrl+'" onerror="this.onerror=null;$(this).addClass(\'d-none\');$(this).next().removeClass(\'d-none\');" style="'+this.styleIconDisable+this.styleIcon+'margin-bottom:3px;"></i> '+iconfont;
-                                }
-                                if(button_description.hasOwnProperty('icon_alignment')){
-                                    switch (button_description.icon_alignment) {
-                                        case 'end':
-                                            this.button_content = '<button '+disabled+' type="button" class="btn default"'+this.styleButton+'><span style="'+this.styleAll+'width:100%;overflow: hidden;text-overflow: ellipsis;padding:0 5px;display: -webkit-box;-webkit-box-orient: vertical;white-space: break-spaces;word-wrap: break-word;margin: auto;-webkit-line-clamp:'+((button_description.hasOwnProperty('max_text_line') && button_description.max_text_line!=null)?button_description.max_text_line:(1+";white-space: unset !important"))+';">'+(button_description.hasOwnProperty('show_text') ? button_description.show_text == true ? this.item_button['label']: '' :this.item_button['label'])+' </span>'+(button_description.hasOwnProperty('show_icon') ? ((button_description.show_icon == true || button_description.show_icon == 'true') == true ? icon: '') :icon)+'</button>';
-                                            break;
-                                        case 'top':
-                                            this.styleButton = this.styleButton.replace('text-align:start;','').replace('display:flex;','')
-                                            this.button_content = '<button '+disabled+' type="button" class="btn default"'+this.styleButton+'>'+(button_description.hasOwnProperty('show_icon') ? ((button_description.show_icon == true || button_description.show_icon == 'true') == true ? icon: '') :icon)+'<span style="'+this.styleAll+'width:100%;overflow: hidden;text-overflow: ellipsis;padding:0 5px;display:block;"> '+(button_description.hasOwnProperty('show_text') ? button_description.show_text == true ? this.item_button['label']: '' :this.item_button['label'])+' </span></button>';
-                                            break;
-                                        case 'bottom':
-                                            this.styleButton = this.styleButton.replace('text-align:start;','').replace('display:flex;','')
-                                            this.button_content = '<button '+disabled+' type="button" class="btn default"'+this.styleButton+'><span style="'+this.styleAll+'width:100%;overflow: hidden;text-overflow: ellipsis;padding:0 5px;display:block;"> '+(button_description.hasOwnProperty('show_text') ? button_description.show_text == true ? this.item_button['label']: '' :this.item_button['label'])+' </span>'+(button_description.hasOwnProperty('show_icon') ? ((button_description.show_icon == true || button_description.show_icon == 'true') == true ? icon: '') :icon)+'</button>';
-                                            break;
-                                    
-                                        default:
-                                            this.button_content = '<button '+disabled+' type="button" class="btn default"'+this.styleButton+'>'+(button_description.hasOwnProperty('show_icon') ? ((button_description.show_icon == true || button_description.show_icon == 'true') == true ? icon: '') :icon)+'<span style="'+this.styleAll+'width:100%;overflow: hidden;text-overflow: ellipsis;padding:0 5px;display: -webkit-box;-webkit-box-orient: vertical;white-space: break-spaces;word-wrap: break-word;margin: auto;-webkit-line-clamp:'+((button_description.hasOwnProperty('max_text_line') && button_description.max_text_line!=null)?button_description.max_text_line:(1+";white-space: unset !important"))+';">'+(button_description.hasOwnProperty('show_text') ? button_description.show_text == true ? this.item_button['label']: '' :this.item_button['label'])+' </span></button>';
-                                            break;
-                                    }
-                                }else{ 
-                                    if (this.item_button.hasOwnProperty("badge_icon") && this.item_button.badge_icon !== "") {
-                                        this.button_content = '<button '+disabled+' type="button" class="btn default"'+this.styleButton+'>'+(button_description.hasOwnProperty('show_icon') ? ((button_description.show_icon == true || button_description.show_icon == 'true') == true ? icon: '') :icon)+'<span style="'+this.styleAll+'width:100%;overflow: hidden;text-overflow: ellipsis;padding:0 5px;display: -webkit-box;-webkit-box-orient: vertical;white-space: break-spaces;word-wrap: break-word;margin: auto;-webkit-line-clamp:'+((button_description.hasOwnProperty('max_text_line') && button_description.max_text_line!=null)?button_description.max_text_line:(1+";white-space: unset !important"))+';">'+(button_description.hasOwnProperty('show_text') ? button_description.show_text == true ? this.item_button['label']: '' :this.item_button['label'])+' </span><span style="background:'+bgBIcon+'; box-shadow:'+shadowBIcon+'; color:'+txtBIcon+'; display:'+showBIcon+'; border:'+borderColorBIcon+'; width:fit-content; height:fit-content; position:absolute; top:-10px; right:-10px; justify-content:center; align-items:center; text-transform: none; padding: 3px 7px !important" class="badge">'+contentBIcon+'</span></button>';
-                                    } else {
-                                        this.button_content = '<button '+disabled+' type="button" class="btn default"'+this.styleButton+'>'+(button_description.hasOwnProperty('show_icon') ? ((button_description.show_icon == true || button_description.show_icon == 'true') == true ? icon: '') :icon)+'<span style="'+this.styleAll+'width:100%;overflow: hidden;text-overflow: ellipsis;padding:0 5px;display: -webkit-box;-webkit-box-orient: vertical;white-space: break-spaces;word-wrap: break-word;margin: auto;-webkit-line-clamp:'+((button_description.hasOwnProperty('max_text_line') && button_description.max_text_line!=null)?button_description.max_text_line:(1+";white-space: unset !important"))+';">'+(button_description.hasOwnProperty('show_text') ? button_description.show_text == true ? this.item_button['label']: '' :this.item_button['label'])+' </span></button>';
-                                    }
-                                }
-                            }
-                            else{
-                                this.styleButton = 'style=\''+this.styleButton+this.styleAll+"display:flex;'";
-                                icon += '<i class="isShowIcon fa fa-calendar-plus-o" style="'+this.styleIconDisable+this.stylefontasome+'"></i> ';
-                                if(this.item_button.hasOwnProperty('imageUrl')){
-                                    iconfont = icon.replace('isShowIcon', 'isShowIcon d-none');
-                                    icon = '<img src="'+this.item_button.imageUrl+'" onerror="this.onerror=null;$(this).addClass(\'d-none\');$(this).next().removeClass(\'d-none\');" style="'+this.styleIconDisable+'height:1rem;width:1rem;margin-bottom:3px;"></i> '+iconfont;
-                                }
-                                this.button_content = '<button '+disabled+' type="button" class="btn default"'+this.styleButton+'>'+(button_description.hasOwnProperty('show_icon') ? ((button_description.show_icon == true || button_description.show_icon == 'true') ? icon: '') :icon)+'<span style="'+this.styleAll+'width:100%;overflow: hidden;text-overflow: ellipsis;padding:0 5px;"> '+(button_description.hasOwnProperty('show_text') ? button_description.show_text == true ? this.item_button['label']: '' :this.item_button['label'])+' </span></button>';
-                            }
-                        }
-                        else{
-                            icon = '<i class="isShowIcon fa fa-calendar-plus-o" style="'+this.styleIconDisable+this.stylefontasome+'padding:2.5px !important;"></i> '
-                            if(this.item_button.hasOwnProperty('imageUrl')){
-                                iconfont = icon.replace('isShowIcon', 'isShowIcon d-none');
-                                icon = '<img src="'+this.item_button.imageUrl+'" onerror="this.onerror=null;$(this).addClass(\'d-none\');$(this).next().removeClass(\'d-none\');" style="'+this.styleIconDisable+'height:1rem;width:1rem;margin-bottom:3px;"></i> '+iconfont;
-                            }
-                            this.button_content = '<button '+disabled+' type="button" style="'+this.styleAll+'padding: 3px 9px !important; border-radius: 5px !important;'+'" class="btn default">'+icon+'<span style="'+this.styleAll+'padding:0 5px;width:100%;">'+(button_description.hasOwnProperty('show_text') ? button_description.show_text == true ? this.item_button['label']: '' :this.item_button['label'])+'</span></button>';
-                        }
-                        this.button_icon += 'fa fa-calendar-plus-o';
+                        font_icon = 'fa fa-calendar-plus-o'
                         break
 
                     case "act_gps":
-                        if(this.styleButton != ""){
-                            if(this.isBigIcon != ""){
-                                if(button_description.hasOwnProperty('icon_color_background') && button_description.icon_color_background != ""){
-                                    this.styleButton = 'style=\''+this.styleButton+" background-color:"+button_description.icon_color_background+" !important;'"
-                                    icon += '<i class="isShowIcon fa fa-map-marker" style="'+this.styleIconDisable+'color:black"></i> ';
-                                }
-                                else{
-                                    this.styleButton = 'style=\''+this.styleButton+this.styleAll+"'";
-                                    icon += '<i class="isShowIcon fa fa-map-marker" style="'+this.styleIconDisable+'color:blue;"></i> ';
-                                }
-                                if(this.item_button.hasOwnProperty('imageUrl')){
-                                    iconfont = icon.replace('isShowIcon', 'isShowIcon d-none');
-                                    icon = '<img src="'+this.item_button.imageUrl+'" onerror="this.onerror=null;$(this).addClass(\'d-none\');$(this).next().removeClass(\'d-none\');" style="'+this.styleIconDisable+'width:1rem;"></i> '+iconfont;
-                                }
-                                this.button_content = '<button '+disabled+' type="button" class="btn"'+this.styleButton+'>'+(button_description.hasOwnProperty('show_icon') ? ((button_description.show_icon == true || button_description.show_icon == 'true') == true ? icon: '') :icon)+'</button><p style="'+this.styleAll+'overflow: hidden;text-overflow: ellipsis;margin: 6px;display: -webkit-box;-webkit-box-orient: vertical;-webkit-line-clamp:'+((button_description.hasOwnProperty('max_text_line') && button_description.max_text_line!=null)?button_description.max_text_line:1)+';">'+(button_description.hasOwnProperty('show_text') ? button_description.show_text == true ? this.item_button['label']: '' :this.item_button['label'])+'</p>';
-                            }
-                            else if(button_description.hasOwnProperty('type') && button_description.type === 'custom'){
-                                if (this.item_button.hasOwnProperty("badge_icon") && this.item_button.badge_icon !== "") {
-                                    this.styleButton = 'style=\''+this.styleButton+this.styleAll+"display:flex; position:relative;'";
-                                } else {
-                                    this.styleButton = 'style=\''+this.styleButton+this.styleAll+"display:flex;'";
-                                }
-                                icon += '<i class="isShowIcon fa fa-map-marker" style="'+this.styleIconDisable+this.styleIcon+this.stylefontasome+'color:blue; margin:auto;"> </i> ';
-                                if(this.item_button.hasOwnProperty('imageUrl')){
-
-                                    let icon_size_more  = 'height:'+((button_description.hasOwnProperty('icon_size') && button_description.icon_size !== "") ? (button_description.icon_size == "large" ? "25px;" : (button_description.icon_size == "medium" ? "24px" : "")) : "")+';'
-                                        icon_size_more += 'min-width:'+((button_description.hasOwnProperty('icon_size') && button_description.icon_size !== "") ? (button_description.icon_size == "large" ? "25px;" : (button_description.icon_size == "medium" ? "24px" : "")) : "")+';'
-                                        this.styleIcon += icon_size_more
-                                    
-                                    iconfont = icon.replace('isShowIcon', 'isShowIcon d-none');
-                                    icon = '<img src="'+this.item_button.imageUrl+'" onerror="this.onerror=null;$(this).addClass(\'d-none\');$(this).next().removeClass(\'d-none\');" style="'+this.styleIconDisable+this.styleIcon+'margin-bottom:3px;"></i> '+iconfont;
-                                }
-                                if(button_description.hasOwnProperty('icon_alignment')){
-                                    switch (button_description.icon_alignment) {
-                                        case 'end':
-                                            this.button_content = '<button '+disabled+' type="button" class="btn default"'+this.styleButton+'><span style="'+this.styleAll+'width:100%;overflow: hidden;text-overflow: ellipsis;padding:0 5px;display: -webkit-box;-webkit-box-orient: vertical;white-space: break-spaces;word-wrap: break-word;margin: auto;-webkit-line-clamp:'+((button_description.hasOwnProperty('max_text_line') && button_description.max_text_line!=null)?button_description.max_text_line:(1+";white-space: unset !important"))+';">'+(button_description.hasOwnProperty('show_text') ? button_description.show_text == true ? this.item_button['label']: '' :this.item_button['label'])+' </span>'+(button_description.hasOwnProperty('show_icon') ? ((button_description.show_icon == true || button_description.show_icon == 'true') == true ? icon: '') :icon)+'</button>';
-                                            break;
-                                        case 'top':
-                                            this.styleButton = this.styleButton.replace('text-align:start;','').replace('display:flex;','')
-                                            this.button_content = '<button '+disabled+' type="button" class="btn default"'+this.styleButton+'>'+(button_description.hasOwnProperty('show_icon') ? ((button_description.show_icon == true || button_description.show_icon == 'true') == true ? icon: '') :icon)+'<span style="'+this.styleAll+'width:100%;overflow: hidden;text-overflow: ellipsis;padding:0 5px;display:block;"> '+(button_description.hasOwnProperty('show_text') ? button_description.show_text == true ? this.item_button['label']: '' :this.item_button['label'])+' </span></button>';
-                                            break;
-                                        case 'bottom':
-                                            this.styleButton = this.styleButton.replace('text-align:start;','').replace('display:flex;','')
-                                            this.button_content = '<button '+disabled+' type="button" class="btn default"'+this.styleButton+'><span style="'+this.styleAll+'width:100%;overflow: hidden;text-overflow: ellipsis;padding:0 5px;display:block;"> '+(button_description.hasOwnProperty('show_text') ? button_description.show_text == true ? this.item_button['label']: '' :this.item_button['label'])+' </span>'+(button_description.hasOwnProperty('show_icon') ? ((button_description.show_icon == true || button_description.show_icon == 'true') == true ? icon: '') :icon)+'</button>';
-                                            break;
-                                    
-                                        default:
-                                            this.button_content = '<button '+disabled+' type="button" class="btn default"'+this.styleButton+'>'+(button_description.hasOwnProperty('show_icon') ? ((button_description.show_icon == true || button_description.show_icon == 'true') == true ? icon: '') :icon)+'<span style="'+this.styleAll+'width:100%;overflow: hidden;text-overflow: ellipsis;padding:0 5px;display: -webkit-box;-webkit-box-orient: vertical;white-space: break-spaces;word-wrap: break-word;margin: auto;-webkit-line-clamp:'+((button_description.hasOwnProperty('max_text_line') && button_description.max_text_line!=null)?button_description.max_text_line:(1+";white-space: unset !important"))+';">'+(button_description.hasOwnProperty('show_text') ? button_description.show_text == true ? this.item_button['label']: '' :this.item_button['label'])+' </span></button>';
-                                            break;
-                                    }
-                                }else{
-                                    if (this.item_button.hasOwnProperty("badge_icon") && this.item_button.badge_icon !== "") {
-                                        this.button_content = '<button '+disabled+' type="button" class="btn default"'+this.styleButton+'>'+(button_description.hasOwnProperty('show_icon') ? ((button_description.show_icon == true || button_description.show_icon == 'true') == true ? icon: '') :icon)+'<span style="'+this.styleAll+'width:100%;overflow: hidden;text-overflow: ellipsis;padding:0 5px;display: -webkit-box;-webkit-box-orient: vertical;white-space: break-spaces;word-wrap: break-word;margin: auto;-webkit-line-clamp:'+((button_description.hasOwnProperty('max_text_line') && button_description.max_text_line!=null)?button_description.max_text_line:(1+";white-space: unset !important"))+';">'+(button_description.hasOwnProperty('show_text') ? button_description.show_text == true ? this.item_button['label']: '' :this.item_button['label'])+' </span><span style="background:'+bgBIcon+'; box-shadow:'+shadowBIcon+'; color:'+txtBIcon+'; display:'+showBIcon+'; border:'+borderColorBIcon+'; width:fit-content; height:fit-content; position:absolute; top:-10px; right:-10px; justify-content:center; align-items:center; text-transform: none; padding: 3px 7px !important" class="badge">'+contentBIcon+'</span></button>';
-                                    } else {
-                                        this.button_content = '<button '+disabled+' type="button" class="btn default"'+this.styleButton+'>'+(button_description.hasOwnProperty('show_icon') ? ((button_description.show_icon == true || button_description.show_icon == 'true') == true ? icon: '') :icon)+'<span style="'+this.styleAll+'width:100%;overflow: hidden;text-overflow: ellipsis;padding:0 5px;display: -webkit-box;-webkit-box-orient: vertical;white-space: break-spaces;word-wrap: break-word;margin: auto;-webkit-line-clamp:'+((button_description.hasOwnProperty('max_text_line') && button_description.max_text_line!=null)?button_description.max_text_line:(1+";white-space: unset !important"))+';">'+(button_description.hasOwnProperty('show_text') ? button_description.show_text == true ? this.item_button['label']: '' :this.item_button['label'])+' </span></button>';
-                                    }   
-                                }
-                            }
-                            else{
-                                this.styleButton = 'style=\''+this.styleButton+this.styleAll+"display:flex;'";
-                                icon += '<i class="isShowIcon fa fa-map-marker" style="'+this.styleIconDisable+this.stylefontasome+'color:blue;"> </i> ';
-                                if(this.item_button.hasOwnProperty('imageUrl')){
-                                    iconfont = icon.replace('isShowIcon', 'isShowIcon d-none');
-                                    icon = '<img src="'+this.item_button.imageUrl+'" onerror="this.onerror=null;$(this).addClass(\'d-none\');$(this).next().removeClass(\'d-none\');" style="'+this.styleIconDisable+'height:1rem;width:1rem;margin-bottom:3px;"></i> '+iconfont;
-                                }
-                                this.button_content = '<button '+disabled+' type="button" class="btn default"'+this.styleButton+'>'+(button_description.hasOwnProperty('show_icon') ? ((button_description.show_icon == true || button_description.show_icon == 'true') == true ? icon: '') :icon)+' <span style="'+this.styleAll+'width:100%;overflow: hidden;text-overflow: ellipsis;padding:0 5px;"> '+(button_description.hasOwnProperty('show_text') ? button_description.show_text == true ? this.item_button['label']: '' :this.item_button['label'])+' </span></button>';
-                            }
-                            
-                        }
-                        else{
-                            icon += '<i class="isShowIcon fa fa-map-marker" style="'+this.styleIconDisable+this.stylefontasome+'color:blue;padding:4.5px !important;"> </i> ';
-                            if(this.item_button.hasOwnProperty('imageUrl')){
-                                iconfont = icon.replace('isShowIcon', 'isShowIcon d-none');
-                                icon = '<img src="'+this.item_button.imageUrl+'" onerror="this.onerror=null;$(this).addClass(\'d-none\');$(this).next().removeClass(\'d-none\');" style="'+this.styleIconDisable+'height:1rem;width:1rem;margin-bottom:3px;"></i> '+iconfont;
-                            }
-                            this.button_content = '<button '+disabled+' type="button" style="'+this.styleAll+'padding: 3px 9px !important; border-radius: 5px !important;'+'" class="btn default">'+icon+'<span style="'+this.styleAll+'padding:0 5px;width:100%;">'+(button_description.hasOwnProperty('show_text') ? button_description.show_text == true ? this.item_button['label']: '' :this.item_button['label'])+'</span></button>';
-                        }
-                        this.button_icon += 'fa fa-map-marker';
+                        font_icon = 'fa fa-map-marker'
                         break
 
                     case "act_check":
-                    return true;
+                        return true;
                         this.button_content = '<label class="mt-checkbox mt-checkbox-outline"><input  '+disabled+' type="checkbox">'+(button_description.hasOwnProperty('show_text') ? button_description.show_text == true ? this.item_button['label']: '' :this.item_button['label'])+' <span></span></label>';
                         break
 
                     case "act_report":
-                        if(this.styleButton != ""){
-                            if(this.isBigIcon != ""){  
-                                if(button_description.hasOwnProperty('icon_color_background') && button_description.icon_color_background != ""){
-                                    this.styleButton = 'style=\''+this.styleButton+" background-color:"+button_description.icon_color_background+" !important;'"
-                                    icon += '<i class="isShowIcon flaticon-diagram" aria-hidden="true" style="'+this.styleIconDisable+'color:black"></i> ';
-                                }
-                                else{
-                                    this.styleButton = 'style=\''+this.styleButton+this.styleAll+"'";
-                                    icon += '<i class="isShowIcon flaticon-diagram" aria-hidden="true" style="'+this.styleIconDisable+'color:#00c5dc"></i> ';
-                                }
-                                if(this.item_button.hasOwnProperty('imageUrl')){
-                                    iconfont = icon.replace('isShowIcon', 'isShowIcon d-none');
-                                    icon = '<img src="'+this.item_button.imageUrl+'" onerror="this.onerror=null;$(this).addClass(\'d-none\');$(this).next().removeClass(\'d-none\');" style="'+this.styleIconDisable+'width:1rem;"></i> '+iconfont;
-                                }
-                                this.button_content = '<button '+disabled+' type="button" class="btn"'+this.styleButton+'>'+(button_description.hasOwnProperty('show_icon') ? ((button_description.show_icon == true || button_description.show_icon == 'true') == true ? icon: '') :icon)+'</button><p style="'+this.styleAll+'overflow: hidden;text-overflow: ellipsis;margin: 6px;display: -webkit-box;-webkit-box-orient: vertical;-webkit-line-clamp:'+((button_description.hasOwnProperty('max_text_line') && button_description.max_text_line!=null)?button_description.max_text_line:1)+';">'+(button_description.hasOwnProperty('show_text') ? button_description.show_text == true ? this.item_button['label']: '' :this.item_button['label'])+'</p>';
-                            }
-                            else if(button_description.hasOwnProperty('type') && button_description.type === 'custom'){
-                                if (this.item_button.hasOwnProperty("badge_icon") && this.item_button.badge_icon !== "") {
-                                    this.styleButton = 'style=\''+this.styleButton+this.styleAll+"display:flex; position:relative;'";
-                                } else {
-                                    this.styleButton = 'style=\''+this.styleButton+this.styleAll+"display:flex;'";
-                                }
-                                icon += '<i class="isShowIcon flaticon-diagram" aria-hidden="true" style="'+this.styleIconDisable+this.styleIcon+this.stylefontasome+'color:#00c5dc; line-height:0; margin:auto;"></i> '
-                                if(this.item_button.hasOwnProperty('imageUrl')){
-
-                                    let icon_size_more  = 'height:'+((button_description.hasOwnProperty('icon_size') && button_description.icon_size !== "") ? (button_description.icon_size == "large" ? "25px;" : (button_description.icon_size == "medium" ? "24px" : "")) : "")+';'
-                                        icon_size_more += 'min-width:'+((button_description.hasOwnProperty('icon_size') && button_description.icon_size !== "") ? (button_description.icon_size == "large" ? "25px;" : (button_description.icon_size == "medium" ? "24px" : "")) : "")+';'
-                                        this.styleIcon += icon_size_more
-                                    
-                                    iconfont = icon.replace('isShowIcon', 'isShowIcon d-none');
-                                    icon = '<img src="'+this.item_button.imageUrl+'" onerror="this.onerror=null;$(this).addClass(\'d-none\');$(this).next().removeClass(\'d-none\');" style="'+this.styleIconDisable+this.styleIcon+'margin-bottom:3px;"></i> '+iconfont;
-                                }
-                                if(button_description.hasOwnProperty('icon_alignment')){
-                                    switch (button_description.icon_alignment) {
-                                        case 'end':
-                                            this.button_content = '<button '+disabled+' type="button" class="btn default"'+this.styleButton+'><span style="'+this.styleAll+'width:100%;overflow: hidden;text-overflow: ellipsis;padding:0 5px;display: -webkit-box;-webkit-box-orient: vertical;white-space: break-spaces;word-wrap: break-word;margin: auto;-webkit-line-clamp:'+((button_description.hasOwnProperty('max_text_line') && button_description.max_text_line!=null)?button_description.max_text_line:(1+";white-space: unset !important"))+';">'+(button_description.hasOwnProperty('show_text') ? button_description.show_text == true ? this.item_button['label']: '' :this.item_button['label'])+' </span>'+(button_description.hasOwnProperty('show_icon') ? ((button_description.show_icon == true || button_description.show_icon == 'true') == true ? icon: '') :icon)+'</button>';
-                                            break;
-                                        case 'top':
-                                            this.styleButton = this.styleButton.replace('text-align:start;','').replace('display:flex;','')
-                                            this.button_content = '<button '+disabled+' type="button" class="btn default"'+this.styleButton+'>'+(button_description.hasOwnProperty('show_icon') ? ((button_description.show_icon == true || button_description.show_icon == 'true') == true ? icon: '') :icon)+'<span style="'+this.styleAll+'width:100%;overflow: hidden;text-overflow: ellipsis;padding:0 5px;display:block;"> '+(button_description.hasOwnProperty('show_text') ? button_description.show_text == true ? this.item_button['label']: '' :this.item_button['label'])+' </span></button>';
-                                            break;
-                                        case 'bottom':
-                                            this.styleButton = this.styleButton.replace('text-align:start;','').replace('display:flex;','')
-                                            this.button_content = '<button '+disabled+' type="button" class="btn default"'+this.styleButton+'><span style="'+this.styleAll+'width:100%;overflow: hidden;text-overflow: ellipsis;padding:0 5px;display:block;"> '+(button_description.hasOwnProperty('show_text') ? button_description.show_text == true ? this.item_button['label']: '' :this.item_button['label'])+' </span>'+(button_description.hasOwnProperty('show_icon') ? ((button_description.show_icon == true || button_description.show_icon == 'true') == true ? icon: '') :icon)+'</button>';
-                                            break;
-                                    
-                                        default:
-                                            this.button_content = '<button '+disabled+' type="button" class="btn default"'+this.styleButton+'>'+(button_description.hasOwnProperty('show_icon') ? ((button_description.show_icon == true || button_description.show_icon == 'true') == true ? icon: '') :icon)+'<span style="'+this.styleAll+'width:100%;overflow: hidden;text-overflow: ellipsis;padding:0 5px;display: -webkit-box;-webkit-box-orient: vertical;white-space: break-spaces;word-wrap: break-word;margin: auto;-webkit-line-clamp:'+((button_description.hasOwnProperty('max_text_line') && button_description.max_text_line!=null)?button_description.max_text_line:(1+";white-space: unset !important"))+';">'+(button_description.hasOwnProperty('show_text') ? button_description.show_text == true ? this.item_button['label']: '' :this.item_button['label'])+' </span></button>';
-                                            break;
-                                    }
-                                }else{
-                                    if (this.item_button.hasOwnProperty("badge_icon") && this.item_button.badge_icon !== "") {
-                                        this.button_content = '<button '+disabled+' type="button" class="btn default"'+this.styleButton+'>'+(button_description.hasOwnProperty('show_icon') ? ((button_description.show_icon == true || button_description.show_icon == 'true') == true ? icon: '') :icon)+'<span style="'+this.styleAll+'width:100%;overflow: hidden;text-overflow: ellipsis;padding:0 5px;display: -webkit-box;-webkit-box-orient: vertical;white-space: break-spaces;word-wrap: break-word;margin: auto;-webkit-line-clamp:'+((button_description.hasOwnProperty('max_text_line') && button_description.max_text_line!=null)?button_description.max_text_line:(1+";white-space: unset !important"))+';">'+(button_description.hasOwnProperty('show_text') ? button_description.show_text == true ? this.item_button['label']: '' :this.item_button['label'])+' </span><span style="background:'+bgBIcon+'; box-shadow:'+shadowBIcon+'; color:'+txtBIcon+'; display:'+showBIcon+'; border:'+borderColorBIcon+'; width:fit-content; height:fit-content; position:absolute; top:-10px; right:-10px; justify-content:center; align-items:center; text-transform: none; padding: 3px 7px !important" class="badge">'+contentBIcon+'</span></button>';
-                                    } else {
-                                        this.button_content = '<button '+disabled+' type="button" class="btn default"'+this.styleButton+'>'+(button_description.hasOwnProperty('show_icon') ? ((button_description.show_icon == true || button_description.show_icon == 'true') == true ? icon: '') :icon)+'<span style="'+this.styleAll+'width:100%;overflow: hidden;text-overflow: ellipsis;padding:0 5px;display: -webkit-box;-webkit-box-orient: vertical;white-space: break-spaces;word-wrap: break-word;margin: auto;-webkit-line-clamp:'+((button_description.hasOwnProperty('max_text_line') && button_description.max_text_line!=null)?button_description.max_text_line:(1+";white-space: unset !important"))+';">'+(button_description.hasOwnProperty('show_text') ? button_description.show_text == true ? this.item_button['label']: '' :this.item_button['label'])+' </span></button>';
-                                    }
-                                }
-                            }
-                            else{
-                                this.styleButton = 'style=\''+this.styleButton+this.styleAll+"display:flex;'";
-                                icon += '<i class="isShowIcon flaticon-diagram" aria-hidden="true" style="'+this.styleIconDisable+this.stylefontasome+'color:#00c5dc; padding:0; font-size:13px;"></i> '
-                                if(this.item_button.hasOwnProperty('imageUrl')){
-                                    iconfont = icon.replace('isShowIcon', 'isShowIcon d-none');
-                                    icon = '<img src="'+this.item_button.imageUrl+'" onerror="this.onerror=null;$(this).addClass(\'d-none\');$(this).next().removeClass(\'d-none\');" style="'+this.styleIconDisable+'height:1rem;width:1rem;margin-bottom:3px;"></i> '+iconfont;
-                                }
-                                this.button_content = '<button '+disabled+' type="button" class="btn default"'+this.styleButton+'>'+(button_description.hasOwnProperty('show_icon') ? ((button_description.show_icon == true || button_description.show_icon == 'true') == true ? icon: '') :icon)+'<span style="'+this.styleAll+'width:100%;overflow: hidden;text-overflow: ellipsis;padding:0 5px;"> '+(button_description.hasOwnProperty('show_text') ? button_description.show_text == true ? this.item_button['label']: '' :this.item_button['label'])+' </span></button>';
-                            }
-                        }
-                        else{
-                            icon='<i class="isShowIcon flaticon-diagram" aria-hidden="true" style="'+this.styleIconDisable+this.stylefontasome+'color:#00c5dc"></i> ';
-                            if(this.item_button.hasOwnProperty('imageUrl')){
-                                iconfont = icon.replace('isShowIcon', 'isShowIcon d-none');
-                                icon = '<img src="'+this.item_button.imageUrl+'" onerror="this.onerror=null;$(this).addClass(\'d-none\');$(this).next().removeClass(\'d-none\');" style="'+this.styleIconDisable+'height:1rem;width:1rem;margin-bottom:3px;"></i> '+iconfont;
-                            }
-                            this.button_content = '<button '+disabled+' type="button" style="'+this.styleAll+'padding: 3px 9px !important; border-radius: 5px !important;'+'" class="btn default">'+icon+'<span style="'+this.styleAll+'width:100%;overflow: hidden;text-overflow: ellipsis;padding:0 5px;"> '+(button_description.hasOwnProperty('show_text') ? button_description.show_text == true ? this.item_button['label']: '' :this.item_button['label'])+' </span></button>';
-                        }
-                        this.button_icon += 'flaticon-diagram';
-                        break
-
-                    case "act_dm_view":                     
-                        if(this.styleButton != ""){
-                            if(this.isBigIcon != ""){  
-                                if(button_description.hasOwnProperty('icon_color_background') && button_description.icon_color_background != ""){
-                                    this.styleButton = 'style=\''+this.styleButton+" background-color:"+button_description.icon_color_background+" !important;'"
-                                    icon += '<i class="isShowIcon fa fa-bar-chart" aria-hidden="true" style="'+this.styleIconDisable+'color:black"></i> ';
-                                }
-                                else{
-                                    this.styleButton = 'style=\''+this.styleButton+this.styleAll+"'";
-                                    icon += '<i class="isShowIcon fa fa-bar-chart" aria-hidden="true" style="'+this.styleIconDisable+'color:#00c5dc"></i> ';
-                                }
-                                if(this.item_button.hasOwnProperty('imageUrl')){
-                                    iconfont = icon.replace('isShowIcon', 'isShowIcon d-none');
-                                    icon = '<img src="'+this.item_button.imageUrl+'" onerror="this.onerror=null;$(this).addClass(\'d-none\');$(this).next().removeClass(\'d-none\');" style="'+this.styleIconDisable+'width:1rem;"></i> '+iconfont;
-                                }
-                                if (this.item_button.hasOwnProperty("badge_icon") && this.item_button.badge_icon !== "") {
-                                    this.button_content = '<button '+disabled+' type="button" class="btn"'+this.styleButton+'>'+(button_description.hasOwnProperty('show_icon') ? ((button_description.show_icon == true || button_description.show_icon == 'true') == true ? icon: '') :icon)+'<span style="background:'+bgBIcon+'; box-shadow:'+shadowBIcon+'; color:'+txtBIcon+'; display:'+showBIcon+'; border:'+borderColorBIcon+'; width:fit-content; height:fit-content; position:absolute; top:-10px; right:-10px; justify-content:center; align-items:center; text-transform: none; padding: 3px 7px !important" class="badge">'+contentBIcon+'</span></button><p style="'+this.styleAll+'overflow: hidden;text-overflow: ellipsis;margin: 6px;display: -webkit-box;-webkit-box-orient: vertical;-webkit-line-clamp:'+((button_description.hasOwnProperty('max_text_line') && button_description.max_text_line!=null)?button_description.max_text_line:1)+';">'+(button_description.hasOwnProperty('show_text') ? button_description.show_text == true ? this.item_button['label']: '' :this.item_button['label'])+'</p>';
-                                } else {
-                                    this.button_content = '<button '+disabled+' type="button" class="btn"'+this.styleButton+'>'+(button_description.hasOwnProperty('show_icon') ? ((button_description.show_icon == true || button_description.show_icon == 'true') == true ? icon: '') :icon)+'</button><p style="'+this.styleAll+'overflow: hidden;text-overflow: ellipsis;margin: 6px;display: -webkit-box;-webkit-box-orient: vertical;-webkit-line-clamp:'+((button_description.hasOwnProperty('max_text_line') && button_description.max_text_line!=null)?button_description.max_text_line:1)+';">'+(button_description.hasOwnProperty('show_text') ? button_description.show_text == true ? this.item_button['label']: '' :this.item_button['label'])+'</p>';
-                                }
-                            }
-                            else if(button_description.hasOwnProperty('type') && button_description.type === 'custom'){
-                                if (this.item_button.hasOwnProperty("badge_icon") && this.item_button.badge_icon !== "") {
-                                    this.styleButton = 'style=\''+this.styleButton+this.styleAll+"display:flex; position:relative;'";
-                                } else {
-                                    this.styleButton = 'style=\''+this.styleButton+this.styleAll+"display:flex;'";
-                                }
-                                icon += '<i class="isShowIcon fa fa-bar-chart" aria-hidden="true" style="'+this.styleIconDisable+this.styleIcon+'color:#00c5dc; margin:auto;"></i> '
-                                if(this.item_button.hasOwnProperty('imageUrl')){
-
-                                    let icon_size_more  = 'height:'+((button_description.hasOwnProperty('icon_size') && button_description.icon_size !== "") ? (button_description.icon_size == "large" ? "25px;" : (button_description.icon_size == "medium" ? "24px" : "")) : "")+';'
-                                        icon_size_more += 'min-width:'+((button_description.hasOwnProperty('icon_size') && button_description.icon_size !== "") ? (button_description.icon_size == "large" ? "25px;" : (button_description.icon_size == "medium" ? "24px" : "")) : "")+';'
-                                        this.styleIcon += icon_size_more
-                                    
-                                    iconfont = icon.replace('isShowIcon', 'isShowIcon d-none');
-                                    icon = '<img src="'+this.item_button.imageUrl+'" onerror="this.onerror=null;$(this).addClass(\'d-none\');$(this).next().removeClass(\'d-none\');" style="'+this.styleIconDisable+this.styleIcon+'margin-bottom:3px;"></i> '+iconfont;
-                                }
-                                if(button_description.hasOwnProperty('icon_alignment')){
-                                    switch (button_description.icon_alignment) {
-                                        case 'end':
-                                            this.button_content = '<button '+disabled+' type="button" class="btn default"'+this.styleButton+'><span style="'+this.styleAll+'width:100%;overflow: hidden;text-overflow: ellipsis;padding:0 5px;display: -webkit-box;-webkit-box-orient: vertical;white-space: break-spaces;word-wrap: break-word;margin: auto;-webkit-line-clamp:'+((button_description.hasOwnProperty('max_text_line') && button_description.max_text_line!=null)?button_description.max_text_line:(1+";white-space: unset !important"))+';">'+(button_description.hasOwnProperty('show_text') ? button_description.show_text == true ? this.item_button['label']: '' :this.item_button['label'])+' </span>'+(button_description.hasOwnProperty('show_icon') ? ((button_description.show_icon == true || button_description.show_icon == 'true') == true ? icon: '') :icon)+'</button>';
-                                            break;
-                                        case 'top':
-                                            this.styleButton = this.styleButton.replace('text-align:start;','').replace('display:flex;','')
-                                            if (this.item_button.hasOwnProperty("badge_icon") && this.item_button.badge_icon !== "") {
-                                                this.button_content = '<button '+disabled+' type="button" class="btn default"'+this.styleButton+'>'+(button_description.hasOwnProperty('show_icon') ? ((button_description.show_icon == true || button_description.show_icon == 'true') == true ? icon: '') :icon)+'<span style="'+this.styleAll+'width:100%;overflow: hidden;text-overflow: ellipsis;padding:0 5px;display:block;"> '+(button_description.hasOwnProperty('show_text') ? button_description.show_text == true ? this.item_button['label']: '' :this.item_button['label'])+' </span><span style="background:'+bgBIcon+'; box-shadow:'+shadowBIcon+'; color:'+txtBIcon+'; display:'+showBIcon+'; border:'+borderColorBIcon+'; width:fit-content; height:fit-content; position:absolute; top:-10px; right:-10px; justify-content:center; align-items:center; text-transform: none; padding: 3px 7px !important" class="badge">'+contentBIcon+'</span></button>';
-                                            } else {
-                                                this.button_content = '<button '+disabled+' type="button" class="btn default"'+this.styleButton+'>'+(button_description.hasOwnProperty('show_icon') ? ((button_description.show_icon == true || button_description.show_icon == 'true') == true ? icon: '') :icon)+'<span style="'+this.styleAll+'width:100%;overflow: hidden;text-overflow: ellipsis;padding:0 5px;display:block;"> '+(button_description.hasOwnProperty('show_text') ? button_description.show_text == true ? this.item_button['label']: '' :this.item_button['label'])+' </span></button>';
-                                            }
-                                            break;
-                                        case 'bottom':
-                                            this.styleButton = this.styleButton.replace('text-align:start;','').replace('display:flex;','')
-                                            this.button_content = '<button '+disabled+' type="button" class="btn default"'+this.styleButton+'><span style="'+this.styleAll+'width:100%;overflow: hidden;text-overflow: ellipsis;padding:0 5px;display:block;"> '+(button_description.hasOwnProperty('show_text') ? button_description.show_text == true ? this.item_button['label']: '' :this.item_button['label'])+' </span>'+(button_description.hasOwnProperty('show_icon') ? ((button_description.show_icon == true || button_description.show_icon == 'true') == true ? icon: '') :icon)+'</button>';
-                                            break;
-                                    
-                                        default:
-                                            this.button_content = '<button '+disabled+' type="button" class="btn default"'+this.styleButton+'>'+(button_description.hasOwnProperty('show_icon') ? ((button_description.show_icon == true || button_description.show_icon == 'true') == true ? icon: '') :icon)+'<span style="'+this.styleAll+'width:100%;overflow: hidden;text-overflow: ellipsis;padding:0 5px;display: -webkit-box;-webkit-box-orient: vertical;white-space: break-spaces;word-wrap: break-word;margin: auto;-webkit-line-clamp:'+((button_description.hasOwnProperty('max_text_line') && button_description.max_text_line!=null)?button_description.max_text_line:(1+";white-space: unset !important"))+';">'+(button_description.hasOwnProperty('show_text') ? button_description.show_text == true ? this.item_button['label']: '' :this.item_button['label'])+' </span></button>';
-                                            break;
-                                    }
-                                }else{
-                                    if (this.item_button.hasOwnProperty("badge_icon") && this.item_button.badge_icon !== "") {
-                                        this.button_content = '<button '+disabled+' type="button" class="btn default"'+this.styleButton+'>'+(button_description.hasOwnProperty('show_icon') ? ((button_description.show_icon == true || button_description.show_icon == 'true') == true ? icon: '') :icon)+'<span style="'+this.styleAll+'width:100%;overflow: hidden;text-overflow: ellipsis;padding:0 5px;display: -webkit-box;-webkit-box-orient: vertical;white-space: break-spaces;word-wrap: break-word;margin: auto;-webkit-line-clamp:'+((button_description.hasOwnProperty('max_text_line') && button_description.max_text_line!=null)?button_description.max_text_line:(1+";white-space: unset !important"))+';">'+(button_description.hasOwnProperty('show_text') ? button_description.show_text == true ? this.item_button['label']: '' :this.item_button['label'])+' </span><span style="background:'+bgBIcon+'; box-shadow:'+shadowBIcon+'; color:'+txtBIcon+'; display:'+showBIcon+'; border:'+borderColorBIcon+'; width:fit-content; height:fit-content; position:absolute; top:-10px; right:-10px; justify-content:center; align-items:center; text-transform: none; padding: 3px 7px !important" class="badge">'+contentBIcon+'</span></button>';
-                                    } else {
-                                        this.button_content = '<button '+disabled+' type="button" class="btn default"'+this.styleButton+'>'+(button_description.hasOwnProperty('show_icon') ? ((button_description.show_icon == true || button_description.show_icon == 'true') == true ? icon: '') :icon)+'<span style="'+this.styleAll+'width:100%;overflow: hidden;text-overflow: ellipsis;padding:0 5px;display: -webkit-box;-webkit-box-orient: vertical;white-space: break-spaces;word-wrap: break-word;margin: auto;-webkit-line-clamp:'+((button_description.hasOwnProperty('max_text_line') && button_description.max_text_line!=null)?button_description.max_text_line:(1+";white-space: unset !important"))+';">'+(button_description.hasOwnProperty('show_text') ? button_description.show_text == true ? this.item_button['label']: '' :this.item_button['label'])+' </span></button>';
-                                    }    
-                                }
-                            }
-                            else{
-                                this.styleButton = 'style=\''+this.styleButton+this.styleAll+"display:flex;'";
-                                icon += '<i class="isShowIcon fa fa-bar-chart" aria-hidden="true" style="'+this.styleIconDisable+this.stylefontasome+'color:#00c5dc"></i> '
-                                if(this.item_button.hasOwnProperty('imageUrl')){
-                                    iconfont = icon.replace('isShowIcon', 'isShowIcon d-none');
-                                    icon = '<img src="'+this.item_button.imageUrl+'" onerror="this.onerror=null;$(this).addClass(\'d-none\');$(this).next().removeClass(\'d-none\');" style="'+this.styleIconDisable+'height:1rem;width:1rem;margin-bottom:3px;"></i> '+iconfont;
-                                }
-                                if (this.item_button.hasOwnProperty("badge_icon") && this.item_button.badge_icon !== "") {
-                                    this.button_content = '<button '+disabled+' type="button" class="btn default"'+this.styleButton+'>'+(button_description.hasOwnProperty('show_icon') ? ((button_description.show_icon == true || button_description.show_icon == 'true') == true ? icon: '') :icon)+'<span style="'+this.styleAll+'width:100%;overflow: hidden;text-overflow: ellipsis;padding:0 5px;"> '+(button_description.hasOwnProperty('show_text') ? button_description.show_text == true ? this.item_button['label']: '' :this.item_button['label'])+' </span><span style="background:'+bgBIcon+'; box-shadow:'+shadowBIcon+'; color:'+txtBIcon+'; display:'+showBIcon+'; border:'+borderColorBIcon+'; width:fit-content; height:fit-content; position:absolute; top:-10px; right:-10px; justify-content:center; align-items:center; text-transform: none; padding: 3px 7px !important" class="badge">'+contentBIcon+'</span></button>';
-                                } else {
-                                    this.button_content = '<button '+disabled+' type="button" class="btn default"'+this.styleButton+'>'+(button_description.hasOwnProperty('show_icon') ? ((button_description.show_icon == true || button_description.show_icon == 'true') == true ? icon: '') :icon)+'<span style="'+this.styleAll+'width:100%;overflow: hidden;text-overflow: ellipsis;padding:0 5px;"> '+(button_description.hasOwnProperty('show_text') ? button_description.show_text == true ? this.item_button['label']: '' :this.item_button['label'])+' </span></button>';
-                                }
-                            }
-                        }
-                        else{
-                            icon='<i class="isShowIcon fa fa-bar-chart" aria-hidden="true" style="'+this.styleIconDisable+this.stylefontasome+'color:#00c5dc;padding:1px !important;"></i> ';
-                            if(this.item_button.hasOwnProperty('imageUrl')){
-                                iconfont = icon.replace('isShowIcon', 'isShowIcon d-none');
-                                icon = '<img src="'+this.item_button.imageUrl+'" onerror="this.onerror=null;$(this).addClass(\'d-none\');$(this).next().removeClass(\'d-none\');" style="'+this.styleIconDisable+'height:1rem;width:1rem;margin-bottom:3px;"></i> '+iconfont;
-                            }
-                            if (this.item_button.hasOwnProperty("badge_icon") && this.item_button.badge_icon !== "") {
-                                this.button_content = '<button '+disabled+' type="button" style="'+this.styleAll+'padding: 3px 9px !important; border-radius: 5px !important;'+'" class="btn default">'+icon+'<span style="'+this.styleAll+'padding:0 5px;width:100%;">'+(button_description.hasOwnProperty('show_text') ? button_description.show_text == true ? this.item_button['label']: '' :this.item_button['label'])+'</span><span style="background:'+bgBIcon+'; box-shadow:'+shadowBIcon+'; color:'+txtBIcon+'; display:'+showBIcon+'; border:'+borderColorBIcon+'; width:fit-content; height:fit-content; position:absolute; top:-10px; right:-10px; justify-content:center; align-items:center; text-transform: none; padding: 3px 7px !important" class="badge">'+contentBIcon+'</span></button>';
-                            } else {
-                                this.button_content = '<button '+disabled+' type="button" style="'+this.styleAll+'padding: 3px 9px !important; border-radius: 5px !important;'+'" class="btn default">'+icon+'<span style="'+this.styleAll+'padding:0 5px;width:100%;">'+(button_description.hasOwnProperty('show_text') ? button_description.show_text == true ? this.item_button['label']: '' :this.item_button['label'])+'</span></button>';
-                            }
-                        }
-                        this.button_icon += 'fa fa-download';
+                        font_icon = 'flaticon-diagram'
                         break
 
                     case "act_jholder_add": 
-                        if(this.styleButton != ""){
-                            if(this.isBigIcon != ""){  
-                                if(button_description.hasOwnProperty('icon_color_background') && button_description.icon_color_background != ""){
-                                    this.styleButton = 'style=\''+this.styleButton+" background-color:"+button_description.icon_color_background+" !important;'"
-                                }
-                                else{
-                                    this.styleButton = 'style=\''+this.styleButton+this.styleAll+"'";
-                                }
-                                if(this.item_button.hasOwnProperty('imageUrl')){
-                                    iconfont = icon.replace('isShowIcon', 'isShowIcon d-none');
-                                    icon = '<img src="'+this.item_button.imageUrl+'" onerror="this.onerror=null;$(this).addClass(\'d-none\');$(this).next().removeClass(\'d-none\');" style="'+this.styleIconDisable+'width:1rem;"></i> '+iconfont;
-                                }
-                                this.button_content = '<button '+disabled+' type="button" class="btn"'+this.styleButton+'>'+(button_description.hasOwnProperty('show_icon') ? ((button_description.show_icon == true || button_description.show_icon == 'true') == true ? icon: '') :icon)+'</button><p style="'+this.styleAll+'overflow: hidden;text-overflow: ellipsis;margin: 6px;display: -webkit-box;-webkit-box-orient: vertical;-webkit-line-clamp:'+((button_description.hasOwnProperty('max_text_line') && button_description.max_text_line!=null)?button_description.max_text_line:1)+';">'+(button_description.hasOwnProperty('show_text') ? button_description.show_text == true ? this.item_button['label']: '' :this.item_button['label'])+'</p>';
-                            }
-                            else if(button_description.hasOwnProperty('type') && button_description.type === 'custom'){
-                                this.styleButton = 'style=\''+this.styleButton+this.styleAll+"display:flex;'";
-                                if(this.item_button.hasOwnProperty('imageUrl')){
-
-                                    let icon_size_more  = 'height:'+((button_description.hasOwnProperty('icon_size') && button_description.icon_size !== "") ? (button_description.icon_size == "large" ? "25px;" : (button_description.icon_size == "medium" ? "24px" : "")) : "")+';'
-                                        icon_size_more += 'min-width:'+((button_description.hasOwnProperty('icon_size') && button_description.icon_size !== "") ? (button_description.icon_size == "large" ? "25px;" : (button_description.icon_size == "medium" ? "24px" : "")) : "")+';'
-                                        this.styleIcon += icon_size_more
-                                    
-                                    iconfont = icon.replace('isShowIcon', 'isShowIcon d-none');
-                                    icon = '<img src="'+this.item_button.imageUrl+'" onerror="this.onerror=null;$(this).addClass(\'d-none\');$(this).next().removeClass(\'d-none\');" style="'+this.styleIconDisable+this.styleIcon+'margin-bottom:3px;"></i> '+iconfont;
-                                }
-                                if(button_description.hasOwnProperty('icon_alignment')){
-                                    switch (button_description.icon_alignment) {
-                                        case 'end':
-                                            this.button_content = '<button '+disabled+' type="button" class="btn default"'+this.styleButton+'><span style="'+this.styleAll+'width:100%;overflow: hidden;text-overflow: ellipsis;padding:0 5px;display: -webkit-box;-webkit-box-orient: vertical;white-space: break-spaces;word-wrap: break-word;margin: auto;-webkit-line-clamp:'+((button_description.hasOwnProperty('max_text_line') && button_description.max_text_line!=null)?button_description.max_text_line:(1+";white-space: unset !important"))+';">'+(button_description.hasOwnProperty('show_text') ? button_description.show_text == true ? this.item_button['label']: '' :this.item_button['label'])+' </span>'+(button_description.hasOwnProperty('show_icon') ? ((button_description.show_icon == true || button_description.show_icon == 'true') == true ? icon: '') :icon)+'</button>';
-                                            break;
-                                        case 'top':
-                                            this.styleButton = this.styleButton.replace('text-align:start;','').replace('display:flex;','')
-                                            this.button_content = '<button '+disabled+' type="button" class="btn default"'+this.styleButton+'>'+(button_description.hasOwnProperty('show_icon') ? ((button_description.show_icon == true || button_description.show_icon == 'true') == true ? icon: '') :icon)+'<span style="'+this.styleAll+'width:100%;overflow: hidden;text-overflow: ellipsis;padding:0 5px;display:block;"> '+(button_description.hasOwnProperty('show_text') ? button_description.show_text == true ? this.item_button['label']: '' :this.item_button['label'])+' </span></button>';
-                                            break;
-                                        case 'bottom':
-                                            this.styleButton = this.styleButton.replace('text-align:start;','').replace('display:flex;','')
-                                            this.button_content = '<button '+disabled+' type="button" class="btn default"'+this.styleButton+'><span style="'+this.styleAll+'width:100%;overflow: hidden;text-overflow: ellipsis;padding:0 5px;display:block;"> '+(button_description.hasOwnProperty('show_text') ? button_description.show_text == true ? this.item_button['label']: '' :this.item_button['label'])+' </span>'+(button_description.hasOwnProperty('show_icon') ? ((button_description.show_icon == true || button_description.show_icon == 'true') == true ? icon: '') :icon)+'</button>';
-                                            break;
-                                    
-                                        default:
-                                            this.button_content = '<button '+disabled+' type="button" class="btn default"'+this.styleButton+'>'+(button_description.hasOwnProperty('show_icon') ? ((button_description.show_icon == true || button_description.show_icon == 'true') == true ? icon: '') :icon)+'<span style="'+this.styleAll+'width:100%;overflow: hidden;text-overflow: ellipsis;padding:0 5px;display: -webkit-box;-webkit-box-orient: vertical;white-space: break-spaces;word-wrap: break-word;margin: auto;-webkit-line-clamp:'+((button_description.hasOwnProperty('max_text_line') && button_description.max_text_line!=null)?button_description.max_text_line:(1+";white-space: unset !important"))+';">'+(button_description.hasOwnProperty('show_text') ? button_description.show_text == true ? this.item_button['label']: '' :this.item_button['label'])+' </span></button>';
-                                            break;
-                                    }
-                                }else{
-                                    this.button_content = '<button '+disabled+' type="button" class="btn default"'+this.styleButton+'>'+(button_description.hasOwnProperty('show_icon') ? ((button_description.show_icon == true || button_description.show_icon == 'true') == true ? icon: '') :icon)+'<span style="'+this.styleAll+'width:100%;overflow: hidden;text-overflow: ellipsis;padding:0 5px;display: -webkit-box;-webkit-box-orient: vertical;white-space: break-spaces;word-wrap: break-word;margin: auto;-webkit-line-clamp:'+((button_description.hasOwnProperty('max_text_line') && button_description.max_text_line!=null)?button_description.max_text_line:(1+";white-space: unset !important"))+';">'+(button_description.hasOwnProperty('show_text') ? button_description.show_text == true ? this.item_button['label']: '' :this.item_button['label'])+' </span></button>';
-                                }
-                            }
-                            else{
-                                this.styleButton = 'style=\''+this.styleButton+this.styleAll+"display:flex;'";
-                                if(this.item_button.hasOwnProperty('imageUrl')){
-                                    iconfont = icon.replace('isShowIcon', 'isShowIcon d-none');
-                                    icon = '<img src="'+this.item_button.imageUrl+'" onerror="this.onerror=null;$(this).addClass(\'d-none\');$(this).next().removeClass(\'d-none\');" style="'+this.styleIconDisable+'height:1rem;width:1rem;margin-bottom:3px;"></i> '+iconfont;
-                                }
-                                this.button_content = '<button '+disabled+' type="button" class="btn default"'+this.styleButton+'>'+(button_description.hasOwnProperty('show_icon') ? ((button_description.show_icon == true || button_description.show_icon == 'true') == true ? icon: '') :icon)+'<span style="'+this.styleAll+'width:100%;overflow: hidden;text-overflow: ellipsis;padding:0 5px;"> '+(button_description.hasOwnProperty('show_text') ? button_description.show_text == true ? this.item_button['label']: '' :this.item_button['label'])+' </span></button>';
-                            }
-                        }
-                        else{
-                            if(this.item_button.hasOwnProperty('imageUrl')){
-                                iconfont = icon.replace('isShowIcon', 'isShowIcon d-none');
-                                icon = '<img src="'+this.item_button.imageUrl+'" onerror="this.onerror=null;$(this).addClass(\'d-none\');$(this).next().removeClass(\'d-none\');" style="'+this.styleIconDisable+'height:1rem;width:1rem;margin-bottom:3px;"></i> '+iconfont;
-                            }
-                            this.button_content = '<button '+disabled+' type="button" style="'+this.styleAll+'padding: 3px 9px !important; border-radius: 5px !important;'+'" class="btn default">'+icon+'<span style="'+this.styleAll+'padding:0 5px;width:100%;">'+(button_description.hasOwnProperty('show_text') ? button_description.show_text == true ? this.item_button['label']: '' :this.item_button['label'])+'</span></button>';
-                        }
-                        break
-
-                    case "act_jholder_remove":    
-                        if(this.styleButton != ""){
-                            if(this.isBigIcon != ""){  
-                                if(button_description.hasOwnProperty('icon_color_background') && button_description.icon_color_background != ""){
-                                    this.styleButton = 'style=\''+this.styleButton+" background-color:"+button_description.icon_color_background+" !important;'"
-                                }
-                                else{
-                                    this.styleButton = 'style=\''+this.styleButton+this.styleAll+"'";
-                                }
-                                if(this.item_button.hasOwnProperty('imageUrl')){
-                                    iconfont = icon.replace('isShowIcon', 'isShowIcon d-none');
-                                    icon = '<img src="'+this.item_button.imageUrl+'" onerror="this.onerror=null;$(this).addClass(\'d-none\');$(this).next().removeClass(\'d-none\');" style="'+this.styleIconDisable+'width:1rem;"></i> '+iconfont;
-                                }
-                                this.button_content = '<button '+disabled+' type="button" class="btn"'+this.styleButton+'>'+(button_description.hasOwnProperty('show_icon') ? ((button_description.show_icon == true || button_description.show_icon == 'true') == true ? icon: '') :icon)+'</button><p style="'+this.styleAll+'overflow: hidden;text-overflow: ellipsis;margin: 6px;display: -webkit-box;-webkit-box-orient: vertical;-webkit-line-clamp:'+((button_description.hasOwnProperty('max_text_line') && button_description.max_text_line!=null)?button_description.max_text_line:1)+';">'+(button_description.hasOwnProperty('show_text') ? button_description.show_text == true ? this.item_button['label']: '' :this.item_button['label'])+'</p>';
-                            }
-                            else if(button_description.hasOwnProperty('type') && button_description.type === 'custom'){
-                                this.styleButton = 'style=\''+this.styleButton+this.styleAll+"display:flex;'";
-                                if(this.item_button.hasOwnProperty('imageUrl')){
-
-                                    let icon_size_more  = 'height:'+((button_description.hasOwnProperty('icon_size') && button_description.icon_size !== "") ? (button_description.icon_size == "large" ? "25px;" : (button_description.icon_size == "medium" ? "24px" : "")) : "")+';'
-                                        icon_size_more += 'min-width:'+((button_description.hasOwnProperty('icon_size') && button_description.icon_size !== "") ? (button_description.icon_size == "large" ? "25px;" : (button_description.icon_size == "medium" ? "24px" : "")) : "")+';'
-                                        this.styleIcon += icon_size_more
-                                    
-                                    iconfont = icon.replace('isShowIcon', 'isShowIcon d-none');
-                                    icon = '<img src="'+this.item_button.imageUrl+'" onerror="this.onerror=null;$(this).addClass(\'d-none\');$(this).next().removeClass(\'d-none\');" style="'+this.styleIconDisable+this.styleIcon+'margin-bottom:3px;"></i> '+iconfont;
-                                }
-                                if(button_description.hasOwnProperty('icon_alignment')){
-                                    switch (button_description.icon_alignment) {
-                                        case 'end':
-                                            this.button_content = '<button '+disabled+' type="button" class="btn default"'+this.styleButton+'><span style="'+this.styleAll+'width:100%;overflow: hidden;text-overflow: ellipsis;padding:0 5px;display: -webkit-box;-webkit-box-orient: vertical;white-space: break-spaces;word-wrap: break-word;margin: auto;-webkit-line-clamp:'+((button_description.hasOwnProperty('max_text_line') && button_description.max_text_line!=null)?button_description.max_text_line:(1+";white-space: unset !important"))+';">'+(button_description.hasOwnProperty('show_text') ? button_description.show_text == true ? this.item_button['label']: '' :this.item_button['label'])+' </span>'+(button_description.hasOwnProperty('show_icon') ? ((button_description.show_icon == true || button_description.show_icon == 'true') == true ? icon: '') :icon)+'</button>';
-                                            break;
-                                        case 'top':
-                                            this.styleButton = this.styleButton.replace('text-align:start;','').replace('display:flex;','')
-                                            this.button_content = '<button '+disabled+' type="button" class="btn default"'+this.styleButton+'>'+(button_description.hasOwnProperty('show_icon') ? ((button_description.show_icon == true || button_description.show_icon == 'true') == true ? icon: '') :icon)+'<span style="'+this.styleAll+'width:100%;overflow: hidden;text-overflow: ellipsis;padding:0 5px;display:block;"> '+(button_description.hasOwnProperty('show_text') ? button_description.show_text == true ? this.item_button['label']: '' :this.item_button['label'])+' </span></button>';
-                                            break;
-                                        case 'bottom':
-                                            this.styleButton = this.styleButton.replace('text-align:start;','').replace('display:flex;','')
-                                            this.button_content = '<button '+disabled+' type="button" class="btn default"'+this.styleButton+'><span style="'+this.styleAll+'width:100%;overflow: hidden;text-overflow: ellipsis;padding:0 5px;display:block;"> '+(button_description.hasOwnProperty('show_text') ? button_description.show_text == true ? this.item_button['label']: '' :this.item_button['label'])+' </span>'+(button_description.hasOwnProperty('show_icon') ? ((button_description.show_icon == true || button_description.show_icon == 'true') == true ? icon: '') :icon)+'</button>';
-                                            break;
-                                    
-                                        default:
-                                            this.button_content = '<button '+disabled+' type="button" class="btn default"'+this.styleButton+'>'+(button_description.hasOwnProperty('show_icon') ? ((button_description.show_icon == true || button_description.show_icon == 'true') == true ? icon: '') :icon)+'<span style="'+this.styleAll+'width:100%;overflow: hidden;text-overflow: ellipsis;padding:0 5px;display: -webkit-box;-webkit-box-orient: vertical;white-space: break-spaces;word-wrap: break-word;margin: auto;-webkit-line-clamp:'+((button_description.hasOwnProperty('max_text_line') && button_description.max_text_line!=null)?button_description.max_text_line:(1+";white-space: unset !important"))+';">'+(button_description.hasOwnProperty('show_text') ? button_description.show_text == true ? this.item_button['label']: '' :this.item_button['label'])+' </span></button>';
-                                            break;
-                                    }
-                                }else{
-                                    this.button_content = '<button '+disabled+' type="button" class="btn default"'+this.styleButton+'>'+(button_description.hasOwnProperty('show_icon') ? ((button_description.show_icon == true || button_description.show_icon == 'true') == true ? icon: '') :icon)+'<span style="'+this.styleAll+'width:100%;overflow: hidden;text-overflow: ellipsis;padding:0 5px;display: -webkit-box;-webkit-box-orient: vertical;white-space: break-spaces;word-wrap: break-word;margin: auto;-webkit-line-clamp:'+((button_description.hasOwnProperty('max_text_line') && button_description.max_text_line!=null)?button_description.max_text_line:(1+";white-space: unset !important"))+';">'+(button_description.hasOwnProperty('show_text') ? button_description.show_text == true ? this.item_button['label']: '' :this.item_button['label'])+' </span></button>';
-                                }
-                            }
-                            else{
-                                this.styleButton = 'style=\''+this.styleButton+this.styleAll+"display:flex;'";
-                                if(this.item_button.hasOwnProperty('imageUrl')){
-                                    iconfont = icon.replace('isShowIcon', 'isShowIcon d-none');
-                                    icon = '<img src="'+this.item_button.imageUrl+'" onerror="this.onerror=null;$(this).addClass(\'d-none\');$(this).next().removeClass(\'d-none\');" style="'+this.styleIconDisable+'height:1rem;width:1rem;margin-bottom:3px;"></i> '+iconfont;
-                                }
-                                this.button_content = '<button '+disabled+' type="button" class="btn default"'+this.styleButton+'>'+(button_description.hasOwnProperty('show_icon') ? ((button_description.show_icon == true || button_description.show_icon == 'true') == true ? icon: '') :icon)+'<span style="'+this.styleAll+'width:100%;overflow: hidden;text-overflow: ellipsis;padding:0 5px;"> '+(button_description.hasOwnProperty('show_text') ? button_description.show_text == true ? this.item_button['label']: '' :this.item_button['label'])+' </span></button>';
-                            }
-                        }
-                        else{
-                            if(this.item_button.hasOwnProperty('imageUrl')){
-                                iconfont = icon.replace('isShowIcon', 'isShowIcon d-none');
-                                icon = '<img src="'+this.item_button.imageUrl+'" onerror="this.onerror=null;$(this).addClass(\'d-none\');$(this).next().removeClass(\'d-none\');" style="'+this.styleIconDisable+'height:1rem;width:1rem;margin-bottom:3px;"></i> '+iconfont;
-                            }
-                            this.button_content = '<button '+disabled+' type="button" style="'+this.styleAll+'padding: 3px 9px !important; border-radius: 5px !important;'+'" class="btn default">'+icon+'<span style="'+this.styleAll+'padding:0 5px;width:100%;">'+(button_description.hasOwnProperty('show_text') ? button_description.show_text == true ? this.item_button['label']: '' :this.item_button['label'])+'</span></button>';
-                        }
-                        break
-  
-                    case "act_open_module":                     
-                        if(this.styleButton != ""){
-                            if(this.isBigIcon != ""){  
-                                if(button_description.hasOwnProperty('icon_color_background') && button_description.icon_color_background != ""){
-                                    this.styleButton = 'style=\''+this.styleButton+" background-color:"+button_description.icon_color_background+" !important;'"
-                                    icon += '<i class="isShowIcon fa fa-bar-chart" aria-hidden="true" style="'+this.styleIconDisable+'color:black"></i> ';
-                                }
-                                else{
-                                    this.styleButton = 'style=\''+this.styleButton+this.styleAll+"'";
-                                    icon += '<i class="isShowIcon fa fa-bar-chart" aria-hidden="true" style="'+this.styleIconDisable+'color:#00c5dc"></i> ';
-                                }
-                                if(this.item_button.hasOwnProperty('imageUrl')){
-                                    iconfont = icon.replace('isShowIcon', 'isShowIcon d-none');
-                                    icon = '<img src="'+this.item_button.imageUrl+'" onerror="this.onerror=null;$(this).addClass(\'d-none\');$(this).next().removeClass(\'d-none\');" style="'+this.styleIconDisable+'width:1rem;"></i> '+iconfont;
-                                }
-                                this.button_content = '<button '+disabled+' type="button" class="btn"'+this.styleButton+'>'+(button_description.hasOwnProperty('show_icon') ? ((button_description.show_icon == true || button_description.show_icon == 'true') == true ? icon: '') :icon)+'</button><p style="'+this.styleAll+'overflow: hidden;text-overflow: ellipsis;margin: 6px;display: -webkit-box;-webkit-box-orient: vertical;-webkit-line-clamp:'+((button_description.hasOwnProperty('max_text_line') && button_description.max_text_line!=null)?button_description.max_text_line:1)+';">'+(button_description.hasOwnProperty('show_text') ? button_description.show_text == true ? this.item_button['label']: '' :this.item_button['label'])+'</p>';
-                            }
-                            else if(button_description.hasOwnProperty('type') && button_description.type === 'custom'){
-                                if (this.item_button.hasOwnProperty("badge_icon") && this.item_button.badge_icon !== "") {
-                                    this.styleButton = 'style=\''+this.styleButton+this.styleAll+"display:flex; position:relative;'";
-                                } else {
-                                    this.styleButton = 'style=\''+this.styleButton+this.styleAll+"display:flex;'";
-                                }
-                                icon += '<i class="isShowIcon fa fa-bar-chart" aria-hidden="true" style="'+this.styleIconDisable+this.styleIcon+this.stylefontasome+'color:#00c5dc; margin:auto;"></i> '
-                                if(this.item_button.hasOwnProperty('imageUrl')){
-
-                                    let icon_size_more  = 'height:'+((button_description.hasOwnProperty('icon_size') && button_description.icon_size !== "") ? (button_description.icon_size == "large" ? "25px;" : (button_description.icon_size == "medium" ? "24px" : "")) : "")+';'
-                                        icon_size_more += 'min-width:'+((button_description.hasOwnProperty('icon_size') && button_description.icon_size !== "") ? (button_description.icon_size == "large" ? "25px;" : (button_description.icon_size == "medium" ? "24px" : "")) : "")+';'
-                                        this.styleIcon += icon_size_more
-                                    
-                                    iconfont = icon.replace('isShowIcon', 'isShowIcon d-none');
-                                    icon = '<img src="'+this.item_button.imageUrl+'" onerror="this.onerror=null;$(this).addClass(\'d-none\');$(this).next().removeClass(\'d-none\');" style="'+this.styleIconDisable+this.styleIcon+'margin-bottom:3px;"></i> '+iconfont;
-                                }
-                                if(button_description.hasOwnProperty('icon_alignment')){
-                                    switch (button_description.icon_alignment) {
-                                        case 'end':
-                                            this.button_content = '<button '+disabled+' type="button" class="btn default"'+this.styleButton+'><span style="'+this.styleAll+'width:100%;overflow: hidden;text-overflow: ellipsis;padding:0 5px;display: -webkit-box;-webkit-box-orient: vertical;white-space: break-spaces;word-wrap: break-word;margin: auto;-webkit-line-clamp:'+((button_description.hasOwnProperty('max_text_line') && button_description.max_text_line!=null)?button_description.max_text_line:(1+";white-space: unset !important"))+';">'+(button_description.hasOwnProperty('show_text') ? button_description.show_text == true ? this.item_button['label']: '' :this.item_button['label'])+' </span>'+(button_description.hasOwnProperty('show_icon') ? ((button_description.show_icon == true || button_description.show_icon == 'true') == true ? icon: '') :icon)+'</button>';
-                                            break;
-                                        case 'top':
-                                            this.styleButton = this.styleButton.replace('text-align:start;','').replace('display:flex;','')
-                                            this.button_content = '<button '+disabled+' type="button" class="btn default"'+this.styleButton+'>'+(button_description.hasOwnProperty('show_icon') ? ((button_description.show_icon == true || button_description.show_icon == 'true') == true ? icon: '') :icon)+'<span style="'+this.styleAll+'width:100%;overflow: hidden;text-overflow: ellipsis;padding:0 5px;display:block;"> '+(button_description.hasOwnProperty('show_text') ? button_description.show_text == true ? this.item_button['label']: '' :this.item_button['label'])+' </span></button>';
-                                            break;
-                                        case 'bottom':
-                                            this.styleButton = this.styleButton.replace('text-align:start;','').replace('display:flex;','')
-                                            this.button_content = '<button '+disabled+' type="button" class="btn default"'+this.styleButton+'><span style="'+this.styleAll+'width:100%;overflow: hidden;text-overflow: ellipsis;padding:0 5px;display:block;"> '+(button_description.hasOwnProperty('show_text') ? button_description.show_text == true ? this.item_button['label']: '' :this.item_button['label'])+' </span>'+(button_description.hasOwnProperty('show_icon') ? ((button_description.show_icon == true || button_description.show_icon == 'true') == true ? icon: '') :icon)+'</button>';
-                                            break;
-                                    
-                                        default:
-                                            this.button_content = '<button '+disabled+' type="button" class="btn default"'+this.styleButton+'>'+(button_description.hasOwnProperty('show_icon') ? ((button_description.show_icon == true || button_description.show_icon == 'true') == true ? icon: '') :icon)+'<span style="'+this.styleAll+'width:100%;overflow: hidden;text-overflow: ellipsis;padding:0 5px;display: -webkit-box;-webkit-box-orient: vertical;white-space: break-spaces;word-wrap: break-word;margin: auto;-webkit-line-clamp:'+((button_description.hasOwnProperty('max_text_line') && button_description.max_text_line!=null)?button_description.max_text_line:(1+";white-space: unset !important"))+';">'+(button_description.hasOwnProperty('show_text') ? button_description.show_text == true ? this.item_button['label']: '' :this.item_button['label'])+' </span></button>';
-                                            break;
-                                    }
-                                }else{
-                                    if (this.item_button.hasOwnProperty("badge_icon") && this.item_button.badge_icon !== "") {
-                                        this.button_content = '<button '+disabled+' type="button" class="btn default"'+this.styleButton+'>'+(button_description.hasOwnProperty('show_icon') ? ((button_description.show_icon == true || button_description.show_icon == 'true') == true ? icon: '') :icon)+'<span style="'+this.styleAll+'width:100%;overflow: hidden;text-overflow: ellipsis;padding:0 5px;display: -webkit-box;-webkit-box-orient: vertical;white-space: break-spaces;word-wrap: break-word;margin: auto;-webkit-line-clamp:'+((button_description.hasOwnProperty('max_text_line') && button_description.max_text_line!=null)?button_description.max_text_line:(1+";white-space: unset !important"))+';">'+(button_description.hasOwnProperty('show_text') ? button_description.show_text == true ? this.item_button['label']: '' :this.item_button['label'])+' </span><span style="background:'+bgBIcon+'; box-shadow:'+shadowBIcon+'; color:'+txtBIcon+'; display:'+showBIcon+'; border:'+borderColorBIcon+'; width:fit-content; height:fit-content; position:absolute; top:-10px; right:-10px; justify-content:center; align-items:center; text-transform: none; padding: 3px 7px !important" class="badge">'+contentBIcon+'</span></button>';
-                                    } else {
-                                        this.button_content = '<button '+disabled+' type="button" class="btn default"'+this.styleButton+'>'+(button_description.hasOwnProperty('show_icon') ? ((button_description.show_icon == true || button_description.show_icon == 'true') == true ? icon: '') :icon)+'<span style="'+this.styleAll+'width:100%;overflow: hidden;text-overflow: ellipsis;padding:0 5px;display: -webkit-box;-webkit-box-orient: vertical;white-space: break-spaces;word-wrap: break-word;margin: auto;-webkit-line-clamp:'+((button_description.hasOwnProperty('max_text_line') && button_description.max_text_line!=null)?button_description.max_text_line:(1+";white-space: unset !important"))+';">'+(button_description.hasOwnProperty('show_text') ? button_description.show_text == true ? this.item_button['label']: '' :this.item_button['label'])+' </span></button>';
-                                    }
-                                }
-                            }
-                            else{
-                                this.styleButton = 'style=\''+this.styleButton+this.styleAll+"display:flex;'";
-                                icon += '<i class="isShowIcon fa fa-bar-chart" aria-hidden="true" style="'+this.styleIconDisable+this.stylefontasome+'color:#00c5dc"></i> '
-                                if(this.item_button.hasOwnProperty('imageUrl')){
-                                    iconfont = icon.replace('isShowIcon', 'isShowIcon d-none');
-                                    icon = '<img src="'+this.item_button.imageUrl+'" onerror="this.onerror=null;$(this).addClass(\'d-none\');$(this).next().removeClass(\'d-none\');" style="'+this.styleIconDisable+'height:1rem;width:1rem;margin-bottom:3px;"></i> '+iconfont;
-                                }
-                                this.button_content = '<button '+disabled+' type="button" class="btn default"'+this.styleButton+'>'+(button_description.hasOwnProperty('show_icon') ? ((button_description.show_icon == true || button_description.show_icon == 'true') == true ? icon: '') :icon)+'<span style="'+this.styleAll+'width:100%;overflow: hidden;text-overflow: ellipsis;padding:0 5px;"> '+(button_description.hasOwnProperty('show_text') ? button_description.show_text == true ? this.item_button['label']: '' :this.item_button['label'])+' </span></button>';
-                            }
-                        }
-                        else{
-                            icon='<i class="isShowIcon fa fa-bar-chart" aria-hidden="true" style="'+this.styleIconDisable+this.stylefontasome+'color:#00c5dc;padding:1px !important;"></i> ';
-                            if(this.item_button.hasOwnProperty('imageUrl')){
-                                iconfont = icon.replace('isShowIcon', 'isShowIcon d-none');
-                                icon = '<img src="'+this.item_button.imageUrl+'" onerror="this.onerror=null;$(this).addClass(\'d-none\');$(this).next().removeClass(\'d-none\');" style="'+this.styleIconDisable+'height:1rem;width:1rem;margin-bottom:3px;"></i> '+iconfont;
-                            }
-                            this.button_content = '<button '+disabled+' type="button" style="'+this.styleAll+'padding: 3px 9px !important; border-radius: 5px !important;'+'" class="btn default">'+icon+'<span style="'+this.styleAll+'padding:0 5px;width:100%;">'+(button_description.hasOwnProperty('show_text') ? button_description.show_text == true ? this.item_button['label']: '' :this.item_button['label'])+'</span></button>';
-                        }
-                        this.button_icon += 'fa fa-download';
-                        break
-
-                    case "act_exit":
-                        if(this.styleButton != ""){
-                            if(this.isBigIcon != ""){  
-                                if(button_description.hasOwnProperty('icon_color_background') && button_description.icon_color_background != ""){
-                                    this.styleButton = 'style=\''+this.styleButton+" background-color:"+button_description.icon_color_background+" !important;'"
-                                    icon += '<i class="isShowIcon fa fa-bar-chart" aria-hidden="true" style="'+this.styleIconDisable+'color:black"></i> ';
-                                }
-                                else{
-                                    this.styleButton = 'style=\''+this.styleButton+this.styleAll+"'";
-                                    icon += '<i class="isShowIcon fa fa-bar-chart" aria-hidden="true" style="'+this.styleIconDisable+'color:#00c5dc"></i> ';
-                                }
-                                if(this.item_button.hasOwnProperty('imageUrl')){
-                                    iconfont = icon.replace('isShowIcon', 'isShowIcon d-none');
-                                    icon = '<img src="'+this.item_button.imageUrl+'" onerror="this.onerror=null;$(this).addClass(\'d-none\');$(this).next().removeClass(\'d-none\');" style="'+this.styleIconDisable+'width:1rem;"></i> '+iconfont;
-                                }
-                                this.button_content = '<button '+disabled+' type="button" class="btn"'+this.styleButton+'>'+(button_description.hasOwnProperty('show_icon') ? ((button_description.show_icon == true || button_description.show_icon == 'true') == true ? icon: '') :icon)+'</button><p style="'+this.styleAll+'overflow: hidden;text-overflow: ellipsis;margin: 6px;display: -webkit-box;-webkit-box-orient: vertical;-webkit-line-clamp:'+((button_description.hasOwnProperty('max_text_line') && button_description.max_text_line!=null)?button_description.max_text_line:1)+';">'+(button_description.hasOwnProperty('show_text') ? button_description.show_text == true ? this.item_button['label']: '' :this.item_button['label'])+'</p>';
-                            }
-                            else if(button_description.hasOwnProperty('type') && button_description.type === 'custom'){
-                                this.styleButton = 'style=\''+this.styleButton+this.styleAll+"display:flex;'";
-                                icon += '<i class="isShowIcon fa fa-bar-chart" aria-hidden="true" style="'+this.styleIconDisable+this.styleIcon+this.stylefontasome+'color:#00c5dc; margin:auto;"></i> '
-                                if(this.item_button.hasOwnProperty('imageUrl')){
-
-                                    let icon_size_more  = 'height:'+((button_description.hasOwnProperty('icon_size') && button_description.icon_size !== "") ? (button_description.icon_size == "large" ? "25px;" : (button_description.icon_size == "medium" ? "24px" : "")) : "")+';'
-                                        icon_size_more += 'min-width:'+((button_description.hasOwnProperty('icon_size') && button_description.icon_size !== "") ? (button_description.icon_size == "large" ? "25px;" : (button_description.icon_size == "medium" ? "24px" : "")) : "")+';'
-                                        this.styleIcon += icon_size_more
-                                    
-                                    iconfont = icon.replace('isShowIcon', 'isShowIcon d-none');
-                                    icon = '<img src="'+this.item_button.imageUrl+'" onerror="this.onerror=null;$(this).addClass(\'d-none\');$(this).next().removeClass(\'d-none\');" style="'+this.styleIconDisable+this.styleIcon+'margin-bottom:3px;"></i> '+iconfont;
-                                }
-                                if(button_description.hasOwnProperty('icon_alignment')){
-                                    switch (button_description.icon_alignment) {
-                                        case 'end':
-                                            this.button_content = '<button '+disabled+' type="button" class="btn default"'+this.styleButton+'><span style="'+this.styleAll+'width:100%;overflow: hidden;text-overflow: ellipsis;padding:0 5px;display: -webkit-box;-webkit-box-orient: vertical;white-space: break-spaces;word-wrap: break-word;margin: auto;-webkit-line-clamp:'+((button_description.hasOwnProperty('max_text_line') && button_description.max_text_line!=null)?button_description.max_text_line:(1+";white-space: unset !important"))+';">'+(button_description.hasOwnProperty('show_text') ? button_description.show_text == true ? this.item_button['label']: '' :this.item_button['label'])+' </span>'+(button_description.hasOwnProperty('show_icon') ? ((button_description.show_icon == true || button_description.show_icon == 'true') == true ? icon: '') :icon)+'</button>';
-                                            break;
-                                        case 'top':
-                                            this.styleButton = this.styleButton.replace('text-align:start;','').replace('display:flex;','')
-                                            this.button_content = '<button '+disabled+' type="button" class="btn default"'+this.styleButton+'>'+(button_description.hasOwnProperty('show_icon') ? ((button_description.show_icon == true || button_description.show_icon == 'true') == true ? icon: '') :icon)+'<span style="'+this.styleAll+'width:100%;overflow: hidden;text-overflow: ellipsis;padding:0 5px;display:block;"> '+(button_description.hasOwnProperty('show_text') ? button_description.show_text == true ? this.item_button['label']: '' :this.item_button['label'])+' </span></button>';
-                                            break;
-                                        case 'bottom':
-                                            this.styleButton = this.styleButton.replace('text-align:start;','').replace('display:flex;','')
-                                            this.button_content = '<button '+disabled+' type="button" class="btn default"'+this.styleButton+'><span style="'+this.styleAll+'width:100%;overflow: hidden;text-overflow: ellipsis;padding:0 5px;display:block;"> '+(button_description.hasOwnProperty('show_text') ? button_description.show_text == true ? this.item_button['label']: '' :this.item_button['label'])+' </span>'+(button_description.hasOwnProperty('show_icon') ? ((button_description.show_icon == true || button_description.show_icon == 'true') == true ? icon: '') :icon)+'</button>';
-                                            break;
-                                    
-                                        default:
-                                            this.button_content = '<button '+disabled+' type="button" class="btn default"'+this.styleButton+'>'+(button_description.hasOwnProperty('show_icon') ? ((button_description.show_icon == true || button_description.show_icon == 'true') == true ? icon: '') :icon)+'<span style="'+this.styleAll+'width:100%;overflow: hidden;text-overflow: ellipsis;padding:0 5px;display: -webkit-box;-webkit-box-orient: vertical;white-space: break-spaces;word-wrap: break-word;margin: auto;-webkit-line-clamp:'+((button_description.hasOwnProperty('max_text_line') && button_description.max_text_line!=null)?button_description.max_text_line:(1+";white-space: unset !important"))+';">'+(button_description.hasOwnProperty('show_text') ? button_description.show_text == true ? this.item_button['label']: '' :this.item_button['label'])+' </span></button>';
-                                            break;
-                                    }
-                                }else{
-                                    this.button_content = '<button '+disabled+' type="button" class="btn default"'+this.styleButton+'>'+(button_description.hasOwnProperty('show_icon') ? ((button_description.show_icon == true || button_description.show_icon == 'true') == true ? icon: '') :icon)+'<span style="'+this.styleAll+'width:100%;overflow: hidden;text-overflow: ellipsis;padding:0 5px;display: -webkit-box;-webkit-box-orient: vertical;white-space: break-spaces;word-wrap: break-word;margin: auto;-webkit-line-clamp:'+((button_description.hasOwnProperty('max_text_line') && button_description.max_text_line!=null)?button_description.max_text_line:(1+";white-space: unset !important"))+';">'+(button_description.hasOwnProperty('show_text') ? button_description.show_text == true ? this.item_button['label']: '' :this.item_button['label'])+' </span></button>';
-                                }
-                            }
-                            else{
-                                this.styleButton = 'style=\''+this.styleButton+this.styleAll+"display:flex;'";
-                                icon += '<i class="isShowIcon fa fa-bar-chart" aria-hidden="true" style="'+this.styleIconDisable+this.stylefontasome+'color:#00c5dc"></i> '
-                                if(this.item_button.hasOwnProperty('imageUrl')){
-                                    iconfont = icon.replace('isShowIcon', 'isShowIcon d-none');
-                                    icon = '<img src="'+this.item_button.imageUrl+'" onerror="this.onerror=null;$(this).addClass(\'d-none\');$(this).next().removeClass(\'d-none\');" style="'+this.styleIconDisable+'height:1rem;width:1rem;margin-bottom:3px;"></i> '+iconfont;
-                                }
-                                this.button_content = '<button '+disabled+' type="button" class="btn default"'+this.styleButton+'>'+(button_description.hasOwnProperty('show_icon') ? ((button_description.show_icon == true || button_description.show_icon == 'true') == true ? icon: '') :icon)+'<span style="'+this.styleAll+'width:100%;overflow: hidden;text-overflow: ellipsis;padding:0 5px;"> '+(button_description.hasOwnProperty('show_text') ? button_description.show_text == true ? this.item_button['label']: '' :this.item_button['label'])+' </span></button>';
-                            }
-                        }
-                        else{
-                            icon='<i class="isShowIcon fa fa-bar-chart" aria-hidden="true" style="'+this.styleIconDisable+this.stylefontasome+'color:#00c5dc;padding:1px !important;"></i> ';
-                            if(this.item_button.hasOwnProperty('imageUrl')){
-                                iconfont = icon.replace('isShowIcon', 'isShowIcon d-none');
-                                icon = '<img src="'+this.item_button.imageUrl+'" onerror="this.onerror=null;$(this).addClass(\'d-none\');$(this).next().removeClass(\'d-none\');" style="'+this.styleIconDisable+'height:1rem;width:1rem;margin-bottom:3px;"></i> '+iconfont;
-                            }
-                            this.button_content = '<button '+disabled+' type="button" style="'+this.styleAll+'padding: 3px 9px !important; border-radius: 5px !important;'+'" class="btn default">'+icon+'<span style="'+this.styleAll+'padding:0 5px;width:100%;">'+(button_description.hasOwnProperty('show_text') ? button_description.show_text == true ? this.item_button['label']: '' :this.item_button['label'])+'</span></button>';
-                        }
-                        this.button_icon += 'fa fa-download';
-                        break
-                    
-                    case "act_open_html_screen":
-                        if(this.styleButton != ""){
-                            if(this.isBigIcon != ""){  
-                                if(button_description.hasOwnProperty('icon_color_background') && button_description.icon_color_background != ""){
-                                    this.styleButton = 'style=\''+this.styleButton+" background-color:"+button_description.icon_color_background+" !important;'"
-                                    icon += '<i class="isShowIcon fa fa-bar-chart" aria-hidden="true" style="'+this.styleIconDisable+'color:black"></i> ';
-                                }
-                                else{
-                                    this.styleButton = 'style=\''+this.styleButton+this.styleAll+"'";
-                                    icon += '<i class="isShowIcon fa fa-bar-chart" aria-hidden="true" style="'+this.styleIconDisable+'color:#00c5dc"></i> ';
-                                }
-                                if(this.item_button.hasOwnProperty('imageUrl')){
-                                    iconfont = icon.replace('isShowIcon', 'isShowIcon d-none');
-                                    icon = '<img src="'+this.item_button.imageUrl+'" onerror="this.onerror=null;$(this).addClass(\'d-none\');$(this).next().removeClass(\'d-none\');" style="'+this.styleIconDisable+'width:1rem;"></i> '+iconfont;
-                                }
-                                this.button_content = '<button '+disabled+' type="button" class="btn"'+this.styleButton+'>'+(button_description.hasOwnProperty('show_icon') ? ((button_description.show_icon == true || button_description.show_icon == 'true') == true ? icon: '') :icon)+'</button><p style="'+this.styleAll+'overflow: hidden;text-overflow: ellipsis;margin: 6px;display: -webkit-box;-webkit-box-orient: vertical;-webkit-line-clamp:'+((button_description.hasOwnProperty('max_text_line') && button_description.max_text_line!=null)?button_description.max_text_line:1)+';">'+(button_description.hasOwnProperty('show_text') ? button_description.show_text == true ? this.item_button['label']: '' :this.item_button['label'])+'</p>';
-                            }
-                            else if(button_description.hasOwnProperty('type') && button_description.type === 'custom'){
-                                this.styleButton = 'style=\''+this.styleButton+this.styleAll+"display:flex;'";
-                                icon += '<i class="isShowIcon fa fa-bar-chart" aria-hidden="true" style="'+this.styleIconDisable+this.styleIcon+this.stylefontasome+'color:#00c5dc; margin:auto;"></i> '
-                                if(this.item_button.hasOwnProperty('imageUrl')){
-
-                                    let icon_size_more  = 'height:'+((button_description.hasOwnProperty('icon_size') && button_description.icon_size !== "") ? (button_description.icon_size == "large" ? "25px;" : (button_description.icon_size == "medium" ? "24px" : "")) : "")+';'
-                                        icon_size_more += 'min-width:'+((button_description.hasOwnProperty('icon_size') && button_description.icon_size !== "") ? (button_description.icon_size == "large" ? "25px;" : (button_description.icon_size == "medium" ? "24px" : "")) : "")+';'
-                                        this.styleIcon += icon_size_more
-                                    
-                                    iconfont = icon.replace('isShowIcon', 'isShowIcon d-none');
-                                    icon = '<img src="'+this.item_button.imageUrl+'" onerror="this.onerror=null;$(this).addClass(\'d-none\');$(this).next().removeClass(\'d-none\');" style="'+this.styleIconDisable+this.styleIcon+'margin-bottom:3px;"></i> '+iconfont;
-                                }
-                                if(button_description.hasOwnProperty('icon_alignment')){
-                                    switch (button_description.icon_alignment) {
-                                        case 'end':
-                                            this.button_content = '<button '+disabled+' type="button" class="btn default"'+this.styleButton+'><span style="'+this.styleAll+'width:100%;overflow: hidden;text-overflow: ellipsis;padding:0 5px;display: -webkit-box;-webkit-box-orient: vertical;white-space: break-spaces;word-wrap: break-word;margin: auto;-webkit-line-clamp:'+((button_description.hasOwnProperty('max_text_line') && button_description.max_text_line!=null)?button_description.max_text_line:(1+";white-space: unset !important"))+';">'+(button_description.hasOwnProperty('show_text') ? button_description.show_text == true ? this.item_button['label']: '' :this.item_button['label'])+' </span>'+(button_description.hasOwnProperty('show_icon') ? ((button_description.show_icon == true || button_description.show_icon == 'true') == true ? icon: '') :icon)+'</button>';
-                                            break;
-                                        case 'top':
-                                            this.styleButton = this.styleButton.replace('text-align:start;','').replace('display:flex;','')
-                                            this.button_content = '<button '+disabled+' type="button" class="btn default"'+this.styleButton+'>'+(button_description.hasOwnProperty('show_icon') ? ((button_description.show_icon == true || button_description.show_icon == 'true') == true ? icon: '') :icon)+'<span style="'+this.styleAll+'width:100%;overflow: hidden;text-overflow: ellipsis;padding:0 5px;display:block;"> '+(button_description.hasOwnProperty('show_text') ? button_description.show_text == true ? this.item_button['label']: '' :this.item_button['label'])+' </span></button>';
-                                            break;
-                                        case 'bottom':
-                                            this.styleButton = this.styleButton.replace('text-align:start;','').replace('display:flex;','')
-                                            this.button_content = '<button '+disabled+' type="button" class="btn default"'+this.styleButton+'><span style="'+this.styleAll+'width:100%;overflow: hidden;text-overflow: ellipsis;padding:0 5px;display:block;"> '+(button_description.hasOwnProperty('show_text') ? button_description.show_text == true ? this.item_button['label']: '' :this.item_button['label'])+' </span>'+(button_description.hasOwnProperty('show_icon') ? ((button_description.show_icon == true || button_description.show_icon == 'true') == true ? icon: '') :icon)+'</button>';
-                                            break;
-                                    
-                                        default:
-                                            this.button_content = '<button '+disabled+' type="button" class="btn default"'+this.styleButton+'>'+(button_description.hasOwnProperty('show_icon') ? ((button_description.show_icon == true || button_description.show_icon == 'true') == true ? icon: '') :icon)+'<span style="'+this.styleAll+'width:100%;overflow: hidden;text-overflow: ellipsis;padding:0 5px;display: -webkit-box;-webkit-box-orient: vertical;white-space: break-spaces;word-wrap: break-word;margin: auto;-webkit-line-clamp:'+((button_description.hasOwnProperty('max_text_line') && button_description.max_text_line!=null)?button_description.max_text_line:(1+";white-space: unset !important"))+';">'+(button_description.hasOwnProperty('show_text') ? button_description.show_text == true ? this.item_button['label']: '' :this.item_button['label'])+' </span></button>';
-                                            break;
-                                    }
-                                }else{
-                                    this.button_content = '<button '+disabled+' type="button" class="btn default"'+this.styleButton+'>'+(button_description.hasOwnProperty('show_icon') ? ((button_description.show_icon == true || button_description.show_icon == 'true') == true ? icon: '') :icon)+'<span style="'+this.styleAll+'width:100%;overflow: hidden;text-overflow: ellipsis;padding:0 5px;display: -webkit-box;-webkit-box-orient: vertical;white-space: break-spaces;word-wrap: break-word;margin: auto;-webkit-line-clamp:'+((button_description.hasOwnProperty('max_text_line') && button_description.max_text_line!=null)?button_description.max_text_line:(1+";white-space: unset !important"))+';">'+(button_description.hasOwnProperty('show_text') ? button_description.show_text == true ? this.item_button['label']: '' :this.item_button['label'])+' </span></button>';
-                                }
-                            }
-                            else{
-                                this.styleButton = 'style=\''+this.styleButton+this.styleAll+"display:flex;'";
-                                icon += '<i class="isShowIcon fa fa-bar-chart" aria-hidden="true" style="'+this.styleIconDisable+this.stylefontasome+'color:#00c5dc"></i> '
-                                if(this.item_button.hasOwnProperty('imageUrl')){
-                                    iconfont = icon.replace('isShowIcon', 'isShowIcon d-none');
-                                    icon = '<img src="'+this.item_button.imageUrl+'" onerror="this.onerror=null;$(this).addClass(\'d-none\');$(this).next().removeClass(\'d-none\');" style="'+this.styleIconDisable+'height:1rem;width:1rem;margin-bottom:3px;"></i> '+iconfont;
-                                }
-                                this.button_content = '<button '+disabled+' type="button" class="btn default"'+this.styleButton+'>'+(button_description.hasOwnProperty('show_icon') ? ((button_description.show_icon == true || button_description.show_icon == 'true') == true ? icon: '') :icon)+'<span style="'+this.styleAll+'width:100%;overflow: hidden;text-overflow: ellipsis;padding:0 5px;"> '+(button_description.hasOwnProperty('show_text') ? button_description.show_text == true ? this.item_button['label']: '' :this.item_button['label'])+' </span></button>';
-                            }
-                        }
-                        else{
-                            icon='<i class="isShowIcon fa fa-bar-chart" aria-hidden="true" style="'+this.styleIconDisable+this.stylefontasome+'color:#00c5dc;padding:1px !important;"></i> ';
-                            if(this.item_button.hasOwnProperty('imageUrl')){
-                                iconfont = icon.replace('isShowIcon', 'isShowIcon d-none');
-                                icon = '<img src="'+this.item_button.imageUrl+'" onerror="this.onerror=null;$(this).addClass(\'d-none\');$(this).next().removeClass(\'d-none\');" style="'+this.styleIconDisable+'height:1rem;width:1rem;margin-bottom:3px;"></i> '+iconfont;
-                            }
-                            this.button_content = '<button '+disabled+' type="button" style="'+this.styleAll+'padding: 3px 9px !important; border-radius: 5px !important;'+'" class="btn default">'+icon+'<span style="'+this.styleAll+'padding:0 5px;width:100%;">'+(button_description.hasOwnProperty('show_text') ? button_description.show_text == true ? this.item_button['label']: '' :this.item_button['label'])+'</span></button>';
-                        }
-                        this.button_icon += 'fa fa-download';
+                    case "act_jholder_remove": 
+                        font_icon = 'none'
                         break
 
                     case "act_open_chat":
-                        if(this.styleButton != ""){
-                            if(this.isBigIcon != ""){  
-                                if(button_description.hasOwnProperty('icon_color_background') && button_description.icon_color_background != ""){
-                                    this.styleButton = 'style=\''+this.styleButton+" background-color:"+button_description.icon_color_background+" !important;'"
-                                    icon += '<i class="isShowIcon fa fa-comment" aria-hidden="true" style="'+this.styleIconDisable+'color:black"></i> ';
-                                }
-                                else{
-                                    this.styleButton = 'style=\''+this.styleButton+this.styleAll+"'";
-                                    icon += '<i class="isShowIcon fa fa-comment" aria-hidden="true" style="'+this.styleIconDisable+'color:black"></i> ';
-                                }
-                                if(this.item_button.hasOwnProperty('imageUrl')){
-                                    iconfont = icon.replace('isShowIcon', 'isShowIcon d-none');
-                                    icon = '<img src="'+this.item_button.imageUrl+'" onerror="this.onerror=null;$(this).addClass(\'d-none\');$(this).next().removeClass(\'d-none\');" style="'+this.styleIconDisable+'width:1rem;"></i> '+iconfont;
-                                }
-                                this.button_content = '<button '+disabled+' type="button" class="btn"'+this.styleButton+'>'+(button_description.hasOwnProperty('show_icon') ? ((button_description.show_icon == true || button_description.show_icon == 'true') == true ? icon: '') :icon)+'</button><p style="'+this.styleAll+'overflow: hidden;text-overflow: ellipsis;margin: 6px;display: -webkit-box;-webkit-box-orient: vertical;-webkit-line-clamp:'+((button_description.hasOwnProperty('max_text_line') && button_description.max_text_line!=null)?button_description.max_text_line:1)+';">'+(button_description.hasOwnProperty('show_text') ? button_description.show_text == true ? this.item_button['label']: '' :this.item_button['label'])+'</p>';
-                            }
-                            else if(button_description.hasOwnProperty('type') && button_description.type === 'custom'){
-                                this.styleButton = 'style=\''+this.styleButton+this.styleAll+"display:flex;'";
-                                icon += '<i class="isShowIcon fa fa-comment" aria-hidden="true" style="'+this.styleIconDisable+this.styleIcon+this.stylefontasome+'color:black; margin:auto;"></i> '
-                                if(this.item_button.hasOwnProperty('imageUrl')){
-
-                                    let icon_size_more  = 'height:'+((button_description.hasOwnProperty('icon_size') && button_description.icon_size !== "") ? (button_description.icon_size == "large" ? "25px;" : (button_description.icon_size == "medium" ? "24px" : "")) : "")+';'
-                                        icon_size_more += 'min-width:'+((button_description.hasOwnProperty('icon_size') && button_description.icon_size !== "") ? (button_description.icon_size == "large" ? "25px;" : (button_description.icon_size == "medium" ? "24px" : "")) : "")+';'
-                                        this.styleIcon += icon_size_more
-                                    
-                                    iconfont = icon.replace('isShowIcon', 'isShowIcon d-none');
-                                    icon = '<img src="'+this.item_button.imageUrl+'" onerror="this.onerror=null;$(this).addClass(\'d-none\');$(this).next().removeClass(\'d-none\');" style="'+this.styleIconDisable+this.styleIcon+'margin-bottom:3px;"></i> '+iconfont;
-                                }
-                                if(button_description.hasOwnProperty('icon_alignment')){
-                                    switch (button_description.icon_alignment) {
-                                        case 'end':
-                                            this.button_content = '<button '+disabled+' type="button" class="btn default"'+this.styleButton+'><span style="'+this.styleAll+'width:100%;overflow: hidden;text-overflow: ellipsis;padding:0 5px;display: -webkit-box;-webkit-box-orient: vertical;white-space: break-spaces;word-wrap: break-word;margin: auto;-webkit-line-clamp:'+((button_description.hasOwnProperty('max_text_line') && button_description.max_text_line!=null)?button_description.max_text_line:(1+";white-space: unset !important"))+';">'+(button_description.hasOwnProperty('show_text') ? button_description.show_text == true ? this.item_button['label']: '' :this.item_button['label'])+' </span>'+(button_description.hasOwnProperty('show_icon') ? ((button_description.show_icon == true || button_description.show_icon == 'true') == true ? icon: '') :icon)+'</button>';
-                                            break;
-                                        case 'top':
-                                            this.styleButton = this.styleButton.replace('text-align:start;','').replace('display:flex;','')
-                                            this.button_content = '<button '+disabled+' type="button" class="btn default"'+this.styleButton+'>'+(button_description.hasOwnProperty('show_icon') ? ((button_description.show_icon == true || button_description.show_icon == 'true') == true ? icon: '') :icon)+'<span style="'+this.styleAll+'width:100%;overflow: hidden;text-overflow: ellipsis;padding:0 5px;display:block;"> '+(button_description.hasOwnProperty('show_text') ? button_description.show_text == true ? this.item_button['label']: '' :this.item_button['label'])+' </span></button>';
-                                            break;
-                                        case 'bottom':
-                                            this.styleButton = this.styleButton.replace('text-align:start;','').replace('display:flex;','')
-                                            this.button_content = '<button '+disabled+' type="button" class="btn default"'+this.styleButton+'><span style="'+this.styleAll+'width:100%;overflow: hidden;text-overflow: ellipsis;padding:0 5px;display:block;"> '+(button_description.hasOwnProperty('show_text') ? button_description.show_text == true ? this.item_button['label']: '' :this.item_button['label'])+' </span>'+(button_description.hasOwnProperty('show_icon') ? ((button_description.show_icon == true || button_description.show_icon == 'true') == true ? icon: '') :icon)+'</button>';
-                                            break;
-                                    
-                                        default:
-                                            this.button_content = '<button '+disabled+' type="button" class="btn default"'+this.styleButton+'>'+(button_description.hasOwnProperty('show_icon') ? ((button_description.show_icon == true || button_description.show_icon == 'true') == true ? icon: '') :icon)+'<span style="'+this.styleAll+'width:100%;overflow: hidden;text-overflow: ellipsis;padding:0 5px;display: -webkit-box;-webkit-box-orient: vertical;white-space: break-spaces;word-wrap: break-word;margin: auto;-webkit-line-clamp:'+((button_description.hasOwnProperty('max_text_line') && button_description.max_text_line!=null)?button_description.max_text_line:(1+";white-space: unset !important"))+';">'+(button_description.hasOwnProperty('show_text') ? button_description.show_text == true ? this.item_button['label']: '' :this.item_button['label'])+' </span></button>';
-                                            break;
-                                    }
-                                }else{
-                                    this.button_content = '<button '+disabled+' type="button" class="btn default"'+this.styleButton+'>'+(button_description.hasOwnProperty('show_icon') ? ((button_description.show_icon == true || button_description.show_icon == 'true') == true ? icon: '') :icon)+'<span style="'+this.styleAll+'width:100%;overflow: hidden;text-overflow: ellipsis;padding:0 5px;display: -webkit-box;-webkit-box-orient: vertical;white-space: break-spaces;word-wrap: break-word;margin: auto;-webkit-line-clamp:'+((button_description.hasOwnProperty('max_text_line') && button_description.max_text_line!=null)?button_description.max_text_line:(1+";white-space: unset !important"))+';">'+(button_description.hasOwnProperty('show_text') ? button_description.show_text == true ? this.item_button['label']: '' :this.item_button['label'])+' </span></button>';
-                                }
-                            }
-                            else{
-                                this.styleButton = 'style=\''+this.styleButton+this.styleAll+"display:flex;'";
-                                icon += '<i class="isShowIcon fa fa-comment" aria-hidden="true" style="'+this.styleIconDisable+this.stylefontasome+'color:black"></i> '
-                                if(this.item_button.hasOwnProperty('imageUrl')){
-                                    iconfont = icon.replace('isShowIcon', 'isShowIcon d-none');
-                                    icon = '<img src="'+this.item_button.imageUrl+'" onerror="this.onerror=null;$(this).addClass(\'d-none\');$(this).next().removeClass(\'d-none\');" style="'+this.styleIconDisable+'height:1rem;width:1rem;margin-bottom:3px;"></i> '+iconfont;
-                                }
-                                this.button_content = '<button '+disabled+' type="button" class="btn default"'+this.styleButton+'>'+(button_description.hasOwnProperty('show_icon') ? ((button_description.show_icon == true || button_description.show_icon == 'true') == true ? icon: '') :icon)+'<span style="'+this.styleAll+'width:100%;overflow: hidden;text-overflow: ellipsis;padding:0 5px;"> '+(button_description.hasOwnProperty('show_text') ? button_description.show_text == true ? this.item_button['label']: '' :this.item_button['label'])+' </span></button>';
-                            }
-                        }
-                        else{
-                            icon='<i class="isShowIcon fa fa-comment" aria-hidden="true" style="'+this.styleIconDisable+this.stylefontasome+'color:black"></i> ';
-                            if(this.item_button.hasOwnProperty('imageUrl')){
-                                iconfont = icon.replace('isShowIcon', 'isShowIcon d-none');
-                                icon = '<img src="'+this.item_button.imageUrl+'" onerror="this.onerror=null;$(this).addClass(\'d-none\');$(this).next().removeClass(\'d-none\');" style="'+this.styleIconDisable+'height:1rem;width:1rem;margin-bottom:3px;"></i> '+iconfont;
-                            }
-                            this.button_content = '<button '+disabled+' type="button" style="'+this.styleAll+'padding: 3px 9px !important; border-radius: 5px !important;'+'" class="btn default">'+icon+'<span style="'+this.styleAll+'padding:0 5px;width:100%;">'+(button_description.hasOwnProperty('show_text') ? button_description.show_text == true ? this.item_button['label']: '' :this.item_button['label'])+'</span></button>';
-                        }
-                        
-                        this.button_icon += 'fa fa-comment';
+                        font_icon = 'fa fa-comment'
                         break
 
                     default:
                         break
+                }
+                if(!this.item_button.label){
+                    this.item_button.label = this.item_button.name || this.item_button.title || ""
+                }
+                if(this.styleButton != ""){
+                    if(this.isBigIcon != ""){  
+                        if(button_description.hasOwnProperty('icon_color_background') && button_description.icon_color_background != ""){
+                            this.styleButton = 'style=\''+this.styleButton+" background-color:"+button_description.icon_color_background+" !important;'"
+                            icon += '<i class="isShowIcon '+font_icon+'" aria-hidden="true" style="'+this.styleIconDisable+'color:black"></i> ';
+                        }
+                        else{
+                            this.styleButton = 'style=\''+this.styleButton+this.styleAll+"'";
+                            icon += '<i class="isShowIcon '+font_icon+'" aria-hidden="true" style="'+this.styleIconDisable+'color:#00c5dc"></i> ';
+                        }
+                        if(font_icon==='none'){
+                            icon = ''
+                        }
+                        if(this.item_button.hasOwnProperty('imageUrl')){
+                            iconfont = icon.replace('isShowIcon', 'isShowIcon d-none');
+                            icon = '<img src="'+this.item_button.imageUrl+'" onerror="this.onerror=null;$(this).addClass(\'d-none\');$(this).next().removeClass(\'d-none\');" style="'+this.styleIconDisable+'width:1rem;"></i> '+iconfont;
+                        }
+                        this.button_content = '<button '+disabled+' type="button" class="btn"'+this.styleButton+'>'+(button_description.hasOwnProperty('show_icon') ? ((button_description.show_icon == true || button_description.show_icon == 'true') == true ? icon: '') :icon)+'</button><p style="'+this.styleAll+'overflow: hidden;text-overflow: ellipsis;margin: 6px;display: -webkit-box;-webkit-box-orient: vertical;-webkit-line-clamp:'+((button_description.hasOwnProperty('max_text_line') && button_description.max_text_line!=null)?button_description.max_text_line:1)+';">'+(button_description.hasOwnProperty('show_text') ? button_description.show_text == true ? this.item_button['label']: '' :this.item_button['label'])+'</p>';
+                    }
+                    else if(button_description.hasOwnProperty('type') && button_description.type === 'custom'){
+                        if (this.item_button.hasOwnProperty("badge_icon") && this.item_button.badge_icon !== "") {
+                            this.styleButton = 'style=\''+this.styleButton+this.styleAll+"display:flex; position:relative;'";
+                        } else {
+                            this.styleButton = 'style=\''+this.styleButton+this.styleAll+"display:flex;'";
+                        }
+                        icon += '<i class="isShowIcon '+font_icon+'" aria-hidden="true" style="'+this.styleIconDisable+this.styleIcon+this.stylefontasome+'color:#00c5dc; margin:auto;"></i> '
+                        if(font_icon==='none'){
+                            icon = ''
+                        }
+                        if(this.item_button.hasOwnProperty('imageUrl')){
+
+                            let icon_size_more  = 'height:'+((button_description.hasOwnProperty('icon_size') && button_description.icon_size !== "") ? (button_description.icon_size == "large" ? "25px;" : (button_description.icon_size == "medium" ? "24px" : "")) : "")+';'
+                                icon_size_more += 'min-width:'+((button_description.hasOwnProperty('icon_size') && button_description.icon_size !== "") ? (button_description.icon_size == "large" ? "25px;" : (button_description.icon_size == "medium" ? "24px" : "")) : "")+';'
+                                this.styleIcon += icon_size_more
+                            
+                            iconfont = icon.replace('isShowIcon', 'isShowIcon d-none');
+                            icon = '<img src="'+this.item_button.imageUrl+'" onerror="this.onerror=null;$(this).addClass(\'d-none\');$(this).next().removeClass(\'d-none\');" style="'+this.styleIconDisable+this.styleIcon+'margin-bottom:3px;"></i> '+iconfont;
+                        }
+                        if(button_description.hasOwnProperty('icon_alignment')){
+                            switch (button_description.icon_alignment) {
+                                case 'end':
+                                    this.button_content = '<button '+disabled+' type="button" class="btn default"'+this.styleButton+'><span style="'+this.styleAll+'width:100%;overflow: hidden;text-overflow: ellipsis;padding:0 5px;display: -webkit-box;-webkit-box-orient: vertical;white-space: break-spaces;word-wrap: break-word;margin: auto;-webkit-line-clamp:'+((button_description.hasOwnProperty('max_text_line') && button_description.max_text_line!=null)?button_description.max_text_line:(1+";white-space: unset !important"))+';">'+(button_description.hasOwnProperty('show_text') ? button_description.show_text == true ? this.item_button['label']: '' :this.item_button['label'])+' </span>'+(button_description.hasOwnProperty('show_icon') ? ((button_description.show_icon == true || button_description.show_icon == 'true') == true ? icon: '') :icon)+'</button>';
+                                    break;
+                                case 'top':
+                                    this.styleButton = this.styleButton.replace('text-align:start;','').replace('display:flex;','')
+                                    this.button_content = '<button '+disabled+' type="button" class="btn default"'+this.styleButton+'>'+(button_description.hasOwnProperty('show_icon') ? ((button_description.show_icon == true || button_description.show_icon == 'true') == true ? icon: '') :icon)+'<span style="'+this.styleAll+'width:100%;overflow: hidden;text-overflow: ellipsis;padding:0 5px;display:block;"> '+(button_description.hasOwnProperty('show_text') ? button_description.show_text == true ? this.item_button['label']: '' :this.item_button['label'])+' </span></button>';
+                                    break;
+                                case 'bottom':
+                                    this.styleButton = this.styleButton.replace('text-align:start;','').replace('display:flex;','')
+                                    this.button_content = '<button '+disabled+' type="button" class="btn default"'+this.styleButton+'><span style="'+this.styleAll+'width:100%;overflow: hidden;text-overflow: ellipsis;padding:0 5px;display:block;"> '+(button_description.hasOwnProperty('show_text') ? button_description.show_text == true ? this.item_button['label']: '' :this.item_button['label'])+' </span>'+(button_description.hasOwnProperty('show_icon') ? ((button_description.show_icon == true || button_description.show_icon == 'true') == true ? icon: '') :icon)+'</button>';
+                                    break;
+                            
+                                default:
+                                    this.button_content = '<button '+disabled+' type="button" class="btn default"'+this.styleButton+'>'+(button_description.hasOwnProperty('show_icon') ? ((button_description.show_icon == true || button_description.show_icon == 'true') == true ? icon: '') :icon)+'<span style="'+this.styleAll+'width:100%;overflow: hidden;text-overflow: ellipsis;padding:0 5px;display: -webkit-box;-webkit-box-orient: vertical;white-space: break-spaces;word-wrap: break-word;margin: auto;-webkit-line-clamp:'+((button_description.hasOwnProperty('max_text_line') && button_description.max_text_line!=null)?button_description.max_text_line:(1+";white-space: unset !important"))+';">'+(button_description.hasOwnProperty('show_text') ? button_description.show_text == true ? this.item_button['label']: '' :this.item_button['label'])+' </span></button>';
+                                    break;
+                            }
+                        }else{
+                            if (this.item_button.hasOwnProperty("badge_icon") && this.item_button.badge_icon !== "") {
+                                this.button_content = '<button '+disabled+' type="button" class="btn default"'+this.styleButton+'>'+(button_description.hasOwnProperty('show_icon') ? ((button_description.show_icon == true || button_description.show_icon == 'true') == true ? icon: '') :icon)+'<span style="'+this.styleAll+'width:100%;overflow: hidden;text-overflow: ellipsis;padding:0 5px;display: -webkit-box;-webkit-box-orient: vertical;white-space: break-spaces;word-wrap: break-word;margin: auto;-webkit-line-clamp:'+((button_description.hasOwnProperty('max_text_line') && button_description.max_text_line!=null)?button_description.max_text_line:(1+";white-space: unset !important"))+';">'+(button_description.hasOwnProperty('show_text') ? button_description.show_text == true ? this.item_button['label']: '' :this.item_button['label'])+' </span><span style="background:'+bgBIcon+'; box-shadow:'+shadowBIcon+'; color:'+txtBIcon+'; display:'+showBIcon+'; border:'+borderColorBIcon+'; width:fit-content; height:fit-content; position:absolute; top:-10px; right:-10px; justify-content:center; align-items:center; text-transform: none; padding: 3px 7px !important" class="badge">'+contentBIcon+'</span></button>';
+                            } else {
+                                this.button_content = '<button '+disabled+' type="button" class="btn default"'+this.styleButton+'>'+(button_description.hasOwnProperty('show_icon') ? ((button_description.show_icon == true || button_description.show_icon == 'true') == true ? icon: '') :icon)+'<span style="'+this.styleAll+'width:100%;overflow: hidden;text-overflow: ellipsis;padding:0 5px;display: -webkit-box;-webkit-box-orient: vertical;white-space: break-spaces;word-wrap: break-word;margin: auto;-webkit-line-clamp:'+((button_description.hasOwnProperty('max_text_line') && button_description.max_text_line!=null)?button_description.max_text_line:(1+";white-space: unset !important"))+';">'+(button_description.hasOwnProperty('show_text') ? button_description.show_text == true ? this.item_button['label']: '' :this.item_button['label'])+' </span></button>';
+                            }
+                        }
+                    }
+                    else{
+                        this.styleButton = 'style=\''+this.styleButton+this.styleAll+"display:flex;'";
+                        icon += '<i class="isShowIcon '+font_icon+'" aria-hidden="true" style="'+this.styleIconDisable+this.stylefontasome+'color:#00c5dc"></i> '
+                        if(font_icon==='none'){
+                            icon = ''
+                        }
+                        if(this.item_button.hasOwnProperty('imageUrl')){
+                            iconfont = icon.replace('isShowIcon', 'isShowIcon d-none');
+                            icon = '<img src="'+this.item_button.imageUrl+'" onerror="this.onerror=null;$(this).addClass(\'d-none\');$(this).next().removeClass(\'d-none\');" style="'+this.styleIconDisable+'height:1rem;width:1rem;margin-bottom:3px;"></i> '+iconfont;
+                        }
+                        this.button_content = '<button '+disabled+' type="button" class="btn default"'+this.styleButton+'>'+(button_description.hasOwnProperty('show_icon') ? ((button_description.show_icon == true || button_description.show_icon == 'true') == true ? icon: '') :icon)+'<span style="'+this.styleAll+'width:100%;overflow: hidden;text-overflow: ellipsis;padding:0 5px;"> '+(button_description.hasOwnProperty('show_text') ? button_description.show_text == true ? this.item_button['label']: '' :this.item_button['label'])+' </span></button>';
+                    }
+                }
+                else{
+                    icon='<i class="isShowIcon '+font_icon+'" aria-hidden="true" style="'+this.styleIconDisable+this.stylefontasome+'color:#00c5dc;padding:1px !important;"></i> ';
+                    if(font_icon==='none'){
+                        icon = ''
+                    }
+                    if(this.item_button.hasOwnProperty('imageUrl')){
+                        iconfont = icon.replace('isShowIcon', 'isShowIcon d-none');
+                        icon = '<img src="'+this.item_button.imageUrl+'" onerror="this.onerror=null;$(this).addClass(\'d-none\');$(this).next().removeClass(\'d-none\');" style="'+this.styleIconDisable+'height:1rem;width:1rem;margin-bottom:3px;"></i> '+iconfont;
+                    }
+                    this.button_content = '<button '+disabled+' type="button" style="'+this.styleAll+'padding: 3px 9px !important; border-radius: 5px !important;'+''+'" class="btn default">'+icon+'<span style="'+this.styleAll+'padding:0 5px;width:100%;">'+(button_description.hasOwnProperty('show_text') ? button_description.show_text == true ? this.item_button['label']: '' :this.item_button['label'])+'</span></button>';
                 }
                 if(this.floating_button != undefined){
                     let label='';
