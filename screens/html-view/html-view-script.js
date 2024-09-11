@@ -214,6 +214,20 @@ Vue.component('html-view', {
                     }, '*');
                 }, 100);    
             },
+            sortDataObject(data){
+                try {
+                    data.sort(function(b, a) {
+                        if(new Date(jsonPath(a,this.object.key_attribute))!='Invalid Date' && isNaN(Number(jsonPath(a,this.object.key_attribute))) ){
+                            return new Date(jsonPath(b,this.object.key_attribute))-new Date(jsonPath(a,this.object.key_attribute));
+                        }else if(!isNaN(parseFloat(jsonPath(a,this.object.key_attribute)))){
+                            return (parseFloat(jsonPath(b,this.object.key_attribute)))-(parseFloat(jsonPath(a,this.object.key_attribute)));
+                        }else{
+                            return (String(jsonPath(b,this.object.key_attribute))).localeCompare(String((jsonPath(a,this.object.key_attribute))));
+                        }
+                    })
+                } catch (error) {}
+                return data;
+            },
             handleDataObject(){
                 let that = this;
                 let order = "";
@@ -221,18 +235,8 @@ Vue.component('html-view', {
                 let get = null;
                 let elasticsearch = "";
                 let data = JSON.parse(JSON.stringify(this.list_data_object));
-                that.dataOnUpdate=data;
-                try {
-                    data.sort(function(b, a) {
-                        if(new Date(jsonPath(a,that.object.key_attribute))!='Invalid Date' && isNaN(Number(jsonPath(a,that.object.key_attribute))) ){
-                            return new Date(jsonPath(b,that.object.key_attribute))-new Date(jsonPath(a,that.object.key_attribute));
-                        }else if(!isNaN(parseFloat(jsonPath(a,that.object.key_attribute)))){
-                            return (parseFloat(jsonPath(b,that.object.key_attribute)))-(parseFloat(jsonPath(a,that.object.key_attribute)));
-                        }else{
-                            return (String(jsonPath(b,that.object.key_attribute))).localeCompare(String((jsonPath(a,that.object.key_attribute))));
-                        }
-                    })
-                } catch (error) {}   
+                data = this.sortDataObject(data)
+                that.dataOnUpdate=data;  
                 if(that.object.alias != "" && data.length>0){
                     data.map(value=>{
                         id = value[that.object.key_attribute]
