@@ -627,9 +627,9 @@ Vue.component('search-view', {
                 try {
                     let that = this;
                     let datastring = JSON.stringify(data);
-                    for (var key in vm.flatRuntimeAttributes) {
+                    for (let key in vm.flatRuntimeAttributes) {
                         if (vm.flatRuntimeAttributes.hasOwnProperty(key)) {
-                            datastring = datastring.replace(new RegExp('##'+key+'##','g'),vm.flatRuntimeAttributes[key].replace(/[\r\n]+/g," "));
+                            datastring = datastring.replace(new RegExp('##'+key+'##','g'),vm.flatRuntimeAttributes[key].toString().replace(/[\r\n]+/g," "));
                             datastring = datastring.replace('"','\"');
                         }
                     }  
