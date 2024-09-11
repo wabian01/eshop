@@ -1,4 +1,4 @@
-Vue.component('slider-view', {
+ Vue.component('slider-view', {
         template: '#slider-view',
         props: ['object','body_area','screen','task','list_data_object'],
         data(){
@@ -56,13 +56,13 @@ Vue.component('slider-view', {
                     setTimeout(() => {
                         this.loadCacheJsonHolder()
                         .then((value)=>{
-                            let jsonholder = typeof(value) == 'string' ? JSON.parse(value) : value
-                            if(jsonholder != null){
+                            let jsonholderSlider = typeof(value) == 'string' ? JSON.parse(value) : value
+                            if(jsonholderSlider != null){
                                 vm.jsonHolder = value
-                                if(jsonholder[that.object.dm_name] == undefined || jsonholder[that.object.dm_name].length==0){
+                                if(jsonholderSlider[that.object.dm_name] == undefined || jsonholderSlider[that.object.dm_name].length==0){
                                     that.list_items = {0:'notfound'};
                                 }else{
-                                    that.list_items = vm.paramJsonHolder(jsonholder,that.task,that.object);
+                                    that.list_items = vm.paramJsonHolder(jsonholderSlider,that.task,that.object);
                                 }
                             }
                         })
