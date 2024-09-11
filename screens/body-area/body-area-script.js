@@ -30,6 +30,9 @@
                         this.firstRender = false
                 }else{
                         $('#'+this.object.componentCode+' .lds-spinner').css({'display':'none'})
+                        if(this.skip_object && (this.body_area.type=='listView'|| this.body_area.type=='gridView')){
+                                vm.checkFilterSkipObject = vm.checkFilterSkipObject + 1;
+                        }
                         this.handleIcon()
                 }
         },
@@ -101,41 +104,10 @@
         },
         mounted: function(){                
                 this.setHeightBody()
-                if(this.body_area?.filterConfig?.qr_scan){
-                        if(vm.activeScreenCode===this.body_area.screenCode){
-                                        $('#task-modal-'+this.task.code+' .codeQRdisplay').show();
-                                }
-                }
-                if((this.body_area.hasOwnProperty('filters') && this.body_area.filters.length>0) && (this.body_area.type=='listView' || this.body_area.type=='gridView' || this.body_area.type=='mapView')){
-                        if(this.task.code===9999){
-                                $('.autofit_subdetail .filterdisplay').show();
-                                if(vm.checkFilterSkipObject>1){
-                                        $('.autofit_subdetail .filterdisplay').hide();
-                                }
-                        }else{
-                                if(vm.activeScreenCode===this.body_area.screenCode){
-                                        $('#task-modal-'+this.task.code+' .filterdisplay').show();
-                                }
-                        }
-                }
-                if(((this.body_area.hasOwnProperty('search_enable') && this.body_area.search_enable) || !this.body_area.hasOwnProperty('search_enable')) && (this.body_area.type=='listView' || this.body_area.type=='gridView')){
-                        if(this.task.code===9999){
-                                $('.autofit_subdetail .searchdisplay').show();
-                                if(vm.checkFilterSkipObject>1){
-                                        $('.autofit_subdetail .searchdisplay').hide();
-                                }
-                        }else{
-                                if(vm.activeScreenCode===this.body_area.screenCode){
-                                        $('#task-modal-'+this.task.code+' .searchdisplay').show();
-                                } 
-                        }
-                }
+                this.handleIcon()
         },
         methods: {
                 handleIcon(){
-                        if(this.skip_object && (this.body_area.type=='listView'|| this.body_area.type=='gridView')){
-                                vm.checkFilterSkipObject = vm.checkFilterSkipObject + 1;
-                        }
                         if(this.body_area?.filterConfig?.qr_scan){
                                 if(vm.activeScreenCode===this.body_area.screenCode){
                                                 $('#task-modal-'+this.task.code+' .codeQRdisplay').show();
