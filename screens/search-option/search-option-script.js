@@ -1,4 +1,4 @@
-    Vue.component('search-option', {
+Vue.component('search-option', {
         template: '#search-option',
         props: ['filter','reset_filter','taskcode','chartcode','show_all_object','show_filter','apply_filter','check_filter','cancel_filter'],
         data: function () {
@@ -354,6 +354,14 @@
                     this.filter.entries = this.filter.entries.sort()
                 }
                 this.dataSort = this.filter.entries
+            },
+            cssDateTime(){
+                $(".daterangepicker").click( function(e) {
+                    e.stopPropagation();
+                });
+                $(".daterangepicker").css({'z-index':'99999', 'overflow':'hidden','border': 'none',"box-shadow": "rgb(36 35 35 / 28%) 2px 2px 5px 1px"});
+                $(".daterangepicker").addClass( " datepicker-rta" );
+                $(".daterangepicker .ranges").remove();
             }
         },
         watch:{
@@ -432,29 +440,22 @@
                     }
                     $("#"+that.chartcode).css('display','none')
 
-                $('#daterange_'+that.id).daterangepicker({
-                    autoUpdateInput: false,
-                    showDropdowns: true,
-                    drops:that.drop<=100 ? 'down' : 'up',
-                    opens: "left",
-                    locale: { applyLabel: 'OK' } 
-                
-                });
+                    $('#daterange_'+that.id).daterangepicker({
+                        autoUpdateInput: false,
+                        showDropdowns: true,
+                        drops:that.drop<=100 ? 'down' : 'up',
+                        opens: "left",
+                        locale: { applyLabel: 'OK' }
+                    });
+                    $('#daterange_'+that.id).on('apply.daterangepicker', function(ev, picker) {
+                        $(this).parent().next().val(picker.startDate.format('YYYY-MM-DD') + ' -> ' + picker.endDate.format('YYYY-MM-DD'))
+                        $('.myBtn').trigger('click');
+                    });
 
-                $('#daterange_'+that.id).on('apply.daterangepicker', function(ev, picker) {
-                    $(this).parent().next().val(picker.startDate.format('YYYY-MM-DD') + ' -> ' + picker.endDate.format('YYYY-MM-DD'))
-                    $('.myBtn').trigger('click');
-                });
-
-                $('#daterange_'+that.id).on('cancel.daterangepicker', function(ev, picker) {
-                    $(this).parent().next().val('')
-                });
-                $(".daterangepicker").click( function(e) {
-                    e.stopPropagation();
-                });
-                $(".daterangepicker").css({'z-index':'99999', 'overflow':'hidden','border': 'none',"box-shadow": "rgb(36 35 35 / 28%) 2px 2px 5px 1px"});
-                $(".daterangepicker").addClass( " datepicker-rta" );
-                $(".daterangepicker .ranges").remove();
+                    $('#daterange_'+that.id).on('cancel.daterangepicker', function(ev, picker) {
+                        $(this).parent().next().val('')
+                    });
+                    that.cssDateTime()
                 }
 
 
@@ -478,18 +479,10 @@
                     $(this).parent().next().val(picker.startDate.format('YYYY-MM-DD'))
                     $('.myBtn').trigger('click');
                 });
-
-                $(".daterangepicker").click( function(e) {
-                    e.stopPropagation();
-                });
-                $(".daterangepicker").css({'z-index':'99999', 'overflow':'hidden','border': 'none',"box-shadow": "rgb(36 35 35 / 28%) 2px 2px 5px 1px"});
-                $(".daterangepicker").addClass( " datepicker-rta" );
-                $(".daterangepicker .ranges").remove();
+                that.cssDateTime()
+                
             }
             }
-        },
-        beforeUpdate(){
-            
         },
         updated(){
                 if(this.filter.entries[0]==='__datelast__'){
@@ -517,12 +510,7 @@
                     $('#daterange_'+that.id).on('cancel.daterangepicker', function(ev, picker) {
                         $(this).parent().next().val('')
                     });
-                    $(".daterangepicker").click( function(e) {
-                        e.stopPropagation();
-                    });
-                    $(".daterangepicker").css({'z-index':'99999', 'overflow':'hidden','border': 'none',"box-shadow": "rgb(36 35 35 / 28%) 2px 2px 5px 1px"});
-                    $(".daterangepicker").addClass( " datepicker-rta" );
-                    $(".daterangepicker .ranges").remove();
+                    that.cssDateTime()
                     
                     }
 
@@ -544,12 +532,7 @@
                         $('.myBtn').trigger('click');
                     });
 
-                    $(".daterangepicker").click( function(e) {
-                        e.stopPropagation();
-                    });
-                    $(".daterangepicker").css({'z-index':'99999', 'overflow':'hidden','border': 'none',"box-shadow": "rgb(36 35 35 / 28%) 2px 2px 5px 1px"});
-                    $(".daterangepicker").addClass( " datepicker-rta" );
-                    $(".daterangepicker .ranges").remove();
+                    that.cssDateTime()
                 }
             }
         }
