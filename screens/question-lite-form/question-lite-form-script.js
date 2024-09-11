@@ -1,4 +1,4 @@
-    Vue.component('question-lite-form', {
+Vue.component('question-lite-form', {
         template: '#question-lite-form',
         props: ['question','formid','one','body_area'],
         data: function(){
@@ -13,7 +13,7 @@
                 camera_stream:null,
                 videoURL:'',
                 previouslySelected:'',
-                lang:vm.lang,
+                lang: vm.lang,
             }
         },
         watch: {
@@ -61,18 +61,7 @@
                 if(this.one){
                     let formData = new FormData($('form')[vm['liteform'][this.formid].index]);
                     document.getElementById(this.formid+"-result").innerHTML = ''
-                    let instanceID = md5(this.uniqid(this.getRandomInt() * 2)).substr(0, 8) + '-' + md5(this.uniqid(this.getRandomInt() * 3)).substr(0, 4) + '-' + md5(this.uniqid(this.getRandomInt() * 4)).substr(0, 4) + '-' + md5(this.uniqid(this.getRandomInt() * 5)).substr(0, 4) + '-' + md5(this.uniqid(this.getRandomInt() * 6)).substr(0, 12)
-                    formData.append("rta-username", this.body_area['form'].username);
-                    formData.append("username", this.body_area['form'].username);
-                    formData.append("rta_familyID", this.body_area['form'].familyId);
-                    formData.append('instanceID','uuid:'+instanceID)
-                    if(this.body_area.form.hasOwnProperty('metadata')){
-                        for(let key in this.body_area.form.metadata){
-                            if(formData.get(key) == null || formData.get(key) === ''){
-                                formData.append(key,this.body_area.form.metadata[key])
-                            }
-                        }
-                    }
+                    this.$parent.appendFormData(formData)
                     if(typeof this.checkedAnswer == 'object'){
                         formData.set(this.question.name,Object.values(this.checkedAnswer).join(" "))
                     }

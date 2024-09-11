@@ -1,4 +1,4 @@
-    Vue.component('lite-form', {
+ Vue.component('lite-form', {
         template: '#lite-form',
         props: ['body_area','object','task','list_item','item_data'],
         created: function () {    
@@ -77,6 +77,20 @@
             getRandomInt:function() {
                 return Math.random() * Math.floor(100000);
             },
+            appendFormData(formData){
+                let instanceID = md5(this.uniqid(this.getRandomInt() * 2)).substr(0, 8) + '-' + md5(this.uniqid(this.getRandomInt() * 3)).substr(0, 4) + '-' + md5(this.uniqid(this.getRandomInt() * 4)).substr(0, 4) + '-' + md5(this.uniqid(this.getRandomInt() * 5)).substr(0, 4) + '-' + md5(this.uniqid(this.getRandomInt() * 6)).substr(0, 12)
+                formData.append("rta-username", this.body_area['form'].username);
+                formData.append("username", this.body_area['form'].username);
+                formData.append("rta_familyID", this.body_area['form'].familyId);
+                formData.append('instanceID','uuid:'+instanceID)
+                if(this.body_area.form.hasOwnProperty('metadata')){
+                    for(let key in this.body_area.form.metadata){
+                        if(formData.get(key) == null || formData.get(key) === ''){
+                            formData.append(key,this.body_area.form.metadata[key])
+                        }
+                    }
+                }
+            },
             saveInstance: function(){
                 document.getElementById(this.id_random+"-result").innerHTML = ''
                 $('.submitButton-'+this.id_random).css({'display':'none'})
@@ -90,18 +104,7 @@
                     else if(element.type == 'image'){}
                 });
                 let formData = new FormData($('#'+this.id_random)[0]);
-                let instanceID = md5(this.uniqid(this.getRandomInt() * 2)).substr(0, 8) + '-' + md5(this.uniqid(this.getRandomInt() * 3)).substr(0, 4) + '-' + md5(this.uniqid(this.getRandomInt() * 4)).substr(0, 4) + '-' + md5(this.uniqid(this.getRandomInt() * 5)).substr(0, 4) + '-' + md5(this.uniqid(this.getRandomInt() * 6)).substr(0, 12)
-                formData.append("rta-username", this.body_area['form'].username);
-                formData.append("username", this.body_area['form'].username);
-                formData.append("rta_familyID", this.body_area['form'].familyId);
-                formData.append('instanceID','uuid:'+instanceID)
-                if(this.body_area.form.hasOwnProperty('metadata')){
-                    for(let key in this.body_area.form.metadata){
-                        if(formData.get(key) == null || formData.get(key) === ''){
-                            formData.append(key,this.body_area.form.metadata[key])
-                        }
-                    }
-                }
+                this.appendFormData(formData)
                 if (vm.liteform[this.id_random] && vm.liteform[this.id_random].file) {
                     Object.entries(vm.liteform[this.id_random].file).forEach(([element, value]) => {
                         formData.set(element, value);
@@ -109,14 +112,14 @@
                 }
                 var that = this
                 $.ajax({
-					url: this.body_area['form'].domain+'/webapp/webform/saveInstance?send=true',
-					async: true,
-					type: 'post',
-					dataType: 'json',
-					contentType: false,
-					processData: false,
-					data: formData,
-					success: function (result) {
+                    url: this.body_area['form'].domain+'/webapp/webform/saveInstance?send=true',
+                    async: true,
+                    type: 'post',
+                    dataType: 'json',
+                    contentType: false,
+                    processData: false,
+                    data: formData,
+                    success: function (result) {
                         if(result.status == 'error'){
                             document.getElementById(that.id_random+"-result").innerHTML = 'Error: '+result.title
                             $('#'+that.id_random+"-result").css({'color':'red'})
@@ -129,13 +132,13 @@
                             document.getElementById(that.id_random+"-result").innerHTML = ''
                         }, 1000);
                         that.resetForm()
-					},
-					error: function (jqXHR, status, msg) {
+                    },
+                    error: function (jqXHR, status, msg) {
                         document.getElementById(that.id_random+"-result").innerHTML = 'Error!'
                         $('#'+that.id_random+"-result").css({'color':'red'})
                         that.resetForm()
-					},
-				})
+                    },
+                })
             },
             resetForm: function() {
                 let that = this
