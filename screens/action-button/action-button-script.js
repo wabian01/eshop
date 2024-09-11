@@ -562,6 +562,7 @@
                     }
                     this.button_content = '<button '+disabled+' type="button" style="'+this.styleAll+'padding: 3px 9px !important; border-radius: 5px !important;'+''+'" class="btn default">'+icon+'<span style="'+this.styleAll+'padding:0 5px;width:100%;">'+(button_description.hasOwnProperty('show_text') ? button_description.show_text == true ? this.item_button['label']: '' :this.item_button['label'])+'</span></button>';
                 }
+                
                 if(this.floating_button != undefined){
                     let label='';
                     let fontSize='15px';
@@ -812,15 +813,10 @@
                     console.log('Your browser does not support localStorage');
                 }
             },
-            openModule(item_button){
-                if(!this.item_button){
-                    this.item_button = item_button
-                }
-                vm.current={};
-                vm.current.open_module = true
+            handleCurrent(){
                 if(this.list_item != undefined){
                         vm.current['parent'] = {}
-                        for(var key in this.list_item){
+                        for(let key in this.list_item){
                             if(this.list_item[key] == null){
                                 this.list_item[key] = ""
                             }
@@ -834,16 +830,26 @@
                         this.item_button.args = JSON.parse(this.item_button.args)
                     }
                     if(vm.current.hasOwnProperty('parent')){
-                        for(var key in this.item_button.args){
+                        for(let key in this.item_button.args){
                             vm.current['parent']['current.args.'+key] = this.item_button.args[key]
                         }
                     }else{
                         vm.current['parent'] = {};
-                        for(var key in this.item_button.args){
+                        for(let key in this.item_button.args){
                             vm.current['parent']['current.args.'+key] = this.item_button.args[key]
                         }
                     }
                 }
+            },
+            openModule(item_button){
+                if(!this.item_button){
+                    this.item_button = item_button
+                }
+                vm.current={};
+                vm.current.open_module = true
+
+                this.handleCurrent()
+
                 if(this.item_button.destinationType === "module"){
                     if(vm.modules[this.item_button.destinationCode] == undefined){
                         toastr.error("The module "+this.item_button.destinationCode+" not found");
@@ -946,8 +952,69 @@
                         vm.statusPopup = false;
                     }
                 }else{
-                    toastr.error("<?php echo Yii::t('app','Screen definition not found')?>");
+                    toastr.error(translations["Screen definition not found"]);
                 }
+            },
+            opemForm(object_code,object){
+                if(!vm.objects.hasOwnProperty(object_code)){
+                    vm.objects[object_code]=object;
+                }
+                object.item_button = this.item_button;
+                let tracking_id = ''
+                if(this.item_button.hasOwnProperty('override_ui_behavior') && this.item_button.hasOwnProperty('tracking_id')){
+                    tracking_id = this.item_button.tracking_id
+                }
+                object.tracking_id = tracking_id
+                if(Object.keys(object).length !== 0){
+                    if(this.item_button.hasOwnProperty('clone') && (this.item_button.clone == 'TRUE' || this.item_button.clone == 'true')){
+                        vm.openTask(object,this.task.layout,this.task.subitem, this.task.comitem,'clone');
+                    }
+                    else{
+                        vm.openTask(object,this.task.layout,this.task.subitem, this.task.comitem,'edit');
+                    }
+                }
+            },
+            createdObjectForm(object_code,screen_code,name){
+                let object = {
+                    "type": "form",
+                    "taskParent": vm.activeTaskCode,
+                    "code": object_code,
+                    "moduleCode": this.task.object.moduleCode,
+                    "subModuleCode": this.task.object.subModuleCode,
+                    "componentCode": this.task.object.componentCode,
+                    "rawComponentCode": this.task.object.rawComponentCode,
+                    "title": name,
+                    "desc": "",
+                    "icon": "",
+                    "background": "",
+                    "quickAccess": 1,
+                    "formId": name,
+                    "familyId": name,
+                    "familyName": name,
+                    "version": "undefined",
+                    "modalTitle": name,
+                    "root_screen": screen_code,
+                    "screens": {
+                        [screen_code]: {
+                            "code": screen_code,
+                            "title":name,
+                            "top_area": [
+
+                            ],
+                            "body_area": [
+                                {
+                                    "code": screen_code+"-formscreen",
+                                    "type": "htmlView",
+                                    "html_template": ""
+                                }
+                            ],
+                            "bottom_area": [
+
+                            ]
+                        }
+                    }
+                }
+                return object
             },
             getInstance: function(event){
                 var uuid = null;
@@ -970,45 +1037,7 @@
                     
                     let screen_code = object_code +"-"+hash(this.item_button['familyName']);
                     if(!object.hasOwnProperty('screens')){
-                    object = {
-                        "type": "form",
-                        "taskParent": vm.activeTaskCode,
-                        "code": object_code,
-                        "moduleCode": "undefined",
-                        "subModuleCode": "undefined",
-                        "componentCode": "undefined-undefined",
-                        "rawComponentCode": "undefined",
-                        "title": this.item_button['familyName'],
-                        "desc": "",
-                        "icon": "",
-                        "background": "",
-                        "quickAccess": 1,
-                        "formId": this.item_button['familyName'],
-                        "familyId": this.item_button['familyName'],
-                        "familyName": this.item_button['familyName'],
-                        "version": "undefined",
-                        "modalTitle": this.item_button['familyName'],
-                        "root_screen": screen_code,
-                        "screens": {
-                            [screen_code]: {
-                                "code": screen_code,
-                                "title":this.item_button['familyName'],
-                                "top_area": [
-
-                                ],
-                                "body_area": [
-                                    {
-                                        "code": screen_code+"-formscreen",
-                                        "type": "htmlView",
-                                        "html_template": ""
-                                    }
-                                ],
-                                "bottom_area": [
-
-                                ]
-                            }
-                        }
-                    }
+                        object = this.createdObjectForm(object_code,screen_code,this.item_button['familyName'])
                     }
                     if(!vm.objects.hasOwnProperty(object_code)){
                         vm.objects[object_code]=object;
@@ -1046,7 +1075,7 @@
                         datajson = JSON.parse(jsondata);
                     
                         if(Object.keys(datajson).length == 0) {
-                            toastr.error("<?php echo Yii::t('app','No records found.')?>")
+                            toastr.error(translations["No records found."])
                         }
                     
                     if(Object.keys(datajson).length > 1){
@@ -1102,64 +1131,10 @@
                                 let screen_code = object_code +"-"+hash(that.item_button['familyName']);
                                 let object = {}
                                 if(!object.hasOwnProperty('screens')){
-                                object = {
-                                    "type": "form",
-                                    "taskParent": vm.activeTaskCode,
-                                    "code": object_code,
-                                    "moduleCode": that.task.object.moduleCode,
-                                    "subModuleCode": that.task.object.subModuleCode,
-                                    "componentCode": that.task.object.componentCode,
-                                    "rawComponentCode": that.task.object.rawComponentCode,
-                                    "title": that.item_button['familyName'],
-                                    "desc": "",
-                                    "icon": "",
-                                    "background": "",
-                                    "quickAccess": 1,
-                                    "formId": that.item_button['familyName'],
-                                    "familyId": that.item_button['familyName'],
-                                    "familyName": that.item_button['familyName'],
-                                    "version": "undefined",
-                                    "modalTitle": that.item_button['familyName'],
-                                    "root_screen": screen_code,
-                                    "screens": {
-                                        [screen_code]: {
-                                            "code": screen_code,
-                                            "title":that.item_button['familyName'],
-                                            "top_area": [
-
-                                            ],
-                                            "body_area": [
-                                                {
-                                                    "code": screen_code+"-formscreen",
-                                                    "type": "htmlView",
-                                                    "html_template": ""
-                                                }
-                                            ],
-                                            "bottom_area": [
-
-                                            ]
-                                        }
-                                    },
-                                    "uuid":uuid
-                                }             
+                                    object = that.createdObjectForm(object_code,screen_code,that.item_button['familyName'])  
+                                    object.uuid = uuid    
                                 
-                                if(!vm.objects.hasOwnProperty(object_code)){
-                                    vm.objects[object_code]=object;
-                                }
-                                object.item_button = that.item_button;
-                                let tracking_id = ''
-                                if(that.item_button.hasOwnProperty('override_ui_behavior') && that.item_button.hasOwnProperty('tracking_id')){
-                                    tracking_id = that.item_button.tracking_id
-                                }
-                                object.tracking_id = tracking_id
-                                if(Object.keys(object).length !== 0){
-                                    if(that.item_button.hasOwnProperty('clone') && (that.item_button.clone == 'TRUE' || that.item_button.clone == 'true')){
-                                        vm.openTask(object,that.task.layout,that.task.subitem, that.task.comitem,'clone');
-                                    }
-                                    else{
-                                        vm.openTask(object,that.task.layout,that.task.subitem, that.task.comitem,'edit');
-                                    }
-                                }
+                                    that.opemForm(object_code,object)
                                 }
                                 }
                                 })()
@@ -1171,70 +1146,16 @@
                            uuid = key;
                         }
                         var family_name = that.list_item?.familyName;
-                    let object_code = "undefined-undefined-"+hash('form'+that.item_button['familyName']);
+                        let object_code = "undefined-undefined-"+hash('form'+that.item_button['familyName']);
 
-                    
-                    let screen_code = object_code +"-"+hash(that.item_button['familyName']);
-                    let object = {}
-                    if(!object.hasOwnProperty('screens')){
-                    object = {
-                        "type": "form",
-                        "taskParent": vm.activeTaskCode,
-                        "code": object_code,
-                        "moduleCode": that.task.object.moduleCode,
-                        "subModuleCode": that.task.object.subModuleCode,
-                        "componentCode": that.task.object.componentCode,
-                        "rawComponentCode": that.task.object.rawComponentCode,
-                        "title": that.item_button['familyName'],
-                        "desc": "",
-                        "icon": "",
-                        "background": "",
-                        "quickAccess": 1,
-                        "formId": that.item_button['familyName'],
-                        "familyId": that.item_button['familyName'],
-                        "familyName": that.item_button['familyName'],
-                        "version": "undefined",
-                        "modalTitle": that.item_button['familyName'],
-                        "root_screen": screen_code,
-                        "screens": {
-                            [screen_code]: {
-                                "code": screen_code,
-                                "title":that.item_button['familyName'],
-                                "top_area": [
-
-                                ],
-                                "body_area": [
-                                    {
-                                        "code": screen_code+"-formscreen",
-                                        "type": "htmlView",
-                                        "html_template": ""
-                                    }
-                                ],
-                                "bottom_area": [
-
-                                ]
-                            }
-                        },
-                        "uuid": uuid
-                    }
-                    }
-                    if(!vm.objects.hasOwnProperty(object_code)){
-                        vm.objects[object_code]=object;
-                    }
-                    object.item_button = that.item_button;
-                    let tracking_id = ''
-                    if(that.item_button.hasOwnProperty('override_ui_behavior') && that.item_button.hasOwnProperty('tracking_id')){
-                        tracking_id = that.item_button.tracking_id
-                    }
-                    object.tracking_id = tracking_id
-                    if(Object.keys(object).length !== 0){
-                        if(that.item_button.hasOwnProperty('clone') && (that.item_button.clone == 'TRUE' || that.item_button.clone == 'true')){
-                            vm.openTask(object,that.task.layout,that.task.subitem, that.task.comitem,'clone');
+                        
+                        let screen_code = object_code +"-"+hash(that.item_button['familyName']);
+                        let object = {}
+                        if(!object.hasOwnProperty('screens')){
+                            object = that.createdObjectForm(object_code,screen_code,that.item_button['familyName'])  
+                            object.uuid = uuid
                         }
-                        else{
-                            vm.openTask(object,that.task.layout,that.task.subitem, that.task.comitem,'edit');
-                        }
-                    }
+                        that.opemForm(object_code,object)
                     }
                     }
                     })                  
@@ -1269,46 +1190,10 @@
                     let form_object_code = this.task.object.code.split('-');
                     form_object_code = form_object_code[form_object_code.length-1];
                     let screen_code = object_code +"-"+hash(this.item_button['familyID']);
-                    objectFillForm = {
-                        "type": "form",
-                        "taskParent": vm.activeTaskCode,
-                        "code": object_code,
-                        "objectCode": form_object_code,
-                        "moduleCode": this.task.object.moduleCode,
-                        "subModuleCode": this.task.object.subModuleCode,
-                        "componentCode": this.task.object.componentCode,
-                        "rawComponentCode": this.task.object.rawComponentCode,
-                        "title": this.item_button['familyID'],
-                        "desc": "",
-                        "icon": "",
-                        "background": "",
-                        "quickAccess": 1,
-                        "formId": this.item_button['formID'],
-                        "familyId": this.item_button['familyID'],
-                        "familyName": this.item_button['familyID'],
-                        "version": "undefined",
-                        "modalTitle": this.item_button['familyID'],
-                        "root_screen": screen_code,
-                        "screens": {
-                            [screen_code]: {
-                                "code": screen_code,
-                                "title":this.item_button['familyID'],
-                                "top_area": [
 
-                                ],
-                                "body_area": [
-                                    {
-                                        "code": screen_code+"-formscreen",
-                                        "type": "htmlView",
-                                        "html_template": ""
-                                    }
-                                ],
-                                "bottom_area": [
-
-                                ]
-                            }
-                        }
-                    }
+                    objectFillForm = this.createdObjectForm(object_code,screen_code,this.item_button['familyID'])  
+                    objectFillForm.objectCode = form_object_code
+                    
                     if(!vm.objects.hasOwnProperty(object_code)){
                         vm.objects[object_code]=objectFillForm;
                     }
@@ -1374,32 +1259,9 @@
                 if(list_item != null){
                     this.list_item = list_item;
                 }
-                if(this.list_item != undefined){
-                        vm.current['parent'] = {}
-                        for(var key in this.list_item){
-                            if(this.list_item[key] == null){
-                                this.list_item[key] = ""
-                            }
-                            vm.current['parent']['current.parent.'+key] = this.list_item[key]
-                        }
-                }else{
-                    vm.current={};
-                }
-                if(this.item_button.hasOwnProperty('args')  && this.item_button.args !== '' && this.item_button.args !== null){
-                    if(typeof(this.item_button.args)==='string'){
-                        this.item_button.args = JSON.parse(this.item_button.args)
-                    }
-                    if(vm.current.hasOwnProperty('parent')){
-                        for(var key in this.item_button.args){
-                            vm.current['parent']['current.args.'+key] = this.item_button.args[key]
-                        }
-                    }else{
-                        vm.current['parent'] = {};
-                        for(var key in this.item_button.args){
-                            vm.current['parent']['current.args.'+key] = this.item_button.args[key]
-                        }
-                    }
-                }
+                
+                this.handleCurrent()
+
                 let object = {}
                 let objectCode = this.item_button['object']
                 let object_temp=vm.objects;
@@ -1484,7 +1346,7 @@
                     }
                     vm.openTask(object,"tabs", "center|start","center|start",null,this.item_button.where,this.item_button.post,this.item_button.get,[true,this.task],screenCode)
                 }else{
-                    toastr.error("<?php echo Yii::t('app','Screen definition not found')?>");
+                    toastr.error(translations["Screen definition not found"]);
                 }
                 vm.objects = object_temp;
             },
@@ -1996,14 +1858,13 @@
                                         $pTag.css('color','')
                                     }
                                 }, timeremain);
-                            
-                        }else{
-                            return
+                            }else{
+                                return
+                            }
                         }
+                    
                     }
-                   
                 }
-            }
             },
             closeScreenTheme(taskactive){
                 let list = vm.listSreenTheme[taskactive]
