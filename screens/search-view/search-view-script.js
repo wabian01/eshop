@@ -1,4 +1,4 @@
-    Vue.component('search-view', {
+Vue.component('search-view', {
         template: '#search-view',
         props: ['object','task','body_area','screen'],
         data: function () {
@@ -361,14 +361,14 @@
             },
             handleHideView(){
                     let itemJSONString = this.body_area.when_empty
-                    for (var key in this.flatRuntimeAttributes) {
+                    for (let key in this.flatRuntimeAttributes) {
                         if (this.flatRuntimeAttributes.hasOwnProperty(key)) {
-                            itemJSONString = itemJSONString.replace(new RegExp('##'+key+'##','g'),this.flatRuntimeAttributes[key].replace(/[\r\n]+/g," ").replace(/["]/g,'\\\"'));
+                            itemJSONString = itemJSONString.replace(new RegExp('##'+key+'##','g'),this.flatRuntimeAttributes[key].toString().replace(/[\r\n]+/g," ").replace(/["]/g,'\\\"'));
                         }
                     }
-                    for(var key in vm.current.parent){
+                    for(let key in vm.current.parent){
                         try {
-                            itemJSONString = itemJSONString.replace(new RegExp('##'+key+'##','g'),vm.current.parent[key].replace(/[\r\n]+/g," ").replace(/["]/g,'\\\"'));
+                            itemJSONString = itemJSONString.replace(new RegExp('##'+key+'##','g'),vm.current.parent[key].toString().replace(/[\r\n]+/g," ").replace(/["]/g,'\\\"'));
                         } catch (error) {
                         }
                     }
