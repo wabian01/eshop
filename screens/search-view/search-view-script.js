@@ -623,20 +623,24 @@ Vue.component('search-view', {
                     this.searchData(dataSearch.__input__)
                 }, 10);
             },
+            handleDataBinding(data){
+                let datastring = JSON.stringify(data);
+                for (let key in vm.flatRuntimeAttributes) {
+                    if (vm.flatRuntimeAttributes.hasOwnProperty(key)) {
+                        datastring = datastring.replace(new RegExp('##'+key+'##','g'),vm.flatRuntimeAttributes[key].toString().replace(/[\r\n]+/g," "));
+                        datastring = datastring.replace('"','\"');
+                    }
+                }  
+                if(datastring.indexOf('##')>-1){
+                    datastring = datastring.replace(/##(.*?)##/g,"");
+                }
+                data = JSON.parse(datastring)
+                return data
+            },
             dynamicFilter(data,index){
                 try {
                     let that = this;
-                    let datastring = JSON.stringify(data);
-                    for (let key in vm.flatRuntimeAttributes) {
-                        if (vm.flatRuntimeAttributes.hasOwnProperty(key)) {
-                            datastring = datastring.replace(new RegExp('##'+key+'##','g'),vm.flatRuntimeAttributes[key].toString().replace(/[\r\n]+/g," "));
-                            datastring = datastring.replace('"','\"');
-                        }
-                    }  
-                    if(datastring.indexOf('##')>-1){
-                        datastring = datastring.replace(/##(.*?)##/g,"");
-                    }
-                    data = JSON.parse(datastring)
+                    data = this.handleDataBinding(data)
 
                     if(data.hasOwnProperty('request')){
                         $.ajax({
@@ -705,17 +709,8 @@ Vue.component('search-view', {
             dynamicFilterQuick(data){
                 try {
                     let that = this;
-                    let datastring = JSON.stringify(data);
-                    for (var key in vm.flatRuntimeAttributes) {
-                        if (vm.flatRuntimeAttributes.hasOwnProperty(key)) {
-                            datastring = datastring.replace(new RegExp('##'+key+'##','g'),vm.flatRuntimeAttributes[key].replace(/[\r\n]+/g," "));
-                            datastring = datastring.replace('"','\"');
-                        }
-                    }  
-                    if(datastring.indexOf('##')>-1){
-                        datastring = datastring.replace(/##(.*?)##/g,"");
-                    }
-                    data = JSON.parse(datastring)
+                    
+                    data = this.handleDataBinding(data)
 
                     if(data.hasOwnProperty('request')){
                         $.ajax({
