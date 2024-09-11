@@ -1,4 +1,4 @@
- Vue.component('slider-view', {
+Vue.component('slider-view', {
         template: '#slider-view',
         props: ['object','body_area','screen','task','list_data_object'],
         data(){
@@ -10,7 +10,7 @@
                 'ChainData':{},
                 'searchChainData':'',
                 'filterforVM':[],
-                screen_item:{},
+                screenSlider:{},
                 random: 'myCarousel-'+Math.random().toString(36).replace(/[^a-z]+/g, '').substr(2, 10),
             }
         },
@@ -22,37 +22,36 @@
             },
         },
         created: function () {
-            this.screen_item = JSON.parse(JSON.stringify(this.body_area))
+            this.screenSlider = JSON.parse(JSON.stringify(this.body_area))
         },
         methods: {
             handleDataObject(reset=false,item_search_string='',item_filter_attributes=[]){
                 let that = this;
-                if(this.screen_item.hasOwnProperty('sort') && Object.keys(this.screen_item.sort).length > 0){
-                    order = "`"+this.screen_item.sort.column+"` "+this.screen_item.sort.order+"";
-                    this.screen_item['filterConfig']={
-                        'sortCol':this.screen_item.sort.column,
-                        'order':this.screen_item.sort.order
+                if(this.screenSlider.hasOwnProperty('sort') && Object.keys(this.screenSlider.sort).length > 0){
+                    order = "`"+this.screenSlider.sort.column+"` "+this.screenSlider.sort.order+"";
+                    this.screenSlider['filterConfig']={
+                        'sortCol':this.screenSlider.sort.column,
+                        'order':this.screenSlider.sort.order
                     }
                 }
-                else if(this.screen_item.hasOwnProperty('filterConfig') && Object.keys(this.screen_item.filterConfig).length > 0){
-                    if(this.screen_item.filterConfig.hasOwnProperty('sortCol')!=true){
-                        this.screen_item.filterConfig['sortCol'] = this.object.key_attribute;
+                else if(this.screenSlider.hasOwnProperty('filterConfig') && Object.keys(this.screenSlider.filterConfig).length > 0){
+                    if(this.screenSlider.filterConfig.hasOwnProperty('sortCol')!=true){
+                        this.screenSlider.filterConfig['sortCol'] = this.object.key_attribute;
                     }
-                    if(this.screen_item.filterConfig.hasOwnProperty('order')!=true){
-                        this.screen_item.filterConfig['order'] = 'ASC';
+                    if(this.screenSlider.filterConfig.hasOwnProperty('order')!=true){
+                        this.screenSlider.filterConfig['order'] = 'ASC';
                     }
-                    order = "`"+this.screen_item.filterConfig['sortCol']+"` "+this.screen_item.filterConfig['order']+"";
+                    order = "`"+this.screenSlider.filterConfig['sortCol']+"` "+this.screenSlider.filterConfig['order']+"";
                 }
                 else{
                     order = "`"+this.object.key_attribute+"` ASC";
-                    this.screen_item['filterConfig']={
+                    this.screenSlider['filterConfig']={
                         'sortCol':this.object.key_attribute,
                         'order':'ASC'
                     }
                 }
                 
                 if(this.object.dm_type == 'JsonHolder'){
-                    
                     that.list_items = {0:'notfound'};
                     setTimeout(() => {
                         this.loadCacheJsonHolder()
@@ -87,27 +86,27 @@
                         if(typeof data !='undefined') {
                             if (data.length > 0) {
                                 that.list_items = that.list_items.concat(data);
-                                if( that.screen_item.hasOwnProperty('filterConfig') && Object.keys(that.screen_item.filterConfig).length > 0){
-                                    if(that.screen_item.filterConfig.hasOwnProperty('sortCol') && that.screen_item.filterConfig.hasOwnProperty('order') && that.screen_item.filterConfig.order=='DESC'){
+                                if( that.screenSlider.hasOwnProperty('filterConfig') && Object.keys(that.screenSlider.filterConfig).length > 0){
+                                    if(that.screenSlider.filterConfig.hasOwnProperty('sortCol') && that.screenSlider.filterConfig.hasOwnProperty('order') && that.screenSlider.filterConfig.order=='DESC'){
                                             that.list_items.sort(function(a, b) {
-                                                if(new Date(jsonPath(a,that.screen_item.filterConfig.sortCol))!='Invalid Date' && isNaN(Number(jsonPath(a,that.screen_item.filterConfig.sortCol))) ){
-                                                    return new Date(jsonPath(b,that.screen_item.filterConfig.sortCol))-new Date(jsonPath(a,that.screen_item.filterConfig.sortCol));
-                                                }else if(!isNaN(parseFloat(jsonPath(a,that.screen_item.filterConfig.sortCol)))){
-                                                    return (parseFloat(jsonPath(b,that.screen_item.filterConfig.sortCol)))-(parseFloat(jsonPath(a,that.screen_item.filterConfig.sortCol)));
+                                                if(new Date(jsonPath(a,that.screenSlider.filterConfig.sortCol))!='Invalid Date' && isNaN(Number(jsonPath(a,that.screenSlider.filterConfig.sortCol))) ){
+                                                    return new Date(jsonPath(b,that.screenSlider.filterConfig.sortCol))-new Date(jsonPath(a,that.screenSlider.filterConfig.sortCol));
+                                                }else if(!isNaN(parseFloat(jsonPath(a,that.screenSlider.filterConfig.sortCol)))){
+                                                    return (parseFloat(jsonPath(b,that.screenSlider.filterConfig.sortCol)))-(parseFloat(jsonPath(a,that.screenSlider.filterConfig.sortCol)));
                                                 }else{
-                                                    return (String(jsonPath(b,that.screen_item.filterConfig.sortCol))).localeCompare(String((jsonPath(a,that.screen_item.filterConfig.sortCol))));
+                                                    return (String(jsonPath(b,that.screenSlider.filterConfig.sortCol))).localeCompare(String((jsonPath(a,that.screenSlider.filterConfig.sortCol))));
                                                 }
                                             })
                                             that.ChainData=that.list_items
                                             that.list_items=that.ChainData.slice(0,19)
-                                    }else if(that.screen_item.filterConfig.hasOwnProperty('sortCol') && that.screen_item.filterConfig.hasOwnProperty('order') && that.screen_item.filterConfig.order=='ASC'){
+                                    }else if(that.screenSlider.filterConfig.hasOwnProperty('sortCol') && that.screenSlider.filterConfig.hasOwnProperty('order') && that.screenSlider.filterConfig.order=='ASC'){
                                             that.list_items.sort(function(b, a) {
-                                                if(new Date(jsonPath(a,that.screen_item.filterConfig.sortCol))!='Invalid Date' && isNaN(Number(jsonPath(a,that.screen_item.filterConfig.sortCol))) ){
-                                                    return new Date(jsonPath(b,that.screen_item.filterConfig.sortCol))-new Date(jsonPath(a,that.screen_item.filterConfig.sortCol));
-                                                }else if(!isNaN(parseFloat(jsonPath(b,that.screen_item.filterConfig.sortCol)))){
-                                                    return (parseFloat(jsonPath(b,that.screen_item.filterConfig.sortCol)))-(parseFloat(jsonPath(a,that.screen_item.filterConfig.sortCol)));
+                                                if(new Date(jsonPath(a,that.screenSlider.filterConfig.sortCol))!='Invalid Date' && isNaN(Number(jsonPath(a,that.screenSlider.filterConfig.sortCol))) ){
+                                                    return new Date(jsonPath(b,that.screenSlider.filterConfig.sortCol))-new Date(jsonPath(a,that.screenSlider.filterConfig.sortCol));
+                                                }else if(!isNaN(parseFloat(jsonPath(b,that.screenSlider.filterConfig.sortCol)))){
+                                                    return (parseFloat(jsonPath(b,that.screenSlider.filterConfig.sortCol)))-(parseFloat(jsonPath(a,that.screenSlider.filterConfig.sortCol)));
                                                 }else{
-                                                    return (String(jsonPath(b,that.screen_item.filterConfig.sortCol))).localeCompare(String((jsonPath(a,that.screen_item.filterConfig.sortCol))));
+                                                    return (String(jsonPath(b,that.screenSlider.filterConfig.sortCol))).localeCompare(String((jsonPath(a,that.screenSlider.filterConfig.sortCol))));
                                                 }
                                             })
                                             that.ChainData=that.list_items
