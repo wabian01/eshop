@@ -1,4 +1,4 @@
-    Vue.component('screen', {
+Vue.component('screen', {
         template: '#screen',
         props: ['screen', 'object', 'task','showtab','skip_object','checkcompo','refresh_rate','newwebapp'],
         data: function () {
@@ -103,144 +103,10 @@
             if ((this.object_temp.root_screen.indexOf(this.screen.code) > -1 && vm.activeScreenCode == '') || vm.activeScreenCode.indexOf(this.screen.code) > -1) {
                 this.task.title = this.screen.title;
             }   
-            if(this.object_temp.query_params != null && this.object_temp.query_params.hasOwnProperty('where') &&  this.object_temp.query_params.where != null){
-                        var where = this.object_temp.query_params.where;
-                        if(where.indexOf("##") != -1){
-                            for (var key in vm.flatRuntimeAttributes) {
-                                    if (vm.flatRuntimeAttributes.hasOwnProperty(key)) {
-                                    where = where.replace(new RegExp('##'+key+'##','g'),vm.flatRuntimeAttributes[key].replace(/[\r\n]+/g," "));
-                                    where = where.replace('"','\"');
-                                    }
-                            }
-                            for (var key in vm.current.parent) {
-                                if (vm.current.parent.hasOwnProperty(key)) {
-                                    where = vm.current.parent[key] != null ? (where.replace(new RegExp('##'+key+'##','g'),vm.current.parent[key].toString().replace(/[\r\n\t]+/g," "))) : where;
-                                    where = where.replace('"','\"');
-                                }
-                            }
-                            if(vm.paramPublicView!=undefined){
-                                for (var key in vm.paramPublicView) {
-                                    if (vm.paramPublicView.hasOwnProperty(key)) {
-                                        where = vm.paramPublicView[key] != null ? (where.replace(new RegExp('##'+key+'##','g'),vm.paramPublicView[key].toString().replace(/[\r\n\t]+/g," "))) : where;
-                                        where = where.replace('"','\"');
-                                    }
-                                }
-                            }
-                        }        
-                        if(where.indexOf('${getdata_dmobj')>-1){
-                            where = vm.getDataDmobj(where)
-                        }
-                        if(where.indexOf('##source:dmobj')>-1){
-                            where = vm.getSourceDmobj(where)
-                        }
-                        this.object_temp.query_params.where = where;
-                }
-                if(this.object_temp.query_params != null && this.object_temp.query_params.hasOwnProperty('get') &&  this.object_temp.query_params.get != null){
-                        var get = this.object_temp.query_params.get;
-                        let parse = false
-                        try {
-                            if(get && typeof(get) === 'object'){
-                                parse = true
-                                get = JSON.stringify(get)
-                            }
-                        } catch (error) {}
-                        if(get.indexOf("##") != -1){
-                            for (var key in vm.flatRuntimeAttributes) {
-                                    if (vm.flatRuntimeAttributes.hasOwnProperty(key)) {
-                                    get = get.replace(new RegExp('##'+key+'##','g'),vm.flatRuntimeAttributes[key].replace(/[\r\n]+/g," "));
-                                    get = get.replace('"','\"');
-                                    }
-                            }
-                            for (var key in vm.current.parent) {
-                                if (vm.current.parent.hasOwnProperty(key)) {
-                                    get = vm.current.parent[key] != null ? (get.replace(new RegExp('##'+key+'##','g'),vm.current.parent[key].toString().replace(/[\r\n\t]+/g," "))) : get;
-                                    get = get.replace('"','\"');
-                                }
-                            }
-                            if(vm.paramPublicView!=undefined){
-                                for (var key in vm.paramPublicView) {
-                                    if (vm.paramPublicView.hasOwnProperty(key)) {
-                                        get = vm.paramPublicView[key] != null ? (get.replace(new RegExp('##'+key+'##','g'),vm.paramPublicView[key].toString().replace(/[\r\n\t]+/g," "))) : get;
-                                        get = get.replace('"','\"');
-                                    }
-                                }
-                            }
-                        }   
-                        if(get.indexOf('${getdata_dmobj')>-1){
-                            get = vm.getDataDmobj(get)
-                        }
-                        if(get.indexOf('##source:dmobj')>-1){
-                            get = vm.getSourceDmobj(get)
-                        }     
-                        if(parse){
-                            try {
-                                get = JSON.parse(get)
-                            } catch (error) {}
-                        }
-                        this.object_temp.query_params.get = get;
-                }
-                if(this.object_temp.query_params != null && this.object_temp.query_params.hasOwnProperty('post_body') &&  this.object_temp.query_params.post_body != null){
-                        var post_body = this.object_temp.query_params.post_body;
-                        if(post_body.indexOf("##") != -1){
-                            for (var key in vm.flatRuntimeAttributes) {
-                                    if (vm.flatRuntimeAttributes.hasOwnProperty(key)) {
-                                    post_body = post_body.replace(new RegExp('##'+key+'##','g'),vm.flatRuntimeAttributes[key].replace(/[\r\n]+/g," "));
-                                    post_body = post_body.replace('"','\"');
-                                    }
-                            }
-                            for (var key in vm.current.parent) {
-                                if (vm.current.parent.hasOwnProperty(key)) {
-                                    post_body = vm.current.parent[key] != null ? (post_body.replace(new RegExp('##'+key+'##','g'),vm.current.parent[key].toString().replace(/[\r\n\t]+/g," "))) : post_body;
-                                    post_body = post_body.replace('"','\"');
-                                }
-                            }
-                            if(vm.paramPublicView!=undefined){
-                                for (var key in vm.paramPublicView) {
-                                    if (vm.paramPublicView.hasOwnProperty(key)) {
-                                        post_body = vm.paramPublicView[key] != null ? (post_body.replace(new RegExp('##'+key+'##','g'),vm.paramPublicView[key].toString().replace(/[\r\n\t]+/g," "))) : post_body;
-                                        post_body = post_body.replace('"','\"');
-                                    }
-                                }
-                            }
-                        }     
-                        if(post_body.indexOf('${getdata_dmobj')>-1){
-                            post_body = vm.getDataDmobj(post_body)
-                        }
-                        if(post_body.indexOf('##source:dmobj')>-1){
-                            post_body = vm.getSourceDmobj(post_body)
-                        }   
-                        this.object_temp.query_params.post_body = post_body;
-                }
-                if(typeof(this.object_temp.dm_name) === 'string' && this.object_temp.dm_name.indexOf('##')>-1){
-                    for (var key in vm.flatRuntimeAttributes) {
-                        if (vm.flatRuntimeAttributes.hasOwnProperty(key)) {
-                            this.object_temp.dm_name = this.object_temp.dm_name.replace(new RegExp('##'+key+'##','g'),vm.flatRuntimeAttributes[key].replace(/[\r\n]+/g," "));
-                            this.object_temp.dm_name = this.object_temp.dm_name.replace('"','\"');
-                        }
-                    }
-                    for (var key in vm.current.parent) {
-                        if (vm.current.parent.hasOwnProperty(key)) {
-                            this.object_temp.dm_name = vm.current.parent[key] != null ? (this.object_temp.dm_name.replace(new RegExp('##'+key+'##','g'),vm.current.parent[key].toString().replace(/[\r\n\t]+/g," "))) : this.object_temp.dm_name;
-                            this.object_temp.dm_name = this.object_temp.dm_name.replace('"','\"');
-                        }
-                    }
-                }
-                if(typeof(this.object_temp.dm_name) === 'string' && this.object_temp.dm_name.indexOf('${getdata_dmobj')>-1){
-                        this.object_temp.dm_name = vm.getDataDmobj(this.object_temp.dm_name)
-                }
-                if(typeof(this.object_temp.dm_name) === 'string' && this.object_temp.dm_name.indexOf('##source:dmobj')>-1){
-                        this.object_temp.dm_name = vm.getSourceDmobj(this.object_temp.dm_name)
-                }   
-                if(this.object.dm_type != 'JsonHolder' && this.object.dm_host !== 'localhost' && this.object.dm_host !== null && this.object.dm_host !== ""){
-                    this.getDataOrigin()   
-                }else{
-                    setTimeout(() => {
-                        this.list_data_object = false
-                    }, 1);
-                }   
+            this.updateObject()
 
-                this.current_save = {...vm.current}
-                this.flatRuntimeAttributes_save = {...vm.flatRuntimeAttributes}
+            this.current_save = {...vm.current}
+            this.flatRuntimeAttributes_save = {...vm.flatRuntimeAttributes}
         },
         beforeDestroy: function(){
             this.refreshContent=false;
@@ -374,12 +240,12 @@
                         }
                         if(get.indexOf('##source:dmobj')>-1){
                             get = vm.getSourceDmobj(get)
-                        }  
+                        }     
                         if(parse){
                             try {
                                 get = JSON.parse(get)
                             } catch (error) {}
-                        }   
+                        }
                         this.object_temp.query_params.get = get;
                 }
                 if(this.object_temp.query_params != null && this.object_temp.query_params.hasOwnProperty('post_body') &&  this.object_temp.query_params.post_body != null){
@@ -428,14 +294,18 @@
                         }
                     }
                 }
-                if(this.object_temp.dm_name.indexOf('${getdata_dmobj')>-1){
+                if(typeof(this.object_temp.dm_name) === 'string' && this.object_temp.dm_name.indexOf('${getdata_dmobj')>-1){
                         this.object_temp.dm_name = vm.getDataDmobj(this.object_temp.dm_name)
                 }
-                if(this.object_temp.dm_name.indexOf('##source:dmobj')>-1){
+                if(typeof(this.object_temp.dm_name) === 'string' && this.object_temp.dm_name.indexOf('##source:dmobj')>-1){
                         this.object_temp.dm_name = vm.getSourceDmobj(this.object_temp.dm_name)
                 }   
                 if(this.object.dm_type != 'JsonHolder' && this.object.dm_host !== 'localhost' && this.object.dm_host !== null && this.object.dm_host !== ""){
-                            this.getDataOrigin()
+                    this.getDataOrigin()   
+                }else{
+                    setTimeout(() => {
+                        this.list_data_object = false
+                    }, 1);
                 }  
             },
             getDataOrigin(){
