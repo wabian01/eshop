@@ -1,4 +1,4 @@
-Vue.component('list-item', {
+ Vue.component('list-item', {
         template: '#list-item',
         props: ['list_item','screen_item','task','object','indexsearch','position','horizontal','selectedValue','hasColumn'],
         data: function () {
@@ -379,7 +379,6 @@ Vue.component('list-item', {
                     this.screen_item_new = JSON.parse(itemJSONString);
                     this.item_content = this.screen_item_new.item_template;
 
-
                     this.handleItem();
                     this.handleButtons();
                     this.handleDynamicButtons();
@@ -478,152 +477,19 @@ Vue.component('list-item', {
                             if(this.screen_item_new.item_template.template_default.hasOwnProperty('type')){
                                 let attributes = JSON.parse(JSON.stringify(this.screen_item.item_template.template_default.attributes))
                                 if(this.screen_item_new.item_template.template_default.type == 'article'){
-                                    let description_html = ''
-                                    if(attributes.hasOwnProperty('description') && attributes.description.toString().indexOf('##')>-1){
-                                        description_html = attributes.description
-                                    }
-                                    this.item_content = '<div class="row col-10" style="margin-bottom:2%;margin-top:2%;overflow:hidden;"> <div class="col" style="float:##thumbnail_alignment##;padding:0 20px;display:flex;align-items:center;justify-content:center;height:120px;"> <img src="##thumbnail##" onerror="this.onerror=null;this.src=\'./metronic6/images/rta_nophoto.webp\';" style="max-height:100%;width:auto;max-width:120px;object-fit:contain;"> </div> <div class="row"> <div> <div> <h3>'+(attributes.hasOwnProperty('title')?'##title##':"")+'</h3> </div> <div> <span>'+(attributes.hasOwnProperty('secondary_text')?'##secondary_text##':"")+'</span> </div> <div> <h5 style="color:grey;">'+(description_html !== '' ? description_html : (attributes.hasOwnProperty('description')?'##description##':''))+'</h5> </div> </div> </div> </div>';
-                                    this.item_content =  this.item_content.replace(new RegExp('##thumbnail_alignment##','g'),this.screen_item_new.item_template.template_default.thumbnail_alignment == undefined ? 'left':this.screen_item_new.item_template.template_default.thumbnail_alignment)
+                                    this.handleArticle(attributes)
                                 }
                                 else if(this.screen_item_new.item_template.template_default.type == 'contact'){
-                                    if(this.list_item[attributes.avatar] != null && this.list_item[attributes.avatar] != ""){
-                                        this.item_content = '<div class="col-md-9"> <div style="height:70px; margin-top: 1.7%;" > <img src="##avatar##" onerror="this.onerror=null;this.src=\'./metronic6/images/rta_nophoto.webp\';" width="70px" height="70px" style="border-radius: 50% !important; float:left;"> </img> <p style="float: left; width:80%; padding-left: 2%;"> ##name## <br> ##phone##</p>  </div></div>';
-                                    }
-                                    else{
-                                        let letterName = 'N/A';
-                                        let arrColor = ['#009788','#fc5ee6','#33e142','#8894ac','#e7f615','#eb678c','#966a81','#f3b806','#8b5f5c','#44a9c7','#573b76','#dca8aa','#10e4f0','#9422f3']
-                                        let colorText = arrColor[Math.floor(Math.random()*arrColor.length)];
-                                        if(this.list_item[attributes.name] != null && this.list_item[attributes.name] != ""){
-                                            let arrName = this.list_item[attributes.name].split(" ");
-                                            letterName = arrName[0].charAt(0);                               
-                                        }
-                                        this.item_content = '<div class="col-md-9"> <div style="height:70px; margin-top: 1.7%;" > <div style="height:70px;width:70px;background-color:'+colorText+'; font-size: 33px; border-radius: 50% !important; text-align:center; padding-top:2.4%; color:white; font-weight:bold; float:left;"> '+letterName.toUpperCase()+' </div> <p style="float: left; width:80%; padding-left: 2%;"> ##name## <br> ##phone##</p>  </div></div>';
-                                    }
+                                    this.handleContact(attributes)
                                 }
                                 else if(this.screen_item_new.item_template.template_default.type == "gallery"){
-                                    let star='';
-                                    let numberStar="";
-                                    if(this.screen_item_new.item_template.template_default.hasOwnProperty('rating')){
-                                        numberStar = this.list_item[attributes.rating].length === 0 ? 0 : this.list_item[attributes.rating]
-                                        if(this.screen_item_new.item_template.template_default.hasOwnProperty('numStars')){
-                                            let maxStar = this.screen_item_new.item_template.template_default.numStars;
-                                            for (let i = 0; i < maxStar; i++) {
-                                                if(numberStar>i){
-                                                    star += '<span class="fa fa-star starchecked"></span>';
-                                                }else{
-                                                    star += '<span class="fa fa-star starunchecked"></span>';
-                                                }
-                                            }
-                                        }
-                                    }
-                                    let imgSrc = attributes.hasOwnProperty('image') ?this.list_item[attributes.image]:'';
-                                    if(imgSrc.length == 0 ){
-                                        imgSrc ="/metronic6/images/rta_nophoto.webp"
-                                   
-                                    }
-                                    if(attributes.hasOwnProperty('title') && this.list_item[attributes.title].length>0){
-                                        let lang = vm.lang;
-                                        if(lang==='vi'){
-                                            this.list_item[attributes.title] = this.list_item[attributes.title].replace(/<en>.*<\/en>/,'')
-                                        }else{
-                                            this.list_item[attributes.title] = this.list_item[attributes.title].replace(/<vi>.*<\/vi>/,'')
-                                        }
-                                        
-                                    }
-                                    let description_html = ''
-                                    if(attributes.hasOwnProperty('description') && attributes.description.toString().indexOf('##')>-1){
-                                        description_html = attributes.description
-                                        let lang = vm.lang;
-                                        if(lang==='vi'){
-                                            description_html = description_html.replace(/<en>.*<\/en>/,'')
-                                        }else{
-                                            description_html = description_html.replace(/<vi>.*<\/vi>/,'')
-                                        }
-                                    }
-                                    let heightDyImg = "";
-                                    if (this.screen_item.hasOwnProperty('layout') && this.screen_item.layout.hasOwnProperty('height')) {
-                                        let heightModule = this.screen_item.layout.height;
-                                        if (heightModule != null && heightModule != undefined && heightModule != "" ) {
-                                            if (typeof heightModule == "number") heightModule = heightModule.toString();
-                                            // no units
-                                            if (!heightModule.includes('%') && !heightModule.includes('px')) {
-                                                heightModule = heightModule + 'px';
-                                                heightDyImg = "height: calc("+heightModule+" * 2/3 );";  
-                                            } else {
-                                                if (heightModule.includes('%')) {
-                                                    heightModule = heightModule.replace('%','vh');
-                                                }
-                                                heightDyImg = "height: calc("+heightModule+" * 2/3 );";  
-                                            }   
-                                        } else {
-                                            heightDyImg = "height: 300px;"; 
-                                        }
-                                    } else {
-                                        heightDyImg = "height: 300px;"; 
-                                    }
-                                    this.item_content='<div class=""><div width="100%" style="display:flex; justify-content:center; background:#cccccc; background-image:url('+imgSrc+'); background-size: 1000000%; background-position:center;"> <img src="'+imgSrc+'" onerror="this.onerror=null;this.src=\'./metronic6/images/rta_nophoto.webp\';" alt="" width="auto"  style="max-width:100%; max-height:300px; '+heightDyImg+'"></div> <div class="card-body"> <h3>'+this.list_item[attributes.title]+(star!==""?('</h3><div>'+star+'<span style="margin-left:1em; color:#999999; font-size:0.8em;">'+Number.parseFloat(numberStar).toFixed(1)):'')+'</span></div> <h5>'+(attributes.hasOwnProperty('secondary_text')?this.list_item[attributes.secondary_text]:'')+'</h5> <p class="">'+(description_html !== '' ? description_html : (attributes.hasOwnProperty('description')?this.list_item[attributes.description]:''))+'</p> </div> </div>'
+                                    this.handleGallery(attributes)
                                 }
                                 else if(this.screen_item_new.item_template.template_default.type == "gallery2"){
-                                    let height = '300px'
-                                    if(this.screen_item_new.hasOwnProperty('layout')){
-                                        if(this.screen_item_new.layout.hasOwnProperty('height') && this.screen_item_new.layout != undefined){
-                                            if(!isNaN(Number(this.screen_item_new.layout.height))){
-                                                height = String(this.screen_item_new.layout.height) + 'px';
-                                            }
-                                            if(String(this.screen_item_new.layout.height).indexOf('px')>-1){
-                                                height = String(this.screen_item_new.layout.height);
-                                            }else if(String(this.screen_item_new.layout.height).indexOf('%')>-1){
-                                                if(this.task.code == 9999){
-                                                    height = 'calc( ( 100vh - 120px ) * '+this.screen_item_new.layout.height.replace('%','')+'/100)'
-                                                }else{
-                                                    height = 'calc( ( 100vh - 90px ) * '+this.screen_item_new.layout.height.replace('%','')+'/100)'
-                                                }
-                                            }
-                                        }
-                                    }
-                                    let imgSrc = attributes.hasOwnProperty('image') ?this.list_item[attributes.image]:'';
-                                    let title_temp = attributes.hasOwnProperty('title') ?this.list_item[attributes.title]:'';
-                                    let description_html = ''
-                                    if(attributes.hasOwnProperty('description') && attributes.description.toString().indexOf('##')>-1){
-                                        description_html = attributes.description
-                                        let lang = vm.lang;
-                                        if(lang==='vi'){
-                                            description_html = description_html.replace(/<en>.*<\/en>/,'')
-                                        }else{
-                                            description_html = description_html.replace(/<vi>.*<\/vi>/,'')
-                                        }
-                                    }
-                                    if(imgSrc.length == 0 ){
-                                        imgSrc ="./metronic6/images/rta_nophoto.webp"
-                                    }
-                                    this.item_content= '<div class="item active" style="position: relative;"><div width="100%" style="max-height: 300px; height:'+height+';display:flex; justify-content:center; background:#cccccc; background-image:url('+imgSrc+'); background-size: 1000000%; background-position:center;border-radius: 25px !important;overflow:hidden;"><img src="'+imgSrc+'" onerror="this.onerror=null;this.src=\'./metronic6/images/rta_nophoto.webp\';" alt="" width="auto"  style="max-width:100%"></div><div class="" style="color:#fff;position: absolute;padding: 0 25px !important;overflow:hidden;bottom: 0;"><h3 style="font-weight: bold;">'+title_temp+'</h3> <h5>'+(attributes.hasOwnProperty('secondary_text')?this.list_item[attributes.secondary_text]:'')+'</h5> <p style="overflow: hidden; text-overflow: ellipsis; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical;">'+(description_html !== '' ? description_html : (attributes.hasOwnProperty('description')?this.list_item[attributes.description]:''))+'</p></div></div>'
+                                    this.handleGallery2(attributes)  
                                 }
                                 else if(this.screen_item_new.item_template.template_default.type == "html"){
-                                    if(attributes.hasOwnProperty('raw')){
-                                        let raw_tem = attributes.raw
-                                        if(this.lang === 'vi') {
-                                            raw_tem.replace(/<vi>(.*)<\/vi>/, function(key1,key2) {
-                                                raw_tem = key2;
-                                            })
-                                        } else {
-                                            raw_tem.replace(/<en>(.*)<\/en>/, function(key1,key2) {
-                                                raw_tem = key2;
-                                            })
-                                        }  
-                                        this.item_content = raw_tem
-                                    }else if(attributes.hasOwnProperty('source')){
-                                        let source_tem = attributes.source
-                                        if(this.lang === 'vi') {
-                                            source_tem.replace(/<vi>(.*)<\/vi>/, function(key1,key2) {
-                                                source_tem = key2;
-                                            })
-                                        } else {
-                                            source_tem.replace(/<en>(.*)<\/en>/, function(key1,key2) {
-                                                source_tem = key2;
-                                            })
-                                        }   
-                                        this.item_content = '<iframe src="'+source_tem+'" frameborder="0" height="100%" width="100%"></iframe>'
-                                    }
+                                    this.handleHtml(attributes)
                                 }
                                 for(var key in attributes){
                                     if (attributes.hasOwnProperty(key)) {
@@ -700,179 +566,20 @@ Vue.component('list-item', {
                         else{
                             let attributes = JSON.parse(JSON.stringify(this.screen_item.item_template.template_default.attributes))
                             if(this.screen_item_new.item_template.template_default.type == 'article'){
-                                let description_html = ''
-                                let secondary_action = ''
-                                if(attributes.hasOwnProperty('description') && attributes.description.toString().indexOf('##')>-1){
-                                    description_html = attributes.description
-                                    let lang = vm.lang;
-                                    if(lang==='vi'){
-                                        description_html = description_html.replace(/<en>.*<\/en>/,'')
-                                    }else{
-                                        description_html = description_html.replace(/<vi>.*<\/vi>/,'')
-                                    }
-                                }
-                                if(attributes.hasOwnProperty('secondary_action') && attributes.secondary_action !== '') {
-                                    this.hasSecondary = true
-                                    this.item_content = '<div class = "row col-10" style="margin-bottom:2%;overflow:hidden;"> <div class="col" style="float:##thumbnail_alignment##;padding:0 20px;"> <img src= "##thumbnail##" onerror="this.onerror=null;this.src=\'./metronic6/images/rta_nophoto.webp\';" style="height:120px;width:120px"> </div> <div class="row"> <div> <div> <h3>'+(attributes.hasOwnProperty('title')?'##title##':"")+'</h3> </div> <div> <span>'+(attributes.hasOwnProperty('secondary_text')?'##secondary_text##':"")+'</span> </div> <div style="display:flex; justify-content:space-between;"> <h5 style="color:grey;">'+(description_html !== '' ? description_html : (attributes.hasOwnProperty('description')?'##description##':''))+'</h5><div class="btn-sec-'+this.classRandom+'"></div> </div> </div> </div> </div>';
-                                    this.item_content =  this.item_content.replace(new RegExp('##thumbnail_alignment##','g'),this.screen_item_new.item_template.template_default.thumbnail_alignment == undefined ? 'left':this.screen_item_new.item_template.template_default.thumbnail_alignment)                             
-                                } else {
-                                    this.item_content = '<div class = "row col-10" style="margin-bottom:2%;margin-top:2%;overflow:hidden;"> <div class="col" style="float:##thumbnail_alignment##;margin-right:10px;display:flex;align-items:center;justify-content:center;width:120px;height:120px;"> <img src= "##thumbnail##" onerror="this.onerror=null;this.src=\'./metronic6/images/rta_nophoto.webp\';" style="width:100%;height:100%;object-fit:cover;"> </div> <div class="row"> <div> <div> <h3>'+(attributes.hasOwnProperty('title')?'##title##':"")+'</h3> </div> <div> <span>'+(attributes.hasOwnProperty('secondary_text')?'##secondary_text##':"")+'</span> </div> <div> <h5 style="color:grey;">'+(description_html !== '' ? description_html : (attributes.hasOwnProperty('description')?'##description##':''))+'</h5> </div> </div> </div> </div>';
-                                    this.item_content =  this.item_content.replace(new RegExp('##thumbnail_alignment##','g'),this.screen_item_new.item_template.template_default.thumbnail_alignment == undefined ? 'left':this.screen_item_new.item_template.template_default.thumbnail_alignment)
-                                }
+                                this.handleArticle(attributes)
                             }
                             else if(this.screen_item_new.item_template.template_default.type == 'contact'){
-                                if(this.list_item[attributes.avatar] != null && this.list_item[attributes.avatar] != ""){
-                                    if( typeof this.list_item[attributes.avatar] == "string" && 
-                                        (
-                                            this.list_item[attributes.avatar].includes(".png") ||
-                                            this.list_item[attributes.avatar].includes(".jpg") ||
-                                            this.list_item[attributes.avatar].includes(".svg") ||
-                                            this.list_item[attributes.avatar].includes(".gif")
-                                        )   
-                                    ) {
-                                        this.item_content = '<div style="padding: 0;" class="col-md-9"> <div style="height:70px; " > <img src="##avatar##" onerror="this.onerror=null;this.src=\'./metronic6/images/rta_nophoto.webp\';" width="70px" height="70px" style="border-radius: 50% !important; float:left;"> </img> <p style="float: left; width:80%; padding-left: 2%; margin-top: 14px;"> <span style="font-size: 17px; font-weight: bold;"> ##name## </span> <br> <span style="font-size: 13px; color: #737373;"> ##phone## </span></p>  </div></div>';
-                                    } else {
-                                        let none_avt = "https://cdn.rtworkspace.com/plugins/webapp/images/avt_user.svg";
-                                        this.item_content = '<div style="padding: 0;" class="col-md-9"> <div style="height:70px; " > <img src='+none_avt+' width="70px" height="70px" style="border-radius: 50% !important; float:left;"> </img> <p style="float: left; width:80%; padding-left: 2%; margin-top: 14px;"> <span style="font-size: 17px; font-weight: bold;"> ##name## </span> <br> <span style="font-size: 13px; color: #737373;"> ##phone## </span></p>  </div></div>';
-                                    } 
-                                }
-                                else{
-                                    let letterName = 'N/A';
-                                    let arrColor = ['#009788','#fc5ee6','#33e142','#8894ac','#e7f615','#eb678c','#966a81','#f3b806','#8b5f5c','#44a9c7','#573b76','#dca8aa','#10e4f0','#9422f3']
-                                    let colorText = arrColor[Math.floor(Math.random()*arrColor.length)];
-                                    if(this.list_item[attributes.name] != null && this.list_item[attributes.name] != ""){
-                                        let arrName = this.list_item[attributes.name].split(" ");
-                                        letterName = arrName[0].charAt(0);                               
-                                    }
-                                    this.item_content = '<div style="padding: 0;" class="col-md-9"> <div style="height:70px; " > <div style="height:70px;width:70px;background-color:'+colorText+'; font-size: 33px; border-radius: 50% !important; text-align:center; padding-top:13px; color:white; font-weight:bold; float:left;"> '+letterName.toUpperCase()+' </div> <p style="float: left; width:80%; padding-left: 2%; margin-top: 14px;"> <span style="font-size: 17px; font-weight: bold;"> ##name## </span> <br> <span style="font-size: 13px; color: #737373;"> ##phone## </span></p>  </div></div>';
-                                }
+                                this.handleContact(attributes)
                             }
                             else if(this.screen_item_new.item_template.template_default.type == "gallery"){
-                                    let star='';
-                                    let numberStar="";
-                                    if(this.screen_item_new.item_template.template_default.hasOwnProperty('rating')){
-                                        numberStar = this.list_item[attributes.rating].length === 0 ? 0 : this.list_item[attributes.rating]
-                                        if(this.screen_item_new.item_template.template_default.hasOwnProperty('numStars')){
-                                            let maxStar = this.screen_item_new.item_template.template_default.numStars;
-                                            for (let i = 0; i < maxStar; i++) {
-                                                if(numberStar>i){
-                                                    star += '<span class="fa fa-star starchecked"></span>';
-                                                }else{
-                                                    star += '<span class="fa fa-star starunchecked"></span>';
-                                                }
-                                            }
-                                        }
-                                    }
-                                    let imgSrc = attributes.hasOwnProperty('image') ?this.list_item[attributes.image]:'';
-                                    if(imgSrc.length == 0 ){
-                                        imgSrc ="/metronic6/images/rta_nophoto.webp"
-                                   
-                                    }
-                                    if(attributes.hasOwnProperty('title') && this.list_item[attributes.title].length>0){
-                                        let lang = vm.lang;
-                                        if(lang==='vi'){
-                                            this.list_item[attributes.title] = this.list_item[attributes.title].replace(/<en>.*<\/en>/,'')
-                                        }else{
-                                            this.list_item[attributes.title] = this.list_item[attributes.title].replace(/<vi>.*<\/vi>/,'')
-                                        }
-                                        
-                                    }
-                                    let description_html = ''
-                                    if(attributes.hasOwnProperty('description') && attributes.description.toString().indexOf('##')>-1){
-                                        description_html = attributes.description
-                                        let lang = vm.lang;
-                                        if(lang==='vi'){
-                                            description_html = description_html.replace(/<en>.*<\/en>/,'')
-                                        }else{
-                                            description_html = description_html.replace(/<vi>.*<\/vi>/,'')
-                                        }
-                                    }
-                                    let heightDyImg = "";
-                                    if (this.screen_item.hasOwnProperty('layout') && this.screen_item.layout.hasOwnProperty('height')) {
-                                        let heightModule = this.screen_item.layout.height;
-                                        if (heightModule != null && heightModule != undefined && heightModule != "" ) {
-                                            if (typeof heightModule == "number") heightModule = heightModule.toString();
-                                            // no units
-                                            if (!heightModule.includes('%') && !heightModule.includes('px')) {
-                                                heightModule = heightModule + 'px';
-                                                heightDyImg = "height: calc("+heightModule+" * 2/3 );";  
-                                            } else {
-                                                if (heightModule.includes('%')) {
-                                                    heightModule = heightModule.replace('%','vh');
-                                                }
-                                                heightDyImg = "height: calc("+heightModule+" * 2/3 );";  
-                                            }   
-                                        } else {
-                                            heightDyImg = "height: 300px;"; 
-                                        }    
-                                    } else {
-                                        heightDyImg = "height: 300px;"; 
-                                    }
-                                    this.item_content='<div class=""><div width="100%" style="display:flex; justify-content:center; background:#cccccc; background-image:url('+imgSrc+'); background-size: 1000000%; background-position:center;"> <img src="'+imgSrc+'" onerror="this.onerror=null;this.src=\'./metronic6/images/rta_nophoto.webp\';" alt="" width="auto"  style="max-width:100%; max-height:300px; '+heightDyImg+'"></div> <div class="card-body"> <h3>'+this.list_item[attributes.title]+(star!==""?('</h3><div>'+star+'<span style="margin-left:1em; color:#999999; font-size:0.8em;">'+Number.parseFloat(numberStar).toFixed(1)):'')+'</span></div> <h5>'+(attributes.hasOwnProperty('secondary_text')?this.list_item[attributes.secondary_text]:'')+'</h5> <p class="">'+(description_html !== '' ? description_html : (attributes.hasOwnProperty('description')?this.list_item[attributes.description]:''))+'</p> </div> </div>'
+                                this.handleGallery(attributes)
                             }
                             else if(this.screen_item_new.item_template.template_default.type == "gallery2"){
-                                    let height = '300px'
-                                    if(this.screen_item_new.hasOwnProperty('layout')){
-                                        if(this.screen_item_new.layout.hasOwnProperty('height')){
-                                            if(!isNaN(Number(this.screen_item_new.layout.height))){
-                                                height = String(this.screen_item_new.layout.height) + 'px';
-                                            }
-                                            if(String(this.screen_item_new.layout.height).indexOf('px')>-1){
-                                                height = String(this.screen_item_new.layout.height);
-                                            }else if(String(this.screen_item_new.layout.height).indexOf('%')>-1){
-                                                if(this.task.code == 9999){
-                                                    height = 'calc( ( 100vh - 120px ) * '+this.screen_item_new.layout.height.replace('%','')+'/100)'
-                                                }else{
-                                                    height = 'calc( ( 100vh - 90px ) * '+this.screen_item_new.layout.height.replace('%','')+'/100)'
-                                                }
-                                            }
-                                        }
-                                    } 
-                                    let imgSrc = attributes.hasOwnProperty('image') ?this.list_item[attributes.image]:'';
-                                    let title_temp = attributes.hasOwnProperty('title') ?this.list_item[attributes.title]:'';
-
-                                    let description_html = ''
-                                    if(attributes.hasOwnProperty('description') && attributes.description.toString().indexOf('##')>-1){
-                                        description_html = attributes.description
-                                        let lang = vm.lang;
-                                        if(lang==='vi'){
-                                            description_html = description_html.replace(/<en>.*<\/en>/,'')
-                                        }else{
-                                            description_html = description_html.replace(/<vi>.*<\/vi>/,'')
-                                        }
-                                    }
-                                    if(imgSrc.length == 0 ){
-                                        imgSrc ="./metronic6/images/rta_nophoto.webp"
-                                    }
-                                    this.item_content= '<div class="item active" style="position: relative;"><div width="100%" style="max-height: 300px; height:'+height+';display:flex; justify-content:center; background:#cccccc; background-image:url('+imgSrc+'); background-size: 1000000%; background-position:center;border-radius: 25px !important;overflow:hidden;"><img src="'+imgSrc+'" alt="" onerror="this.onerror=null;this.src=\'./metronic6/images/rta_nophoto.webp\';" width="auto"  style="max-width:100%"></div><div class="" style="color:#fff;position: absolute;padding: 0 25px !important;overflow:hidden;bottom: 0;"><h3 style="font-weight: bold;">'+title_temp+'</h3> <h5>'+(attributes.hasOwnProperty('secondary_text')?this.list_item[attributes.secondary_text]:'')+'</h5> <p style="overflow: hidden; text-overflow: ellipsis; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical;">'+(description_html !== '' ? description_html : (attributes.hasOwnProperty('description')?this.list_item[attributes.description]:''))+'</p></div></div>'
+                                this.handleGallery2(attributes)    
                             }
                             else if(this.screen_item_new.item_template.template_default.type == "html"){
-                                    if(attributes.hasOwnProperty('raw')){
-                                        let raw_tem = attributes.raw
-                                        if(this.lang === 'vi') {
-                                            raw_tem.replace(/<vi>(.*)<\/vi>/, function(key1,key2) {
-                                                raw_tem = key2;
-                                            })
-                                        } else {
-                                            raw_tem.replace(/<en>(.*)<\/en>/, function(key1,key2) {
-                                                raw_tem = key2;
-                                            })
-                                        }  
-                                        this.item_content = raw_tem
-                                    }else if(attributes.hasOwnProperty('source')){
-                                        let source_tem = attributes.source
-                                        if(this.lang === 'vi') {
-                                            source_tem.replace(/<vi>(.*)<\/vi>/, function(key1,key2) {
-                                                source_tem = key2;
-                                            })
-                                        } else {
-                                            source_tem.replace(/<en>(.*)<\/en>/, function(key1,key2) {
-                                                source_tem = key2;
-                                            })
-                                        } 
-                                        this.item_content = '<iframe src="'+source_tem+'" frameborder="0" height="100%" width="100%"></iframe>'
-                                    }
-                                }
+                                this.handleHtml(attributes)
+                            }
                             for(var key in attributes){
                                 if (attributes.hasOwnProperty(key)) {
                                     if(typeof(attributes[key])!='string'){
@@ -1294,231 +1001,99 @@ Vue.component('list-item', {
                 }
             },
             dynamicItem(dynmicNumber){
-                        if(this.screen_item_new.item_template.templates[dynmicNumber].layout.hasOwnProperty('type')){
-                                let attributes = JSON.parse(JSON.stringify(this.screen_item.item_template.templates[dynmicNumber].layout.attributes))
-                                if(this.screen_item_new.item_template.templates[dynmicNumber].layout.type == "divkit-minimal"){
-                                    let divkit_attributes = JSON.parse(JSON.stringify(this.screen_item.item_template.templates[dynmicNumber].layout.attributes))
-                                    this.renderDivkitMinimal(divkit_attributes)
-                                    this.divkit = true
+                if(this.screen_item_new.item_template.templates[dynmicNumber].layout.hasOwnProperty('type')){
+                        let attributes = JSON.parse(JSON.stringify(this.screen_item.item_template.templates[dynmicNumber].layout.attributes))
+                        if(this.screen_item_new.item_template.templates[dynmicNumber].layout.type == "divkit-minimal"){
+                            let divkit_attributes = JSON.parse(JSON.stringify(this.screen_item.item_template.templates[dynmicNumber].layout.attributes))
+                            this.renderDivkitMinimal(divkit_attributes)
+                            this.divkit = true
+                        }
+                        if(this.screen_item_new.item_template.templates[dynmicNumber].layout.type == "divkit"){
+                            let divkit_attributes = JSON.parse(JSON.stringify(this.screen_item.item_template.templates[dynmicNumber].layout.attributes))
+                            this.renderDivkit(divkit_attributes)
+                            this.divkit = true
+                        }
+                        if(this.screen_item_new.item_template.templates[dynmicNumber].layout.type == "adaptive-card"){
+                            let adaptive_attributes = JSON.parse(JSON.stringify(this.screen_item.item_template.templates[dynmicNumber].layout.attributes))
+                            this.renderAdaptiveCard(adaptive_attributes)
+                            this.divkit = true
+                        }
+                        if(this.screen_item_new.item_template.templates[dynmicNumber].layout.type == 'article'){
+                            this.handleArticle(attributes)
+                        }
+                        else if(this.screen_item_new.item_template.templates[dynmicNumber].layout.type == 'contact'){
+                            this.handleContact(attributes)
+                        }
+                        else if(this.screen_item_new.item_template.templates[dynmicNumber].layout.type == "gallery"){
+                            this.handleGallery(attributes)
+                        }
+                        else if(this.screen_item_new.item_template.templates[dynmicNumber].layout.type == "gallery2"){
+                            this.handleGallery2(attributes)  
+                        }
+                        else if(this.screen_item_new.item_template.templates[dynmicNumber].layout.type == "html"){
+                            this.handleHtml(attributes)
+                        }
+                        for(var key in attributes){
+                            if (attributes.hasOwnProperty(key)) {
+                                if(typeof(attributes[key])!='string'){
+                                    continue;
                                 }
-                                if(this.screen_item_new.item_template.templates[dynmicNumber].layout.type == "divkit"){
-                                    let divkit_attributes = JSON.parse(JSON.stringify(this.screen_item.item_template.templates[dynmicNumber].layout.attributes))
-                                    this.renderDivkit(divkit_attributes)
-                                    this.divkit = true
-                                }
-                                if(this.screen_item_new.item_template.templates[dynmicNumber].layout.type == "adaptive-card"){
-                                    let adaptive_attributes = JSON.parse(JSON.stringify(this.screen_item.item_template.templates[dynmicNumber].layout.attributes))
-                                    this.renderAdaptiveCard(adaptive_attributes)
-                                    this.divkit = true
-                                }
-                                if(this.screen_item_new.item_template.templates[dynmicNumber].layout.type == 'article'){
-                                    let description_html = ''
-                                    if(attributes.hasOwnProperty('description') && attributes.description.toString().indexOf('##')>-1){
-                                        description_html = attributes.description
-                                    }
-                                    this.item_content = '<div class = "row col-10" style="margin-bottom:2%;overflow:hidden;"> <div class="col" style="float:##thumbnail_alignment##;padding:0 20px;"> <img src= "##thumbnail##" onerror="this.onerror=null;this.src=\'./metronic6/images/rta_nophoto.webp\';" style="height:120px;width:120px"> </div> <div class="row"> <div> <div> <h3>'+(attributes.hasOwnProperty('title')?'##title##':"")+'</h3> </div> <div> <span>'+(attributes.hasOwnProperty('secondary_text')?'##secondary_text##':"")+'</span> </div> <div> <h5 style="color:grey;">'+(description_html !== '' ? description_html : (attributes.hasOwnProperty('description')?'##description##':''))+'</h5> </div> </div> </div> </div>';
-                                    this.item_content =  this.item_content.replace(new RegExp('##thumbnail_alignment##','g'),this.screen_item_new.item_template.templates[dynmicNumber].layout.thumbnail_alignment == undefined ? 'left':this.screen_item_new.item_template.templates[dynmicNumber].layout.thumbnail_alignment)
-                                }
-                                else if(this.screen_item_new.item_template.templates[dynmicNumber].layout.type == 'contact'){
-                                    if(this.list_item[attributes.avatar] != null && this.list_item[attributes.avatar] != ""){
-                                        this.item_content = '<div class="col-md-9"> <div style="height:70px; margin-top: 1.7%;" > <img src="##avatar##" onerror="this.onerror=null;this.src=\'./metronic6/images/rta_nophoto.webp\';" width="70px" height="70px" style="border-radius: 50% !important; float:left;"> </img> <p style="float: left; width:80%; padding-left: 2%;"> ##name## <br> ##phone##</p>  </div></div>';
-                                    }
-                                    else{
-                                        let letterName = 'N/A';
-                                        let arrColor = ['#009788','#fc5ee6','#33e142','#8894ac','#e7f615','#eb678c','#966a81','#f3b806','#8b5f5c','#44a9c7','#573b76','#dca8aa','#10e4f0','#9422f3']
-                                        let colorText = arrColor[Math.floor(Math.random()*arrColor.length)];
-                                        if(this.list_item[attributes.name] != null && this.list_item[attributes.name] != ""){
-                                            let arrName = this.list_item[attributes.name].split(" ");
-                                            letterName = arrName[0].charAt(0);                               
-                                        }
-                                        this.item_content = '<div class="col-md-9"> <div style="height:70px; margin-top: 1.7%;" > <div style="height:70px;width:70px;background-color:'+colorText+'; font-size: 33px; border-radius: 50% !important; text-align:center; padding-top:2.4%; color:white; font-weight:bold; float:left;"> '+letterName.toUpperCase()+' </div> <p style="float: left; width:80%; padding-left: 2%;"> ##name## <br> ##phone##</p>  </div></div>';
+                                if(key == 'phone' && this.screen_item_new.item_template.templates[dynmicNumber].layout != '' && this.screen_item_new.item_template.templates[dynmicNumber].layout.cloud == true){
+                                    this.phoneNum = this.list_item[attributes[key]];
+                                    if (this.phoneNum == "" || this.phoneNum == null || this.phoneNum == undefined) {
+                                        this.phoneNum = false;
                                     }
                                 }
-                                else if(this.screen_item_new.item_template.templates[dynmicNumber].layout.type == "gallery"){
-                                    let star='';
-                                    let numberStar="";
-                                    if(this.screen_item_new.item_template.templates[dynmicNumber].layout.hasOwnProperty('rating')){
-                                        numberStar = this.list_item[attributes.rating].length === 0 ? 0 : this.list_item[attributes.rating]
-                                        if(this.screen_item_new.item_template.templates[dynmicNumber].layout.hasOwnProperty('numStars')){
-                                            let maxStar = this.screen_item_new.item_template.templates[dynmicNumber].layout.numStars;
-                                            for (let i = 0; i < maxStar; i++) {
-                                                if(numberStar>i){
-                                                    star += '<span class="fa fa-star starchecked"></span>';
-                                                }else{
-                                                    star += '<span class="fa fa-star starunchecked"></span>';
-                                                }
-                                            }
-                                        }
-                                    }
-                                    let imgSrc = attributes.hasOwnProperty('image') ?this.list_item[attributes.image]:'';
-                                    if(imgSrc.length == 0 ){
-                                        imgSrc ="/metronic6/images/rta_nophoto.webp"
-                                    }
-                                    if(attributes.hasOwnProperty('title') && this.list_item[attributes.title].length>0){
-                                        let lang = vm.lang;
-                                        if(lang==='vi'){
-                                            this.list_item[attributes.title] = this.list_item[attributes.title].replace(/<en>.*<\/en>/,'')
+                                if(attributes[key].length < 1){
+                                    this.item_content = this.item_content.replace(new RegExp('##'+key+'##','g'),attributes[key].toString().replace(/[\r\n]+/g," "));
+                                }
+                                else{
+                                    if(key == 'thumbnail'){
+                                        if(this.list_item[attributes[key]] !== '' && this.list_item[attributes[key]] != null && this.list_item[attributes[key]] != undefined){
+                                            this.item_content = this.item_content.replace(new RegExp('##'+key+'##','g'),"##"+attributes[key].replace(/[\r\n]+/g," ")+"##");
                                         }else{
-                                            this.list_item[attributes.title] = this.list_item[attributes.title].replace(/<vi>.*<\/vi>/,'')
+                                            this.item_content = this.item_content.replace(new RegExp('##'+key+'##','g'),"/metronic6/images/rta_nophoto.webp");
                                         }
-                                        
-                                    }
-                                    let description_html = ''
-                                    if(attributes.hasOwnProperty('description') && attributes.description.toString().indexOf('##')>-1){
-                                        description_html = attributes.description
-                                        let lang = vm.lang;
-                                        if(lang==='vi'){
-                                            description_html = description_html.replace(/<en>.*<\/en>/,'')
-                                        }else{
-                                            description_html = description_html.replace(/<vi>.*<\/vi>/,'')
-                                        }
-                                    }
-                                    let heightDyImg = "";
-                                    if (this.screen_item.hasOwnProperty('layout') && this.screen_item.layout.hasOwnProperty('height')) {
-                                        let heightModule = this.screen_item.layout.height;
-                                        if (heightModule != null && heightModule != undefined && heightModule != "" ) {
-                                            if (typeof heightModule == "number") heightModule = heightModule.toString();
-                                            // no units
-                                            if (!heightModule.includes('%') && !heightModule.includes('px')) {
-                                                heightModule = heightModule + 'px';
-                                                heightDyImg = "height: calc("+heightModule+" * 2/3 );";  
-                                            } else {
-                                                if (heightModule.includes('%')) {
-                                                    heightModule = heightModule.replace('%','vh');
-                                                }
-                                                heightDyImg = "height: calc("+heightModule+" * 2/3 );";  
-                                            }   
-                                        } else {
-                                            heightDyImg = "height: 300px;"; 
-                                        }
-                                    } else {
-                                        heightDyImg = "height: 300px;"; 
-                                    }
-                                    this.item_content='<div class=""><div width="100%" style="display:flex; justify-content:center; background:#cccccc; background-image:url('+imgSrc+'); background-size: 1000000%; background-position:center;"> <img src="'+imgSrc+'" onerror="this.onerror=null;this.src=\'./metronic6/images/rta_nophoto.webp\';" alt="" width="auto"  style="max-width:100%; max-height:300px; '+heightDyImg+'"></div> <div class="card-body"> <h3>'+this.list_item[attributes.title]+(star!==""?('</h3><div>'+star+'<span style="margin-left:1em; color:#999999; font-size:0.8em;">'+Number.parseFloat(numberStar).toFixed(1)):'')+'</span></div> <h5>'+(attributes.hasOwnProperty('secondary_text')?this.list_item[attributes.secondary_text]:'')+'</h5> <p class="">'+(description_html !== '' ? description_html : (attributes.hasOwnProperty('description')?this.list_item[attributes.description]:''))+'</p> </div> </div>'
-                                }
-                                else if(this.screen_item_new.item_template.templates[dynmicNumber].layout.type == "gallery2"){
-                                    let height = '300px'
-                                    if(this.screen_item_new.hasOwnProperty('layout')){
-                                        if(this.screen_item_new.layout.hasOwnProperty('height') && this.screen_item_new.layout != undefined){
-                                            if(!isNaN(Number(this.screen_item_new.layout.height))){
-                                                height = String(this.screen_item_new.layout.height) + 'px';
-                                            }
-                                            if(String(this.screen_item_new.layout.height).indexOf('px')>-1){
-                                                height = String(this.screen_item_new.layout.height);
-                                            }else if(String(this.screen_item_new.layout.height).indexOf('%')>-1){
-                                                if(this.task.code == 9999){
-                                                    height = 'calc( ( 100vh - 120px ) * '+this.screen_item_new.layout.height.replace('%','')+'/100)'
-                                                }else{
-                                                    height = 'calc( ( 100vh - 90px ) * '+this.screen_item_new.layout.height.replace('%','')+'/100)'
-                                                }
-                                            }
-                                        }
-                                    }
-                                    let imgSrc = attributes.hasOwnProperty('image') ?this.list_item[attributes.image]:'';
-                                    let title_temp = attributes.hasOwnProperty('title') ?this.list_item[attributes.title]:'';
-                                    let description_html = ''
-                                    if(attributes.hasOwnProperty('description') && attributes.description.toString().indexOf('##')>-1){
-                                        description_html = attributes.description
-                                        let lang = vm.lang;
-                                        if(lang==='vi'){
-                                            description_html = description_html.replace(/<en>.*<\/en>/,'')
-                                        }else{
-                                            description_html = description_html.replace(/<vi>.*<\/vi>/,'')
-                                        }
-                                    }
-                                    if(imgSrc.length == 0 ){
-                                        imgSrc ="./metronic6/images/rta_nophoto.webp"
-                                    }
-                                    this.item_content= '<div class="item active" style="position: relative;"><div width="100%" style="max-height: 300px; height:'+height+';display:flex; justify-content:center; background:#cccccc; background-image:url('+imgSrc+'); background-size: 1000000%; background-position:center;border-radius: 25px !important;overflow:hidden;"><img src="'+imgSrc+'" onerror="this.onerror=null;this.src=\'./metronic6/images/rta_nophoto.webp\';" alt="" width="auto"  style="max-width:100%"></div><div class="" style="color:#fff;position: absolute;padding: 0 25px !important;overflow:hidden;bottom: 0;"><h3 style="font-weight: bold;">'+title_temp+'</h3> <h5>'+(attributes.hasOwnProperty('secondary_text')?this.list_item[attributes.secondary_text]:'')+'</h5> <p style="overflow: hidden; text-overflow: ellipsis; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical;">'+(description_html !== '' ? description_html : (attributes.hasOwnProperty('description')?this.list_item[attributes.description]:''))+'</p></div></div>'
-                                }
-                                else if(this.screen_item_new.item_template.templates[dynmicNumber].layout.type == "html"){
-                                    if(attributes.hasOwnProperty('raw')){
-                                        let raw_tem = attributes.raw
-                                        if(this.lang === 'vi') {
-                                            raw_tem.replace(/<vi>(.*)<\/vi>/, function(key1,key2) {
-                                                raw_tem = key2;
-                                            })
-                                        } else {
-                                            raw_tem.replace(/<en>(.*)<\/en>/, function(key1,key2) {
-                                                raw_tem = key2;
-                                            })
-                                        }  
-                                        this.item_content = raw_tem
-                                    }else if(attributes.hasOwnProperty('source')){
-                                        let source_tem = attributes.source
-                                        if(this.lang === 'vi') {
-                                            source_tem.replace(/<vi>(.*)<\/vi>/, function(key1,key2) {
-                                                source_tem = key2;
-                                            })
-                                        } else {
-                                            source_tem.replace(/<en>(.*)<\/en>/, function(key1,key2) {
-                                                source_tem = key2;
-                                            })
-                                        } 
-                                        this.item_content = '<iframe src="'+source_tem+'" frameborder="0" height="100%" width="100%"></iframe>'
-                                    }
-                                }
-                                for(var key in attributes){
-                                    if (attributes.hasOwnProperty(key)) {
-                                        if(typeof(attributes[key])!='string'){
-                                            continue;
-                                        }
-                                        if(key == 'phone' && this.screen_item_new.item_template.templates[dynmicNumber].layout != '' && this.screen_item_new.item_template.templates[dynmicNumber].layout.cloud == true){
-                                            this.phoneNum = this.list_item[attributes[key]];
-                                            if (this.phoneNum == "" || this.phoneNum == null || this.phoneNum == undefined) {
-                                                this.phoneNum = false;
-                                            }
-                                        }
-                                        if(attributes[key].length < 1){
-                                            this.item_content = this.item_content.replace(new RegExp('##'+key+'##','g'),attributes[key].toString().replace(/[\r\n]+/g," "));
-                                        }
-                                        else{
-                                            if(key == 'thumbnail'){
-                                                if(this.list_item[attributes[key]] !== '' && this.list_item[attributes[key]] != null && this.list_item[attributes[key]] != undefined){
-                                                    this.item_content = this.item_content.replace(new RegExp('##'+key+'##','g'),"##"+attributes[key].replace(/[\r\n]+/g," ")+"##");
-                                                }else{
-                                                    this.item_content = this.item_content.replace(new RegExp('##'+key+'##','g'),"/metronic6/images/rta_nophoto.webp");
-                                                }
-                                            }else if(key == 'description' && attributes[key].toString().indexOf('##')>-1){
+                                    }else if(key == 'description' && attributes[key].toString().indexOf('##')>-1){
 
-                                            }else{
-                                                this.item_content = this.item_content.replace(new RegExp('##'+key+'##','g'),"##"+attributes[key].replace(/[\r\n]+/g," ")+"##");
-                                            }
-                                        }
-                                        this.item_content = this.item_content.replace('"','\"');
+                                    }else{
+                                        this.item_content = this.item_content.replace(new RegExp('##'+key+'##','g'),"##"+attributes[key].replace(/[\r\n]+/g," ")+"##");
                                     }
                                 }
-                            }else{
-                                var itemJSONString = this.screen_item_new.item_template.templates[dynmicNumber].layout;
-                                itemJSONString = this.replaceAttribute(itemJSONString)
-                                this.item_content =  itemJSONString;
+                                this.item_content = this.item_content.replace('"','\"');
                             }
-                            if(this.screen_item_new.item_template.templates[dynmicNumber].layout.type == "web-page"){
-                                let lang = vm.lang;
-                                let webpage = JSON.parse(JSON.stringify(this.screen_item_new.item_template.templates[dynmicNumber].layout.attributes)).content
-                                if(lang==='vi'){
-                                    webpage = webpage.replace(/<en>.*<\/en>/,'')
-                                }else{
-                                    webpage = webpage.replace(/<vi>.*<\/vi>/,'')
-                                }
-                                let functionApp = `
-                                <script>
-                                    class App{
-                                        static callActionButton(json){
-                                            let moduleCode = '`+this.object.moduleCode+`';
-                                            let subModuleCode = '`+this.object.subModuleCode+`';
-                                            let componentCode = '`+this.object.componentCode+`';
-                                            let code = '`+this.object.code+`';
-                                            let rawComponentCode = '`+this.object.rawComponentCode+`';
-                                            window.parent.vm.callActionButton(json,moduleCode,subModuleCode,componentCode,code,rawComponentCode)
-                                        }}  
-                                <\/script>`
-                                this.listJS = true;
-                                this.item_content = webpage + functionApp
-                            }
-                            this.handleItem();
-                            this.handleButtons();
-                            this.handleDynamicButtons();
+                        }
+                    }else{
+                        var itemJSONString = this.screen_item_new.item_template.templates[dynmicNumber].layout;
+                        itemJSONString = this.replaceAttribute(itemJSONString)
+                        this.item_content =  itemJSONString;
+                    }
+                    if(this.screen_item_new.item_template.templates[dynmicNumber].layout.type == "web-page"){
+                        let lang = vm.lang;
+                        let webpage = JSON.parse(JSON.stringify(this.screen_item_new.item_template.templates[dynmicNumber].layout.attributes)).content
+                        if(lang==='vi'){
+                            webpage = webpage.replace(/<en>.*<\/en>/,'')
+                        }else{
+                            webpage = webpage.replace(/<vi>.*<\/vi>/,'')
+                        }
+                        let functionApp = `
+                        <script>
+                            class App{
+                                static callActionButton(json){
+                                    let moduleCode = '`+this.object.moduleCode+`';
+                                    let subModuleCode = '`+this.object.subModuleCode+`';
+                                    let componentCode = '`+this.object.componentCode+`';
+                                    let code = '`+this.object.code+`';
+                                    let rawComponentCode = '`+this.object.rawComponentCode+`';
+                                    window.parent.vm.callActionButton(json,moduleCode,subModuleCode,componentCode,code,rawComponentCode)
+                                }}  
+                        <\/script>`
+                        this.listJS = true;
+                        this.item_content = webpage + functionApp
+                    }
+                    this.handleItem();
+                    this.handleButtons();
+                    this.handleDynamicButtons();
                         
             },
             mouseDown:function(){
@@ -1921,7 +1496,181 @@ Vue.component('list-item', {
                     return
                 }
                 this.checkABDivkit = true
-            }
+            },
+            handleArticle(attributes){
+                let description_html = ''
+                let secondary_action = ''
+                if(attributes.hasOwnProperty('description') && attributes.description.toString().indexOf('##')>-1){
+                    description_html = attributes.description
+                    let lang = vm.lang;
+                    if(lang==='vi'){
+                        description_html = description_html.replace(/<en>.*<\/en>/,'')
+                    }else{
+                        description_html = description_html.replace(/<vi>.*<\/vi>/,'')
+                    }
+                }
+                if(attributes.hasOwnProperty('secondary_action') && attributes.secondary_action !== '') {
+                    this.hasSecondary = true
+                    this.item_content = '<div class = "row col-10" style="margin-bottom:2%;overflow:hidden;"> <div class="col" style="float:##thumbnail_alignment##;padding:0 20px;"> <img src= "##thumbnail##" onerror="this.onerror=null;this.src=\'./metronic6/images/rta_nophoto.webp\';" style="height:120px;width:120px"> </div> <div class="row"> <div> <div> <h3>'+(attributes.hasOwnProperty('title')?'##title##':"")+'</h3> </div> <div> <span>'+(attributes.hasOwnProperty('secondary_text')?'##secondary_text##':"")+'</span> </div> <div style="display:flex; justify-content:space-between;"> <h5 style="color:grey;">'+(description_html !== '' ? description_html : (attributes.hasOwnProperty('description')?'##description##':''))+'</h5><div class="btn-sec-'+this.classRandom+'"></div> </div> </div> </div> </div>';
+                    this.item_content =  this.item_content.replace(new RegExp('##thumbnail_alignment##','g'),this.screen_item_new.item_template.template_default.thumbnail_alignment == undefined ? 'left':this.screen_item_new.item_template.template_default.thumbnail_alignment)                             
+                } else {
+                    this.item_content = '<div class = "row col-10" style="margin-bottom:2%;margin-top:2%;overflow:hidden;"> <div class="col" style="float:##thumbnail_alignment##;margin-right:10px;display:flex;align-items:center;justify-content:center;width:120px;height:120px;"> <img src= "##thumbnail##" onerror="this.onerror=null;this.src=\'./metronic6/images/rta_nophoto.webp\';" style="width:100%;height:100%;object-fit:cover;"> </div> <div class="row"> <div> <div> <h3>'+(attributes.hasOwnProperty('title')?'##title##':"")+'</h3> </div> <div> <span>'+(attributes.hasOwnProperty('secondary_text')?'##secondary_text##':"")+'</span> </div> <div> <h5 style="color:grey;">'+(description_html !== '' ? description_html : (attributes.hasOwnProperty('description')?'##description##':''))+'</h5> </div> </div> </div> </div>';
+                    this.item_content =  this.item_content.replace(new RegExp('##thumbnail_alignment##','g'),this.screen_item_new.item_template.template_default.thumbnail_alignment == undefined ? 'left':this.screen_item_new.item_template.template_default.thumbnail_alignment)
+                }
+            },
+            handleContact(attributes){
+                if(this.list_item[attributes.avatar] != null && this.list_item[attributes.avatar] != ""){
+                    if( typeof this.list_item[attributes.avatar] == "string" && 
+                        (
+                            this.list_item[attributes.avatar].includes(".png") ||
+                            this.list_item[attributes.avatar].includes(".jpg") ||
+                            this.list_item[attributes.avatar].includes(".svg") ||
+                            this.list_item[attributes.avatar].includes(".gif")
+                        )   
+                    ) {
+                        this.item_content = '<div style="padding: 0;" class="col-md-9"> <div style="height:70px; " > <img src="##avatar##" onerror="this.onerror=null;this.src=\'./metronic6/images/rta_nophoto.webp\';" width="70px" height="70px" style="border-radius: 50% !important; float:left;"> </img> <p style="float: left; width:80%; padding-left: 2%; margin-top: 14px;"> <span style="font-size: 17px; font-weight: bold;"> ##name## </span> <br> <span style="font-size: 13px; color: #737373;"> ##phone## </span></p>  </div></div>';
+                    } else {
+                        let none_avt = "https://cdn.rtworkspace.com/plugins/webapp/images/avt_user.svg";
+                        this.item_content = '<div style="padding: 0;" class="col-md-9"> <div style="height:70px; " > <img src='+none_avt+' width="70px" height="70px" style="border-radius: 50% !important; float:left;"> </img> <p style="float: left; width:80%; padding-left: 2%; margin-top: 14px;"> <span style="font-size: 17px; font-weight: bold;"> ##name## </span> <br> <span style="font-size: 13px; color: #737373;"> ##phone## </span></p>  </div></div>';
+                    } 
+                }
+                else{
+                    let letterName = 'N/A';
+                    let arrColor = ['#009788','#fc5ee6','#33e142','#8894ac','#e7f615','#eb678c','#966a81','#f3b806','#8b5f5c','#44a9c7','#573b76','#dca8aa','#10e4f0','#9422f3']
+                    let colorText = arrColor[Math.floor(Math.random()*arrColor.length)];
+                    if(this.list_item[attributes.name] != null && this.list_item[attributes.name] != ""){
+                        let arrName = this.list_item[attributes.name].split(" ");
+                        letterName = arrName[0].charAt(0);                               
+                    }
+                    this.item_content = '<div style="padding: 0;" class="col-md-9"> <div style="height:70px; " > <div style="height:70px;width:70px;background-color:'+colorText+'; font-size: 33px; border-radius: 50% !important; text-align:center; padding-top:13px; color:white; font-weight:bold; float:left;"> '+letterName.toUpperCase()+' </div> <p style="float: left; width:80%; padding-left: 2%; margin-top: 14px;"> <span style="font-size: 17px; font-weight: bold;"> ##name## </span> <br> <span style="font-size: 13px; color: #737373;"> ##phone## </span></p>  </div></div>';
+                }
+            },
+            handleGallery(attributes){
+                let star='';
+                let numberStar="";
+                if(this.screen_item_new.item_template.template_default.hasOwnProperty('rating')){
+                    numberStar = this.list_item[attributes.rating].length === 0 ? 0 : this.list_item[attributes.rating]
+                    if(this.screen_item_new.item_template.template_default.hasOwnProperty('numStars')){
+                        let maxStar = this.screen_item_new.item_template.template_default.numStars;
+                        for (let i = 0; i < maxStar; i++) {
+                            if(numberStar>i){
+                                star += '<span class="fa fa-star starchecked"></span>';
+                            }else{
+                                star += '<span class="fa fa-star starunchecked"></span>';
+                            }
+                        }
+                    }
+                }
+                let imgSrc = attributes.hasOwnProperty('image') ?this.list_item[attributes.image]:'';
+                if(imgSrc.length == 0 ){
+                    imgSrc ="/metronic6/images/rta_nophoto.webp"
+                
+                }
+                if(attributes.hasOwnProperty('title') && this.list_item[attributes.title].length>0){
+                    let lang = vm.lang;
+                    if(lang==='vi'){
+                        this.list_item[attributes.title] = this.list_item[attributes.title].replace(/<en>.*<\/en>/,'')
+                    }else{
+                        this.list_item[attributes.title] = this.list_item[attributes.title].replace(/<vi>.*<\/vi>/,'')
+                    }
+                    
+                }
+                let description_html = ''
+                if(attributes.hasOwnProperty('description') && attributes.description.toString().indexOf('##')>-1){
+                    description_html = attributes.description
+                    let lang = vm.lang;
+                    if(lang==='vi'){
+                        description_html = description_html.replace(/<en>.*<\/en>/,'')
+                    }else{
+                        description_html = description_html.replace(/<vi>.*<\/vi>/,'')
+                    }
+                }
+                let heightDyImg = "";
+                if (this.screen_item.hasOwnProperty('layout') && this.screen_item.layout.hasOwnProperty('height')) {
+                    let heightModule = this.screen_item.layout.height;
+                    if (heightModule != null && heightModule != undefined && heightModule != "" ) {
+                        if (typeof heightModule == "number") heightModule = heightModule.toString();
+                        // no units
+                        if (!heightModule.includes('%') && !heightModule.includes('px')) {
+                            heightModule = heightModule + 'px';
+                            heightDyImg = "height: calc("+heightModule+" * 2/3 );";  
+                        } else {
+                            if (heightModule.includes('%')) {
+                                heightModule = heightModule.replace('%','vh');
+                            }
+                            heightDyImg = "height: calc("+heightModule+" * 2/3 );";  
+                        }   
+                    } else {
+                        heightDyImg = "height: 300px;"; 
+                    }    
+                } else {
+                    heightDyImg = "height: 300px;"; 
+                }
+                this.item_content='<div class=""><div width="100%" style="display:flex; justify-content:center; background:#cccccc; background-image:url('+imgSrc+'); background-size: 1000000%; background-position:center;"> <img src="'+imgSrc+'" onerror="this.onerror=null;this.src=\'./metronic6/images/rta_nophoto.webp\';" alt="" width="auto"  style="max-width:100%; max-height:300px; '+heightDyImg+'"></div> <div class="card-body"> <h3>'+this.list_item[attributes.title]+(star!==""?('</h3><div>'+star+'<span style="margin-left:1em; color:#999999; font-size:0.8em;">'+Number.parseFloat(numberStar).toFixed(1)):'')+'</span></div> <h5>'+(attributes.hasOwnProperty('secondary_text')?this.list_item[attributes.secondary_text]:'')+'</h5> <p class="">'+(description_html !== '' ? description_html : (attributes.hasOwnProperty('description')?this.list_item[attributes.description]:''))+'</p> </div> </div>'
+            },
+            handleGallery2(attributes){
+                let height = '300px'
+                if(this.screen_item_new.hasOwnProperty('layout')){
+                    if(this.screen_item_new.layout.hasOwnProperty('height')){
+                        if(!isNaN(Number(this.screen_item_new.layout.height))){
+                            height = String(this.screen_item_new.layout.height) + 'px';
+                        }
+                        if(String(this.screen_item_new.layout.height).indexOf('px')>-1){
+                            height = String(this.screen_item_new.layout.height);
+                        }else if(String(this.screen_item_new.layout.height).indexOf('%')>-1){
+                            if(this.task.code == 9999){
+                                height = 'calc( ( 100vh - 120px ) * '+this.screen_item_new.layout.height.replace('%','')+'/100)'
+                            }else{
+                                height = 'calc( ( 100vh - 90px ) * '+this.screen_item_new.layout.height.replace('%','')+'/100)'
+                            }
+                        }
+                    }
+                } 
+                let imgSrc = attributes.hasOwnProperty('image') ?this.list_item[attributes.image]:'';
+                let title_temp = attributes.hasOwnProperty('title') ?this.list_item[attributes.title]:'';
+
+                let description_html = ''
+                if(attributes.hasOwnProperty('description') && attributes.description.toString().indexOf('##')>-1){
+                    description_html = attributes.description
+                    let lang = vm.lang;
+                    if(lang==='vi'){
+                        description_html = description_html.replace(/<en>.*<\/en>/,'')
+                    }else{
+                        description_html = description_html.replace(/<vi>.*<\/vi>/,'')
+                    }
+                }
+                if(imgSrc.length == 0 ){
+                    imgSrc ="./metronic6/images/rta_nophoto.webp"
+                }
+                this.item_content= '<div class="item active" style="position: relative;"><div width="100%" style="max-height: 300px; height:'+height+';display:flex; justify-content:center; background:#cccccc; background-image:url('+imgSrc+'); background-size: 1000000%; background-position:center;border-radius: 25px !important;overflow:hidden;"><img src="'+imgSrc+'" alt="" onerror="this.onerror=null;this.src=\'./metronic6/images/rta_nophoto.webp\';" width="auto"  style="max-width:100%"></div><div class="" style="color:#fff;position: absolute;padding: 0 25px !important;overflow:hidden;bottom: 0;"><h3 style="font-weight: bold;">'+title_temp+'</h3> <h5>'+(attributes.hasOwnProperty('secondary_text')?this.list_item[attributes.secondary_text]:'')+'</h5> <p style="overflow: hidden; text-overflow: ellipsis; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical;">'+(description_html !== '' ? description_html : (attributes.hasOwnProperty('description')?this.list_item[attributes.description]:''))+'</p></div></div>'
+            },
+            handleHtml(attributes){
+                if(attributes.hasOwnProperty('raw')){
+                    let raw_tem = attributes.raw
+                    if(this.lang === 'vi') {
+                        raw_tem.replace(/<vi>(.*)<\/vi>/, function(key1,key2) {
+                            raw_tem = key2;
+                        })
+                    } else {
+                        raw_tem.replace(/<en>(.*)<\/en>/, function(key1,key2) {
+                            raw_tem = key2;
+                        })
+                    }  
+                    this.item_content = raw_tem
+                }else if(attributes.hasOwnProperty('source')){
+                    let source_tem = attributes.source
+                    if(this.lang === 'vi') {
+                        source_tem.replace(/<vi>(.*)<\/vi>/, function(key1,key2) {
+                            source_tem = key2;
+                        })
+                    } else {
+                        source_tem.replace(/<en>(.*)<\/en>/, function(key1,key2) {
+                            source_tem = key2;
+                        })
+                    } 
+                    this.item_content = '<iframe src="'+source_tem+'" frameborder="0" height="100%" width="100%"></iframe>'
+                }
+            },
         },
         watch: {
             statusButton: function(statusButton){
