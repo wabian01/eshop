@@ -1,4 +1,4 @@
-Vue.component('list-item', {
+    Vue.component('list-item', {
         template: '#list-item',
         props: ['list_item','screen_item','task','object','indexsearch','position','horizontal','selectedValue','hasColumn'],
         data: function () {
@@ -629,7 +629,9 @@ Vue.component('list-item', {
                             list_temp[key] = "";
                         }
                         try {
-                            list_temp[key] = JSON.stringify(list_temp[key]).slice(1,-1)
+                            if(typeof(list_temp[key])!=='number'){
+                                list_temp[key] = JSON.stringify(list_temp[key]).slice(1,-1)
+                            }
                         } catch (error) {}
                         itemJSONString = itemJSONString.replace(new RegExp('##'+key+'##','g'),list_temp[key].toString().replace(/[\r\n]+/g," "));
                         itemJSONString = itemJSONString.replace('"','\"');
@@ -710,58 +712,8 @@ Vue.component('list-item', {
                                                 buttons: data
                                             }
                                         }
-                                        data=data.sort((a,b)=>a.orderNumber-b.orderNumber)
-                                        data.forEach(dynamic_button => {
-                                            if(dynamic_button.hasOwnProperty('actionID') && dynamic_button.actionID!=""){
-                                                dynamic_buttons.splice(indexbutton, 0, dynamic_button)
-                                                indexbutton++;
-                                            }
-                                        })
-                                        itemJSONString = JSON.stringify(dynamic_buttons);
-                                        if(itemJSONString.indexOf('${')>-1){
-                                            itemJSONString = itemJSONString.replace(/\${(.*?)}/g,function(me,to){
-                                                if(me.indexOf("'##")<0 && me.indexOf("\"##")<0){
-                                                    me = me.replace(/##(.*?)##/g,'\\"##$1##\\"')
-                                                }
-                                                return me;
-                                            })
-                                        }
-                                        let list_temp = {...that.list_item}
-                                        for (var key in list_temp) {
-                                            if (list_temp.hasOwnProperty(key)) {
-                                                if(list_temp[key] == null){
-                                                    list_temp[key] = "";
-                                                }
-                                                try {
-                                                    if(typeof(list_temp[key])!=='number'){
-                                                        list_temp[key] = JSON.stringify(list_temp[key]).slice(1,-1)
-                                                    }
-                                                } catch (error) {}
-                                                itemJSONString = itemJSONString.replace(new RegExp('##'+key+'##','g'),list_temp[key].toString().replace(/[\r\n]+/g," "));
-                                                itemJSONString = itemJSONString.replace('"','\"');
-                                            }
-                                        }
-                                        for (var key in that.flatRuntimeAttributes) {
-                                            if (that.flatRuntimeAttributes.hasOwnProperty(key)) {
-                                                itemJSONString = itemJSONString.replace(new RegExp('##'+key+'##','g'),that.flatRuntimeAttributes[key].replace(/[\r\n]+/g," "));
-                                                itemJSONString = itemJSONString.replace('"','\"');
-                                            }
-                                        }
-                                        for(var key in vm.current.parent){
-                                            try {
-                                                itemJSONString = itemJSONString.replace(new RegExp('##'+key+'##','g'),vm.current.parent[key]);  
-                                            } catch (error) {}
-                                        }
-                                        if(itemJSONString.indexOf('${getdata_dmobj')>-1){
-                                            itemJSONString = vm.getDataDmobj(itemJSONString)
-                                        }
-                                        if(itemJSONString.indexOf('##source:dmobj')>-1){
-                                            itemJSONString = vm.getSourceDmobj(itemJSONString)
-                                        }
-                                        if(itemJSONString.indexOf('##')>-1){
-                                            itemJSONString = itemJSONString.replace(/##(.*?)##/g,"");
-                                        }
-                                        that.item_buttons = JSON.parse(itemJSONString)
+                                        that.replaceABDynamic(data,indexbutton,dynamic_buttons)
+                                        indexbutton = indexbutton + data.length
                                         that.statusButton = false;   
                                     } catch (error) {
                                         that.statusButton = false;
@@ -815,49 +767,11 @@ Vue.component('list-item', {
                                                 buttons: data
                                             }
                                         }
-                                        data=data.sort((a,b)=>a.orderNumber-b.orderNumber)
-                                        data.forEach(dynamic_button => {
-                                            if(dynamic_button.hasOwnProperty('actionID') && dynamic_button.actionID!=""){
-                                                dynamic_buttons.splice(indexbutton, 0, dynamic_button)
-                                                indexbutton++;
-                                            }
-                                        })
-                                        itemJSONString = JSON.stringify(dynamic_buttons);
-                                        for (var key in that.list_item) {
-                                            if (that.list_item.hasOwnProperty(key) && that.list_item[key] != null ) {
-                                                itemJSONString = itemJSONString.replace(new RegExp('##'+key+'##','g'),"@@@"+that.list_item[key].toString().replace(/[\r\n]+/g," ")+"@@@");
-                                                itemJSONString = itemJSONString.replace('"','\"');
-                                            }
-                                        }
-                                        for (var key in that.flatRuntimeAttributes) {
-                                            if (that.flatRuntimeAttributes.hasOwnProperty(key)) {
-                                                itemJSONString = itemJSONString.replace(new RegExp('##'+key+'##','g'),that.flatRuntimeAttributes[key].replace(/[\r\n]+/g," "));
-                                                itemJSONString = itemJSONString.replace('"','\"');
-                                            }
-                                        }
-                                        for(var key in vm.current.parent){
-                                            try {
-                                                itemJSONString = itemJSONString.replace(new RegExp('##'+key+'##','g'),vm.current.parent[key]);  
-                                            } catch (error) {}
-                                        }
-                                        if(itemJSONString.indexOf('${getdata_dmobj')>-1){
-                                            itemJSONString = vm.getDataDmobj(itemJSONString)
-                                        }
-                                        if(itemJSONString.indexOf('##source:dmobj')>-1){
-                                            itemJSONString = vm.getSourceDmobj(itemJSONString)
-                                        }
-                                        if(itemJSONString.indexOf('##')>-1){
-                                            itemJSONString = itemJSONString.replace(/##(.*?)##/g,"");
-                                        }
-                                        try {
-                                            that.overflow_menu = JSON.parse(itemJSONString.replace(/\\"@@@|@@@\\"|'@@@|@@@'/g,'\"').replace(/"@@@|@@@"/g,'"').replace(/@@@/g,'\"'));
-                                            
-                                        } catch (error) {
-                                            that.overflow_menu = JSON.parse(itemJSONString.replace(/@@@/g,''))
-                                        }
+                                        that.replaceABDynamic(data,indexbutton,dynamic_buttons)
+                                        indexbutton = indexbutton + data.length
                                     } catch (error) {
+                                        that.count = 0;
                                     }
-                                    that.count = 0;
                                 }, error: function (error) {
                                     toastr.error(error);
                                 }
