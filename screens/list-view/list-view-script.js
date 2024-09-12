@@ -517,42 +517,6 @@ Vue.component('list-view', {
                                 
                             });
                             that.filterforVM = JSON.stringify(filterVM)
-                        }else{
-                            let filterVM = vm.activeListFilters.map(function(filter,index) {
-                                if(filter.screen_code===that.screen_item.screenCode){
-                                    if((filter.hasOwnProperty('entries') && filter.entries[0]!=undefined && filter.entries[0].toString().indexOf('lite_connection')>-1 ) || filter.hasOwnProperty('check')){
-                                            if(!filter.hasOwnProperty('check')){
-                                                filter['check'] = filter.entries[0];
-                                            }else{
-                                                filter.entries = []
-                                                filter.entries[0] = filter['check']
-                                            }
-                                            
-                                            let regExp = /\(([^)]+)\)/;
-                                            let matches = regExp.exec(filter.entries[0])[1];
-                                            if(that.object.lite_connection[matches]!=undefined){
-                                                vm.dynamicFilter(that.object.lite_connection[matches],index)
-                                            }else{
-                                                filter.entries=[];
-                                            }
-                                    }else{
-                                        let entries =  [];
-                                        if(filter.hasOwnProperty('entries') && filter.entries[0]!=undefined && (filter.entries[0]=='__daterange__' || filter.entries[0]=='__date__' || filter.entries[0]=='__userinput__' || filter.entries[0]=='__datelast__' || filter.entries[0]=='__daterecent__')){
-                                            if(filter.entries[0]=='__datelast__' || filter.entries[0]=='__daterecent__') {
-                                                filter.timeLast = 0
-                                                return
-                                            }
-                                            filter.entries=[].concat(filter.entries[0])
-                                        }else{
-                                            filter.entries=[]
-                                        }
-                                        filter.entries = filter.entries.concat(entries).filter((x, i, d) => d.indexOf(x) == i && x != '');
-                                    }  
-                                }
-                                return filter;
-                                
-                            });
-                            that.filterforVM = JSON.stringify(filterVM)
                         }
                         var flag = 0;
 
