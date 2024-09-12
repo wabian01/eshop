@@ -1,5 +1,4 @@
-
-    Vue.component('list-item', {
+Vue.component('list-item', {
         template: '#list-item',
         props: ['list_item','screen_item','task','object','indexsearch','position','horizontal','selectedValue','hasColumn'],
         data: function () {
@@ -195,21 +194,25 @@
             $('.modal-'+this.object.code+' .lds-spinner').css({'display':'none'})
         },
         methods: {
+            replaceJsonPaths: function(template) {
+                return template.replace(/##(\$.*?)##/g, (match, capture) => {
+                    if(capture === '$'){
+                        return typeof this.list_item === 'object' 
+                        ? JSON.stringify(this.list_item)
+                        : JSON.stringify([]);
+                    }
+                    const value = jsonPath(this.list_item, capture);
+                    if (!value) return match;
+                    const processedValue = value[0] ? value[0] : "";
+                    return typeof processedValue === 'object' 
+                        ? JSON.stringify(processedValue)
+                        : processedValue.toString().replace(/\"/g, "\\\"").replace(/\s/g, " ");
+                });
+            },
             handleHideView(){
                     this.screen_item_new.when_empty = vm.aggregateFunction(this.screen_item_new.when_empty,this.list_item)                  
                     let itemJSONString = this.screen_item_new.when_empty
-                    if(itemJSONString.indexOf('##$.')>-1){
-                        itemJSONString = itemJSONString.replace(/##(.*?)##/g,function(me,to){
-                            let value = jsonPath(that.list_item,to);
-                            if(value===false){
-                                value=me
-                            }else{
-                                value=value[0]!==null?value[0]:""
-                            }
-                            value=value.toString().replace(/\"/g,"\\\"").replace(/\s/g," ")
-                            return value;
-                        })
-                    }
+                    itemJSONString = this.replaceJsonPaths(itemJSONString);
                     for (var key in this.list_item) {
                        if (this.list_item.hasOwnProperty(key) && this.list_item[key] != null ) {
                             if(this.list_item[key].toString().search("##") != -1){
@@ -368,18 +371,7 @@
                     this.screen_item_new.item_template = vm.aggregateFunction(this.screen_item_new.item_template,this.list_item)
                     var temp_screen_item = this.screen_item_new;                        
                     let itemJSONString = JSON.stringify(temp_screen_item);
-                    if(itemJSONString.indexOf('##$.')>-1){
-                        itemJSONString = itemJSONString.replace(/##(.*?)##/g,function(me,to){
-                            let value = jsonPath(that.list_item,to);
-                            if(value===false){
-                                value=me
-                            }else{
-                                value=value[0]!==null?value[0]:""
-                            }
-                            value=value.toString().replace(/\"/g,"\\\"").replace(/\s/g," ")
-                            return value;
-                        })
-                    }
+                    itemJSONString = this.replaceJsonPaths(itemJSONString);
                     for (var key in this.list_item) {
                        if (this.list_item.hasOwnProperty(key) && this.list_item[key] != null ) {
                             if(this.list_item[key].toString().search("##") != -1){
@@ -472,18 +464,7 @@
                                         var itemJSONString = element.html;
                                         itemJSONString = vm.aggregateFunction(itemJSONString,this.list_item)
                                         temp_default = true;
-                                        if(itemJSONString.indexOf('##$.')>-1){
-                                            itemJSONString = itemJSONString.replace(/##(.*?)##/g,function(me,to){
-                                                let value = jsonPath(that.list_item,to);
-                                                if(value===false){
-                                                    value=me
-                                                }else{
-                                                    value=value[0]!==null?value[0]:""
-                                                }
-                                                value=value.toString().replace(/\"/g,"\\\"").replace(/\s/g," ")
-                                                return value;
-                                            })
-                                        }
+                                        itemJSONString = this.replaceJsonPaths(itemJSONString);
                                         for (var key in this.list_item) {
                                         if (this.list_item.hasOwnProperty(key) && this.list_item[key] != null ) {
                                             itemJSONString = itemJSONString.replace(new RegExp('##'+key+'##','g'),this.list_item[key].toString().replace(/[\r\n]+/g," "));
@@ -711,18 +692,7 @@
                             }else{
                                 var itemJSONString = this.screen_item_new.item_template.template_default;
                                 itemJSONString = vm.aggregateFunction(itemJSONString,this.list_item)
-                                if(itemJSONString.indexOf('##$.')>-1){
-                                    itemJSONString = itemJSONString.replace(/##(.*?)##/g,function(me,to){
-                                        let value = jsonPath(that.list_item,to);
-                                        if(value===false){
-                                            value=me
-                                        }else{
-                                            value=value[0]!==null?value[0]:""
-                                        }
-                                        value=value.toString().replace(/\"/g,"\\\"").replace(/\s/g," ")
-                                        return value;
-                                    })
-                                }
+                                itemJSONString = this.replaceJsonPaths(itemJSONString);
                                 for (var key in this.list_item) {
                                 if (this.list_item.hasOwnProperty(key) && this.list_item[key] != null) {
                                         itemJSONString = itemJSONString.replace(new RegExp('##'+key+'##','g'),this.list_item[key].toString().replace(/[\r\n]+/g," "));
@@ -1573,18 +1543,7 @@
                                 }
                             }else{
                                 var itemJSONString = this.screen_item_new.item_template.templates[dynmicNumber].layout;
-                                if(itemJSONString.indexOf('##$.')>-1){
-                                    itemJSONString = itemJSONString.replace(/##(.*?)##/g,function(me,to){
-                                        let value = jsonPath(that.list_item,to);
-                                        if(value===false){
-                                            value=me
-                                        }else{
-                                            value=value[0]!==null?value[0]:""
-                                        }
-                                        value=value.toString().replace(/\"/g,"\\\"").replace(/\s/g," ")
-                                        return value;
-                                    })
-                                }
+                                itemJSONString = this.replaceJsonPaths(itemJSONString);
                                 for (var key in this.list_item) {
                                 if (this.list_item.hasOwnProperty(key) && this.list_item[key] != null) {
                                         itemJSONString = itemJSONString.replace(new RegExp('##'+key+'##','g'),this.list_item[key].toString().replace(/[\r\n]+/g," "));
@@ -1684,7 +1643,7 @@
                         }
                         else if(this.screen_item_new.item_onclick[i].type == 'detail'){
                             try{
-                                var temp = vm.lang;
+                                var temp = vm.lang
                             }
                             catch(err){
                                 if(String(err).indexOf('en is not defined')){
@@ -1931,8 +1890,7 @@
                 }, 1);
 
             },
-            renderDivkit(schema){
-                let schema_temp = JSON.stringify(schema)
+            handleSchema(schema_temp){
                 schema_temp = vm.aggregateFunction(schema_temp,this.list_item)
                 for (var key in this.list_item) {
                     if(this.list_item[key]==null){
@@ -1963,7 +1921,12 @@
                 if(schema_temp.indexOf('##')>-1){
                     schema_temp = schema_temp.replace(/##(.*?)##/g,"");
                 }
-                var that= this
+                return schema_temp;
+            },
+            renderDivkit(schema){
+                let that= this
+                let schema_temp = JSON.stringify(schema)
+                schema_temp = this.handleSchema(schema_temp)
                 schema = JSON.parse(schema_temp)
                 let schema_lang = schema.schema
                 let lang = vm.lang;
@@ -1999,36 +1962,7 @@
             renderAdaptiveCard(schema){
                 let that = this
                 let schema_temp = JSON.stringify(schema)
-                schema_temp = vm.aggregateFunction(schema_temp,this.list_item)
-                for (var key in this.list_item) {
-                    if(this.list_item[key]==null){
-                        this.list_item[key]='';
-                    }
-                    if (this.list_item.hasOwnProperty(key) && this.list_item[key]!==null ) {
-                        if(typeof(this.list_item[key]) == 'object'){
-                            schema_temp = schema_temp.replace(new RegExp('##'+key+'##','g'),JSON.stringify(this.list_item[key]).toString().replace(/[\r\n]+/g," ").replace(/["]/g,'\\\"'));
-                        }else{
-                            schema_temp = schema_temp.replace(new RegExp('##'+key+'##','g'),this.list_item[key].toString().replace(/[\r\n]+/g," ").replace(/["]/g,'\\\"'));
-                        }
-                        schema_temp = schema_temp.replace('"','\"');
-                    }
-                }
-                for (var key in this.flatRuntimeAttributes) {
-                    if (this.flatRuntimeAttributes.hasOwnProperty(key)) {
-
-                        schema_temp = schema_temp.replace(new RegExp('##'+key+'##','g'),this.flatRuntimeAttributes[key].toString().replace(/[\r\n\t]+/g," "));
-                        schema_temp = schema_temp.replace('"','\"');
-                    }
-                }
-                for (var key in vm.current.parent) {
-                    if (vm.current.parent.hasOwnProperty(key)) {
-                        schema_temp = vm.current.parent[key] != null ? (schema_temp.replace(new RegExp('##'+key+'##','g'),vm.current.parent[key].toString().replace(/[\r\n\t]+/g," "))) : schema_temp;
-                        schema_temp = schema_temp.replace('"','\"');
-                    }
-                }
-                if(schema_temp.indexOf('##')>-1){
-                    schema_temp = schema_temp.replace(/##(.*?)##/g,"");
-                }
+                schema_temp = this.handleSchema(schema_temp)
                 schema = JSON.parse(schema_temp)
                 let schema_lang = schema.schema
                 let lang = vm.lang;
