@@ -128,15 +128,15 @@ const jumpToView = {
                                             filter.entries= [];
                                         }
                                         filter.table=object.screens[screen_code]['body_area'][body_code].code;
-                                        let check = true;
+                                        let checkTable = true;
                                         if(vm.activeListFilters.length>0){
                                             vm.activeListFilters.map(ft=>{
                                                 if(filter.screen_code === ft.screen_code && filter.column === ft.column){
-                                                    check = false;
+                                                    checkTable = false;
                                                     return;
                                                 }
                                             })
-                                            if(check){
+                                            if(checkTable){
                                                 vm.activeListFilters.push(filter);
                                             }
                                         }else{
