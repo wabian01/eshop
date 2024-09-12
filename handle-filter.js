@@ -2,7 +2,7 @@ const handleFilter = {
     methods: {
         handleFilter(filter_attributes){
             let filter_query=[]
-            let time
+            let datatime
             Object.keys(filter_attributes).map(function(key){
                 if(filter_attributes[key]=='_all'){
                     return;
@@ -14,13 +14,13 @@ const handleFilter = {
                         filter_query.push('(moment(item.'+key+').unix()>=moment("'+filter_attributes_temp[key][0]+'").unix() && moment(item.'+key+').unix()<=moment("'+filter_attributes_temp[key][1]+'").unix())')
                     }
                     else if(filter_attributes[key][0].length==10 && new Date(filter_attributes[key][0])!='Invalid Date'){
-                        time='((0<= moment(item.'+key+').unix() - moment("'+filter_attributes[key][0]+'").unix() && moment(item.'+key+').unix()-moment("'+filter_attributes[key][0]+'").unix()<=86399 )'
+                        datatime='((0<= moment(item.'+key+').unix() - moment("'+filter_attributes[key][0]+'").unix() && moment(item.'+key+').unix()-moment("'+filter_attributes[key][0]+'").unix()<=86399 )'
                         for (let i = 1; i < filter_attributes[key].length; i++) {
-                            time=time +'|| (0<=moment(item.'+key+').unix()-moment("'+filter_attributes[key][i]+'").unix() && moment(item.'+key+').unix()-moment("'+filter_attributes[key][i]+'").unix()<=86399 )'
+                            datatime=datatime +'|| (0<=moment(item.'+key+').unix()-moment("'+filter_attributes[key][i]+'").unix() && moment(item.'+key+').unix()-moment("'+filter_attributes[key][i]+'").unix()<=86399 )'
                             
                         }
-                        time=time +')';
-                        filter_query.push(time);
+                        datatime=datatime +')';
+                        filter_query.push(datatime);
                     }
                     else {
                         filter_query.push('(item.'+key+'=="'+filter_attributes[key].join('" || '+'item.'+key+'=="')+'")')
