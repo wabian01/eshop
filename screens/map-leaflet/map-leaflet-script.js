@@ -1,4 +1,4 @@
-    Vue.component('map-leaflet', {
+ Vue.component('map-leaflet', {
         template: '#map-leaflet',
         props: ['list_items_origin','id_random','body_area','item_search_string','task','object','item_filter_attributes','update_map','refresh_rate'],
         data: function () {
@@ -83,20 +83,43 @@
                     });
                 }
                 getPosition().then((position) => {
+                    that.renderMap(true,position.coords.latitude, position.coords.longitude,16)
+                }).catch(error=>{
+                    let mapEle = $('#webapp').find('.parents-map-leaflet');
+                    if ( mapEle.length > 0 && ($("#webapp").css("display") !== "none") ) {
+                        Swal.fire({
+                            title: that.lang=='en'?'Warning!':'Cảnh báo!',
+                            text: that.permission[that.lang],
+                            icon: 'warning',
+                            confirmButtonText: that.lang=='en'?'OK':'Xác Nhận'
+                        })
+                    }
+                    that.renderMap(false,17.0286292,107.3789675,6)
+                })
+                    
+                }
+            },
+            beforeDestroy: function(){
+                this.renderMarkerStart = false;
+            },
+            methods: {
+                renderMap(access,latitude,longitude,zoom){
+                    let that = this
                     let mymap
                     try {
-                        mymap = L.map(this.id_random,{zoomControl:true}).setView([position.coords.latitude, position.coords.longitude], 16);
+                        mymap = L.map(this.id_random,{zoomControl:true}).setView([latitude, longitude], zoom);
                     } catch (error) {
                         this.$parent.$parent.re_render_map = false
                     }
-                    
-                    let greenIcon1 = L.icon({
+                    if(access){
+                        let greenIcon1 = L.icon({
                                 iconUrl: 'https://cdn.rtworkspace.com/plugins/webapp/images/location.png',
                                 iconSize:     [60, 60], 
                                 iconAnchor:   [30, 30],
                             });
-                    L.marker([position.coords.latitude, position.coords.longitude],{icon: greenIcon1,zIndexOffset:-9999}).addTo(mymap)
-
+                        L.marker([latitude, longitude],{icon: greenIcon1,zIndexOffset:-9999}).addTo(mymap)
+                    }
+                    
                     let osm = L.tileLayer('http://{s}.google.com/vt/lyrs=m&x={x}&y={y}&z={z}', {
                         maxZoom: 22,
                         subdomains:['mt0','mt1','mt2','mt3']
@@ -107,7 +130,15 @@
                         subdomains:['mt0','mt1','mt2','mt3']
                     })
                     L.easyButton('fa-location-arrow', function(btn, map){
-                        mymap.flyTo([position.coords.latitude,position.coords.longitude], 18, {
+                        if(!access){
+                            Swal.fire({
+                                title: that.lang=='en'?'Warning!':'Cảnh báo!',
+                                text: that.permission[that.lang],
+                                icon: 'warning',
+                                confirmButtonText: that.lang=='en'?'OK':'Xác Nhận'
+                            })
+                        }
+                        mymap.flyTo([latitude,longitude], zoom, {
                             animate: true,
                         });
                     }).addTo(mymap);
@@ -151,7 +182,6 @@
                         mymap.flyTo([long,lat], 22, {
                                 animate: true,
                             });
-                    
                         }
                     }
                     this.mymap = mymap
@@ -161,110 +191,7 @@
                         this.startfilter = true
                         this.renderMarker(this.list_items)
                     }
-                }).catch(error=>{
-                    let that = this
-                    let mapEle = $('#webapp').find('.parents-map-leaflet');
-                    if ( mapEle.length > 0 && ($("#webapp").css("display") !== "none") ) {
-                        Swal.fire({
-                            title: that.lang=='en'?'Warning!':'Cảnh báo!',
-                            text: that.permission[that.lang],
-                            icon: 'warning',
-                            confirmButtonText: that.lang=='en'?'OK':'Xác Nhận'
-                        })
-                    }
-                    let mymap
-                    try {
-                        mymap = L.map(this.id_random,{zoomControl:true}).setView([17.0286292,107.3789675], 6);
-                    } catch (error) {
-                        this.$parent.$parent.re_render_map = false
-                    }
-                    let greenIcon1 = L.icon({
-                                iconUrl: 'https://cdn.rtworkspace.com/plugins/webapp/images/location.png',
-                                iconSize:     [60, 60], 
-                                iconAnchor:   [30, 30],
-                            });
-                    let osm = L.tileLayer('http://{s}.google.com/vt/lyrs=m&x={x}&y={y}&z={z}', {
-                        maxZoom: 22,
-                        subdomains:['mt0','mt1','mt2','mt3']
-                    }),
-                   
-                    osm_de = L.tileLayer('http://{s}.google.com/vt/lyrs=s&x={x}&y={y}&z={z}', {
-                        maxZoom: 22,
-                        subdomains:['mt0','mt1','mt2','mt3']
-                    })
-                    L.easyButton('fa-location-arrow', function(btn, map){
-                            Swal.fire({
-                                title: that.lang=='en'?'Warning!':'Cảnh báo!',
-                                text: that.permission[that.lang],
-                                icon: 'warning',
-                                confirmButtonText: that.lang=='en'?'OK':'Xác Nhận'
-                            })
-                            mymap.flyTo([position.coords.latitude,position.coords.longitude], 18, {
-                                animate: true,
-                              });
-                    }).addTo(mymap);
-                    vm['mapLeaflet'] = mymap;
-                    mymap.options.maxZoom = 22;
-                    mymap.options.minZoom = 2;
-                    osm.addTo(mymap)
-                    let baseMaps = {
-                        "StateLite": osm_de,
-                        'Default': osm,
-                    }
-
-                    let controlLayers = L.control.layers(baseMaps).setPosition('bottomleft').addTo(mymap);
-                    attributes = this.body_area.attributes;             
-                    
-                    let markers = L.markerClusterGroup({ chunkedLoading: true });
-                    this.markers = markers
-                   
-                  
-                    mymap.attributionControl.addAttribution('RTA &copy; <a href= "https://rta.rtworkspace.com">rta.rtworkspace.com</a>');
-                    L.DomEvent.addListener(markers, 'click', function(e){
-                        mymap.closePopup();
-                        that.stateButton = true;
-                        that.showContent = true;
-                        $('#'+that.id_random+' .leaflet-bottom').css({'bottom':'23vh'})
-                        let popup = e.layer.getPopup();
-                        let content = popup.getContent();
-                        that.openHtmlView(content)
-                    });
-                    
-                    mymap.addLayer(markers).on('click', function(e) {
-                        that.narrowPopup()
-                        that.showContent = false;
-                        $('#'+that.id_random+' .leaflet-bottom').css({'bottom':'0'})
-                        $('#'+that.id_random+' .leaflet-top').css({'top':'0'})
-                        $('.showPopup.'+that.id_random+' .content').empty()
-                    });;
-                    document.getElementById('map-navigation').onclick = function(e) {
-                        let lat = e.target.getAttribute('data-longitude');
-                        let long = e.target.getAttribute('data-latitude');
-                        if (lat && long) {
-                        
-                        mymap.flyTo([long,lat], 22, {
-                                animate: true,
-                            });
-                    
-                        }
-                    }
-                   
-                    this.mymap = mymap
-                    if(Object.keys(this.quickfilter).length>0 && this.quickfilter.firstEntrySelectedByDefault){
-                        this.startfilter = true
-                    }else{
-                        this.startfilter = true
-                        this.renderMarker(this.list_items)
-                    }
-                    
-                })
-                    
-                }
-            },
-            beforeDestroy: function(){
-                this.renderMarkerStart = false;
-            },
-            methods: {
+                },
                 filterMapview:function(item_filter_attributes,check=false){
                     try {
                         let markers = this.markers
@@ -553,7 +480,7 @@
                                     }
                                 }
                                 return $.ajax({
-                                    url: button.source.replace("./","<?php echo AppEnv::BASE_URL ?>"+"/"),
+                                    url: button.source.replace("./",window.location.origin+"/"),
                                     type: "GET",
                                     contentType: "application/json",
                                     dataType: "json",
@@ -720,4 +647,3 @@
                 },
             },
     });
-
