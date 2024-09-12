@@ -180,26 +180,7 @@ Vue.component('list-view', {
                 this.hasColumn = true;
                 this.valColumn = columnDefault.split('|')[0].split(',');
 
-                if(localStorage.getItem("currentSelectedValue/"+this.screen.code) !== null && localStorage.getItem("currentSelectedValue/"+this.screen.code) !== "") {
-                    this.selectedValue = localStorage.getItem("currentSelectedValue/"+this.screen.code);
-
-                    // change column when using "orientation": "horizontal"
-                    if (this.screen_item.hasOwnProperty('layout') && 
-                        this.screen_item.layout.hasOwnProperty('orientation') && 
-                        this.screen_item.layout.orientation === "horizontal"
-                    ) {
-                        this.numberCol = localStorage.getItem("currentSelectedValue/"+this.screen.code);
-                    }
-                } else if (this.screen_item.numCol !== null && this.screen_item.numCol !== undefined && this.screen_item.numCol !== "") {
-                    if (this.screen_item.numCol.toString().includes('|')) {
-                        // using syntax x|y, the mobile screen takes x, and the desktop screen takes y.
-                        this.selectedValue = this.screen_item.numCol.toString().split('|')[1];
-                    } else {
-                        this.selectedValue = this.screen_item.numCol.toString();
-                    } 
-                } else {
-                    this.selectedValue = "1";
-                }
+                this.selectedValueLocal()
             }
 
             // Dynamic_style (with articel/gallery/gallery2)
@@ -250,27 +231,7 @@ Vue.component('list-view', {
                 }
             }
             // Setting default value column 
-            if(localStorage.getItem("currentSelectedValue/"+this.screen.code) !== null && localStorage.getItem("currentSelectedValue/"+this.screen.code) !== "") {
-                this.selectedValue = localStorage.getItem("currentSelectedValue/"+this.screen.code);
-
-                // change column when using "orientation": "horizontal"
-                if (this.screen_item.type === "gridView" && 
-                    this.screen_item.hasOwnProperty('layout') && 
-                    this.screen_item.layout.hasOwnProperty('orientation') && 
-                    this.screen_item.layout.orientation === "horizontal"
-                ) {
-                    this.numberCol = localStorage.getItem("currentSelectedValue/"+this.screen.code);
-                }
-            } else if (this.screen_item.numCol !== null && this.screen_item.numCol !== undefined && this.screen_item.numCol !== "") {
-                if (this.screen_item.numCol.toString().includes('|')) {
-                    // using syntax x|y, the mobile screen takes x, and the desktop screen takes y.
-                    this.selectedValue = this.screen_item.numCol.toString().split('|')[1];
-                } else {
-                    this.selectedValue = this.screen_item.numCol.toString();
-                } 
-            } else {
-                this.selectedValue = "1";
-            }
+            this.selectedValueLocal()
 
         },
         mounted: function (){
@@ -302,6 +263,29 @@ Vue.component('list-view', {
             
         },
         methods: {
+            selectedValueLocal(){
+                if(localStorage.getItem("currentSelectedValue/"+this.screen.code) !== null && localStorage.getItem("currentSelectedValue/"+this.screen.code) !== "") {
+                    this.selectedValue = localStorage.getItem("currentSelectedValue/"+this.screen.code);
+
+                    // change column when using "orientation": "horizontal"
+                    if (this.screen_item.type === "gridView" && 
+                        this.screen_item.hasOwnProperty('layout') && 
+                        this.screen_item.layout.hasOwnProperty('orientation') && 
+                        this.screen_item.layout.orientation === "horizontal"
+                    ) {
+                        this.numberCol = localStorage.getItem("currentSelectedValue/"+this.screen.code);
+                    }
+                } else if (this.screen_item.numCol !== null && this.screen_item.numCol !== undefined && this.screen_item.numCol !== "") {
+                    if (this.screen_item.numCol.toString().includes('|')) {
+                        // using syntax x|y, the mobile screen takes x, and the desktop screen takes y.
+                        this.selectedValue = this.screen_item.numCol.toString().split('|')[1];
+                    } else {
+                        this.selectedValue = this.screen_item.numCol.toString();
+                    } 
+                } else {
+                    this.selectedValue = "1";
+                }
+            },
             displayValue: function(number) {
                 if (this.screen_item.type === "gridView" && 
                     this.screen_item.hasOwnProperty('layout') && 
