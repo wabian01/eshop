@@ -1,7 +1,7 @@
 Vue.component('map-leaflet', {
         template: '#map-leaflet',
         props: ['list_items_origin','id_random','body_area','item_search_string','task','object','item_filter_attributes','update_map','refresh_rate'],
-        mixins: [handleFilter],
+        mixins: [handleFilter,handleButtonVisible],
         data: function () {
         return {
             searchs: [],
@@ -478,44 +478,44 @@ Vue.component('map-leaflet', {
                     })     
                 },
                 buttonData() {
-                    let button_replace = JSON.stringify(JSON.parse(JSON.stringify(attributes.item_buttons)))
-                    let button_visible = JSON.parse(button_replace)
+                    let button_replace_map = JSON.stringify(JSON.parse(JSON.stringify(attributes.item_buttons)))
+                    let button_visible = JSON.parse(button_replace_map)
                     button_visible = this.handleButtonVisible(button_visible,this.list_item)
-                    button_replace = JSON.stringify(button_visible)
+                    button_replace_map = JSON.stringify(button_visible)
                     for(var key in this.list_item){
                         if(this.list_item.hasOwnProperty(key) && this.list_item[key] != null){
-                            button_replace = button_replace.toString().replace(new RegExp('"##'+key+'##"','g'),'"'+(this.list_item[key].toString().replace(/[\r\n]+/g," ").replace(/["]/g,'\\\"'))+'"');
-                            button_replace = button_replace.toString().replace(new RegExp('\'##'+key+'##\'','g'),"'"+(this.list_item[key].toString().replace(/[\r\n]+/g," ").replace(/["]/g,'\\\"'))+"'");
-                            button_replace = button_replace.toString().replace(new RegExp('##'+key+'##','g'),(this.list_item[key].toString().replace(/[\r\n]+/g," ").replace(/["]/g,'\\\"')));
+                            button_replace_map = button_replace_map.toString().replace(new RegExp('"##'+key+'##"','g'),'"'+(this.list_item[key].toString().replace(/[\r\n]+/g," ").replace(/["]/g,'\\\"'))+'"');
+                            button_replace_map = button_replace_map.toString().replace(new RegExp('\'##'+key+'##\'','g'),"'"+(this.list_item[key].toString().replace(/[\r\n]+/g," ").replace(/["]/g,'\\\"'))+"'");
+                            button_replace_map = button_replace_map.toString().replace(new RegExp('##'+key+'##','g'),(this.list_item[key].toString().replace(/[\r\n]+/g," ").replace(/["]/g,'\\\"')));
                         }
                     }
-                    button_replace = button_replace.replace(/\\"'(.*?)'\\"/g,'\\"$1\\"')
+                    button_replace_map = button_replace_map.replace(/\\"'(.*?)'\\"/g,'\\"$1\\"')
                     for (var key in vm.flatRuntimeAttributes) {
                         if (vm.flatRuntimeAttributes.hasOwnProperty(key)) {
-                            button_replace = button_replace.replace(new RegExp('##'+key+'##','g'),vm.flatRuntimeAttributes[key].replace(/[\r\n]+/g," "));
-                            button_replace = button_replace.replace('"','\"');
+                            button_replace_map = button_replace_map.replace(new RegExp('##'+key+'##','g'),vm.flatRuntimeAttributes[key].replace(/[\r\n]+/g," "));
+                            button_replace_map = button_replace_map.replace('"','\"');
                         }
                     }  
                     for(var key in vm.current.parent){
                         try {
-                            button_replace = button_replace.replace(new RegExp('##'+key+'##','g'),vm.current.parent[key].replace(/[\r\n]+/g," "));
+                            button_replace_map = button_replace_map.replace(new RegExp('##'+key+'##','g'),vm.current.parent[key].replace(/[\r\n]+/g," "));
                         } catch (error) {
                         }
-                        button_replace = button_replace.replace('"','\"');
+                        button_replace_map = button_replace_map.replace('"','\"');
                     }
-                    if(button_replace.indexOf('${getdata_dmobj')>-1){
-                            button_replace = vm.getDataDmobj(button_replace)
+                    if(button_replace_map.indexOf('${getdata_dmobj')>-1){
+                            button_replace_map = vm.getDataDmobj(button_replace_map)
                     }
-                    if(button_replace.indexOf('##source:dmobj')>-1){
-                        button_replace = vm.getSourceDmobj(button_replace)
+                    if(button_replace_map.indexOf('##source:dmobj')>-1){
+                        button_replace_map = vm.getSourceDmobj(button_replace_map)
                     }
-                    button_replace = vm.jsonHolderData(button_replace,'buttonGroup')
-                    if(button_replace.indexOf('##')>-1){
-                        button_replace = button_replace.replace(/\\\"##(.*?)##\\\"/g,"''");
-                        button_replace = button_replace.replace(/##(.*?)##/g,"''");
+                    button_replace_map = vm.jsonHolderData(button_replace_map,'buttonGroup')
+                    if(button_replace_map.indexOf('##')>-1){
+                        button_replace_map = button_replace_map.replace(/\\\"##(.*?)##\\\"/g,"''");
+                        button_replace_map = button_replace_map.replace(/##(.*?)##/g,"''");
                     }
                     
-                    this.item_buttons = JSON.parse(button_replace);
+                    this.item_buttons = JSON.parse(button_replace_map);
                     this.handleDynamicButtons();
                 },
                 openHtmlView(index){
@@ -569,55 +569,6 @@ Vue.component('map-leaflet', {
                             content = el[attributes['description']]
                         }
                         $('.showPopup.'+this.id_random+' .content').html(content)
-                },
-                handleButtonVisible(screen_item_new_temp,list_item){
-                    screen_item_new_temp.forEach(element => {                    
-                        for(var key in element){
-                            if(key === 'name'){
-                                element[key] = vm.aggregateFunction(element[key],list_item)
-                            }
-                            for(var key1 in list_item){
-                                if(key == 'visible' && element[key].toString().indexOf(key1)>-1 && element[key] != null && list_item[key1] !=null ){
-                                    element[key] = element[key].toString().replace(new RegExp('"##'+key1+'##"','g'),'"'+(this.list_item[key1].toString().replace(/[\r\n]+/g," ").replace(/["]/g,'\\\"'))+'"');
-                                    element[key] = element[key].toString().replace(new RegExp('\'##'+key1+'##\'','g'),"'"+(this.list_item[key1].toString().replace(/[\r\n]+/g," ").replace(/["]/g,'\\\"'))+"'");
-                                    element[key] = element[key].toString().replace(new RegExp('##'+key1+'##','g'),"'"+(this.list_item[key1].toString().replace(/[\r\n]+/g," ").replace(/["]/g,'\\\"'))+"'");           
-                                }
-                            }
-                            for (var key2 in vm.flatRuntimeAttributes) {
-                                if (vm.flatRuntimeAttributes.hasOwnProperty(key2)) {
-                                    if(key == 'visible' && element[key].toString().indexOf(key2)>-1 && element[key] != null && vm.flatRuntimeAttributes[key2] !=null ){
-                                        let hasMatches = element[key].match(/matches\((.*?)\)/g) 
-                                        
-                                        if( !(hasMatches && hasMatches[0] && hasMatches[0].indexOf("##")) && element[key].indexOf('"##')<0 && element[key].indexOf('\'##')<0){
-                                            element[key] = element[key].toString().replace(new RegExp('##'+key2+'##','g'),"'"+(vm.flatRuntimeAttributes[key2].toString().replace(/[\r\n]+/g," ").replace(/["]/g,'\\\"'))+"'");
-                                        }
-                                        else{
-                                            element[key] = element[key].toString().replace(new RegExp('##'+key2+'##','g'),vm.flatRuntimeAttributes[key2].toString().replace(/[\r\n]+/g," ").replace(/["]/g,'\\\"'));
-                                        }
-                                    }
-                                }
-                            }
-                            for(var key3 in vm.current.parent){
-                                if(key == 'visible' && element[key].toString().indexOf(key3)>-1 && element[key] != null && vm.current.parent[key3] !=null ){
-                                        if( element[key].indexOf('"##')<0 && element[key].indexOf('\'##')<0){
-                                            element[key] = element[key].toString().replace(new RegExp('##'+key3+'##','g'),"'"+(vm.current.parent[key3].toString().replace(/[\r\n]+/g," ").replace(/["]/g,'\\\"'))+"'");
-                                        }
-                                        else{
-                                            element[key] = element[key].toString().replace(new RegExp('##'+key3+'##','g'),vm.current.parent[key3].toString().replace(/[\r\n]+/g," ").replace(/["]/g,'\\\"'));
-                                        }
-                                    }
-                            }
-                            if(key == 'visible' && element[key].toString().indexOf('##')>-1){
-                                if( element[key].indexOf('"##')<0 && element[key].indexOf('\'##')<0){
-                                    element[key] = element[key].toString().replace(/##(.*?)##/g,'""')
-                                }
-                                else{
-                                    element[key] = element[key].toString().replace(/##(.*?)##/g,'')
-                                }
-                            }
-                        }
-                    });
-                    return screen_item_new_temp;
                 },
             },
     });
