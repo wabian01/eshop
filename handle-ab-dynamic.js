@@ -59,10 +59,10 @@ const handleDynamicButtons = {
                         }
                         if(button.hasOwnProperty('payloadLifetime')){
                             if(vm.payloadLifetime.hasOwnProperty(hashCode(button.source))){
-                                let timeCache = vm.payloadLifetime[hashCode(button.source)].time
-                                let timePayload = button.payloadLifetime * 1000
-                                let timeCurrent = (new Date()).getTime()
-                                if(timeCurrent - timeCache < timePayload){
+                                let timeCacheAB = vm.payloadLifetime[hashCode(button.source)].time
+                                let timePayloadAB = button.payloadLifetime * 1000
+                                let timeCurrentAB = (new Date()).getTime()
+                                if(timeCurrentAB - timeCacheAB < timePayloadAB){
                                     let button_cache = vm.payloadLifetime[hashCode(button.source)].buttons;
                                     that.replaceABDynamic(button_cache,indexbutton,dynamic_buttons)
                                     indexbutton = indexbutton + button_cache.length
