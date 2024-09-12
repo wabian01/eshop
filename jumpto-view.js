@@ -103,15 +103,15 @@ const jumpToView = {
                                         }
                                         filter.code = 'filter-'+makeElemId();
                                         filter.screen_code = screen_code;
-                                        let check = true;
+                                        let checkList = true;
                                         if(vm.activeListFilters.length>0){
                                             vm.activeListFilters.map(ft=>{
                                                 if(filter.screen_code === ft.screen_code && filter.column === ft.column){
-                                                    check = false;
+                                                    checkList = false;
                                                     return;
                                                 }
                                             })
-                                            if(check){
+                                            if(checkList){
                                                 vm.activeListFilters.push(filter);
                                             }
                                         }else{
