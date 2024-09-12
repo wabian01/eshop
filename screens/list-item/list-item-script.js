@@ -1,4 +1,4 @@
- Vue.component('list-item', {
+Vue.component('list-item', {
         template: '#list-item',
         props: ['list_item','screen_item','task','object','indexsearch','position','horizontal','selectedValue','hasColumn'],
         data: function () {
@@ -459,68 +459,40 @@
                         }
                        
                         if(temp_default == false){
-                            if(this.screen_item_new.item_template.template_default.type == "divkit-minimal"){
+                            let typeView = this.screen_item_new.item_template.template_default.type
+                            if(typeView == "divkit-minimal"){
                                 let divkit_tem = JSON.parse(JSON.stringify(this.screen_item))
                                 this.renderDivkitMinimal(divkit_tem.item_template.template_default.attributes)
                                 this.divkit = true
                             }
-                            if(this.screen_item_new.item_template.template_default.type == "divkit"){
+                            if(typeView == "divkit"){
                                 let divkit_tem = JSON.parse(JSON.stringify(this.screen_item))
                                 this.renderDivkit(divkit_tem.item_template.template_default.attributes)
                                 this.divkit = true
                             }
-                            if(this.screen_item_new.item_template.template_default.type == "adaptive-card"){
+                            if(typeView == "adaptive-card"){
                                 let adaptive_tem = JSON.parse(JSON.stringify(this.screen_item))
                                 this.renderAdaptiveCard(adaptive_tem.item_template.template_default.attributes)
                                 this.divkit = true
                             }
                             if(this.screen_item_new.item_template.template_default.hasOwnProperty('type')){
                                 let attributes = JSON.parse(JSON.stringify(this.screen_item.item_template.template_default.attributes))
-                                if(this.screen_item_new.item_template.template_default.type == 'article'){
+                                if(typeView == 'article'){
                                     this.handleArticle(attributes)
                                 }
-                                else if(this.screen_item_new.item_template.template_default.type == 'contact'){
+                                else if(typeView == 'contact'){
                                     this.handleContact(attributes)
                                 }
-                                else if(this.screen_item_new.item_template.template_default.type == "gallery"){
+                                else if(typeView == "gallery"){
                                     this.handleGallery(attributes)
                                 }
-                                else if(this.screen_item_new.item_template.template_default.type == "gallery2"){
+                                else if(typeView == "gallery2"){
                                     this.handleGallery2(attributes)  
                                 }
-                                else if(this.screen_item_new.item_template.template_default.type == "html"){
+                                else if(typeView == "html"){
                                     this.handleHtml(attributes)
                                 }
-                                for(var key in attributes){
-                                    if (attributes.hasOwnProperty(key)) {
-                                        if(typeof(attributes[key])!='string'){
-                                            continue;
-                                        }
-                                        if(key == 'phone' && this.screen_item_new.item_template.template_default != '' && this.screen_item_new.item_template.template_default.cloud == true){
-                                            this.phoneNum = this.list_item[attributes[key]];
-                                            if (this.phoneNum == "" || this.phoneNum == null || this.phoneNum == undefined) {
-                                                this.phoneNum = false;
-                                            }
-                                        }
-                                        if(attributes[key].length < 1){
-                                            this.item_content = this.item_content.replace(new RegExp('##'+key+'##','g'),attributes[key].toString().replace(/[\r\n]+/g," "));
-                                        }
-                                        else{
-                                            if(key == 'thumbnail'){
-                                                if(this.list_item[attributes[key]] !== '' && this.list_item[attributes[key]] != null && this.list_item[attributes[key]] != undefined){
-                                                    this.item_content = this.item_content.replace(new RegExp('##'+key+'##','g'),"##"+attributes[key].replace(/[\r\n]+/g," ")+"##");
-                                                }else{
-                                                    this.item_content = this.item_content.replace(new RegExp('##'+key+'##','g'),"/metronic6/images/rta_nophoto.webp");
-                                                }
-                                            }else if(key == 'description' && attributes[key].toString().indexOf('##')>-1){
-
-                                            }else{
-                                                this.item_content = this.item_content.replace(new RegExp('##'+key+'##','g'),"##"+attributes[key].replace(/[\r\n]+/g," ")+"##");
-                                            }
-                                        }
-                                        this.item_content = this.item_content.replace('"','\"');
-                                    }
-                                }
+                                this.handleContentAttribute(attributes,this.screen_item_new.item_template.template_default)
                             }else{
                                 var itemJSONString = this.screen_item_new.item_template.template_default;
                                 itemJSONString = vm.aggregateFunction(itemJSONString,this.list_item)
@@ -528,28 +500,8 @@
                                 this.item_content =  itemJSONString;
                             }
 
-                            if(this.screen_item_new.item_template.template_default.type == "web-page"){
-                                let lang = vm.lang;
-                                let webpage = JSON.parse(JSON.stringify(this.screen_item_new.item_template.template_default.attributes)).content
-                                if(lang==='vi'){
-                                    webpage = webpage.replace(/<en>.*<\/en>/,'')
-                                }else{
-                                    webpage = webpage.replace(/<vi>.*<\/vi>/,'')
-                                }
-                                let functionApp = `
-                                <script>
-                                    class App{
-                                        static callActionButton(json){
-                                            let moduleCode = '`+this.object.moduleCode+`';
-                                            let subModuleCode = '`+this.object.subModuleCode+`';
-                                            let componentCode = '`+this.object.componentCode+`';
-                                            let code = '`+this.object.code+`';
-                                            let rawComponentCode = '`+this.object.rawComponentCode+`';
-                                            window.parent.vm.callActionButton(json,moduleCode,subModuleCode,componentCode,code,rawComponentCode)
-                                        }}  
-                                <\/script>`
-                                this.listJS = true;
-                                this.item_content = webpage + functionApp
+                            if(typeView == "web-page"){
+                                this.handleWebPage(this.screen_item_new.item_template.template_default.attributes)
                             }
                             
                             this.handleItem();
@@ -580,59 +532,10 @@
                             else if(this.screen_item_new.item_template.template_default.type == "html"){
                                 this.handleHtml(attributes)
                             }
-                            for(var key in attributes){
-                                if (attributes.hasOwnProperty(key)) {
-                                    if(typeof(attributes[key])!='string'){
-                                        continue;
-                                    }
-                                    if(key == 'phone' && this.screen_item_new.item_template.template_default != '' && this.screen_item_new.item_template.template_default.cloud == true){
-                                        this.phoneNum = this.list_item[attributes[key]];
-                                        if (this.phoneNum == "" || this.phoneNum == null || this.phoneNum == undefined) {
-                                            this.phoneNum = false;
-                                        }
-                                    }
-                                    if(attributes[key].length < 1){
-                                        this.item_content = this.item_content.replace(new RegExp('##'+key+'##','g'),attributes[key].toString().replace(/[\r\n]+/g," "));
-                                    }
-                                    else{
-                                        if(key == 'thumbnail'){
-                                            if(this.list_item[attributes[key]] !== '' && this.list_item[attributes[key]] != null && this.list_item[attributes[key]] != undefined){
-                                                this.item_content = this.item_content.replace(new RegExp('##'+key+'##','g'),"##"+attributes[key].replace(/[\r\n]+/g," ")+"##");
-                                            }else{
-                                                this.item_content = this.item_content.replace(new RegExp('##'+key+'##','g'),"/metronic6/images/rta_nophoto.webp");
-                                            }
-                                        }else if(key == 'description' && attributes[key].toString().indexOf('##')>-1){
-
-                                        }else{
-                                            this.item_content = this.item_content.replace(new RegExp('##'+key+'##','g'),"##"+attributes[key].replace(/[\r\n]+/g," ")+"##");
-                                        }
-                                    }
-                                    this.item_content = this.item_content.replace('"','\"');
-                                }
-                            }
+                            this.handleContentAttribute(attributes,this.screen_item_new.item_template.template_default)
                         }
                         if(this.screen_item_new.item_template.template_default.type == "web-page"){
-                            let lang = vm.lang;
-                            let webpage = JSON.parse(JSON.stringify(this.screen_item_new.item_template.template_default.attributes)).content
-                            if(lang==='vi'){
-                                webpage = webpage.replace(/<en>.*<\/en>/,'')
-                            }else{
-                                webpage = webpage.replace(/<vi>.*<\/vi>/,'')
-                            }
-                            let functionApp = `
-                            <script>
-                                class App{
-                                    static callActionButton(json){
-                                        let moduleCode = '`+this.object.moduleCode+`';
-                                        let subModuleCode = '`+this.object.subModuleCode+`';
-                                        let componentCode = '`+this.object.componentCode+`';
-                                        let code = '`+this.object.code+`';
-                                        let rawComponentCode = '`+this.object.rawComponentCode+`';
-                                        window.parent.vm.callActionButton(json,moduleCode,subModuleCode,componentCode,code,rawComponentCode)
-                                    }}  
-                            <\/script>`
-                            this.listJS = true;
-                            this.item_content = webpage + functionApp
+                            this.handleWebPage(this.screen_item_new.item_template.template_default.attributes)
                         }
                         if(this.screen_item_new.item_template.template_default.type == "divkit-minimal"){
                             let divkit_tem = JSON.parse(JSON.stringify(this.screen_item))
@@ -1002,98 +905,50 @@
             },
             dynamicItem(dynmicNumber){
                 if(this.screen_item_new.item_template.templates[dynmicNumber].layout.hasOwnProperty('type')){
-                        let attributes = JSON.parse(JSON.stringify(this.screen_item.item_template.templates[dynmicNumber].layout.attributes))
-                        if(this.screen_item_new.item_template.templates[dynmicNumber].layout.type == "divkit-minimal"){
-                            let divkit_attributes = JSON.parse(JSON.stringify(this.screen_item.item_template.templates[dynmicNumber].layout.attributes))
-                            this.renderDivkitMinimal(divkit_attributes)
-                            this.divkit = true
-                        }
-                        if(this.screen_item_new.item_template.templates[dynmicNumber].layout.type == "divkit"){
-                            let divkit_attributes = JSON.parse(JSON.stringify(this.screen_item.item_template.templates[dynmicNumber].layout.attributes))
-                            this.renderDivkit(divkit_attributes)
-                            this.divkit = true
-                        }
-                        if(this.screen_item_new.item_template.templates[dynmicNumber].layout.type == "adaptive-card"){
-                            let adaptive_attributes = JSON.parse(JSON.stringify(this.screen_item.item_template.templates[dynmicNumber].layout.attributes))
-                            this.renderAdaptiveCard(adaptive_attributes)
-                            this.divkit = true
-                        }
-                        if(this.screen_item_new.item_template.templates[dynmicNumber].layout.type == 'article'){
-                            this.handleArticle(attributes)
-                        }
-                        else if(this.screen_item_new.item_template.templates[dynmicNumber].layout.type == 'contact'){
-                            this.handleContact(attributes)
-                        }
-                        else if(this.screen_item_new.item_template.templates[dynmicNumber].layout.type == "gallery"){
-                            this.handleGallery(attributes)
-                        }
-                        else if(this.screen_item_new.item_template.templates[dynmicNumber].layout.type == "gallery2"){
-                            this.handleGallery2(attributes)  
-                        }
-                        else if(this.screen_item_new.item_template.templates[dynmicNumber].layout.type == "html"){
-                            this.handleHtml(attributes)
-                        }
-                        for(var key in attributes){
-                            if (attributes.hasOwnProperty(key)) {
-                                if(typeof(attributes[key])!='string'){
-                                    continue;
-                                }
-                                if(key == 'phone' && this.screen_item_new.item_template.templates[dynmicNumber].layout != '' && this.screen_item_new.item_template.templates[dynmicNumber].layout.cloud == true){
-                                    this.phoneNum = this.list_item[attributes[key]];
-                                    if (this.phoneNum == "" || this.phoneNum == null || this.phoneNum == undefined) {
-                                        this.phoneNum = false;
-                                    }
-                                }
-                                if(attributes[key].length < 1){
-                                    this.item_content = this.item_content.replace(new RegExp('##'+key+'##','g'),attributes[key].toString().replace(/[\r\n]+/g," "));
-                                }
-                                else{
-                                    if(key == 'thumbnail'){
-                                        if(this.list_item[attributes[key]] !== '' && this.list_item[attributes[key]] != null && this.list_item[attributes[key]] != undefined){
-                                            this.item_content = this.item_content.replace(new RegExp('##'+key+'##','g'),"##"+attributes[key].replace(/[\r\n]+/g," ")+"##");
-                                        }else{
-                                            this.item_content = this.item_content.replace(new RegExp('##'+key+'##','g'),"/metronic6/images/rta_nophoto.webp");
-                                        }
-                                    }else if(key == 'description' && attributes[key].toString().indexOf('##')>-1){
-
-                                    }else{
-                                        this.item_content = this.item_content.replace(new RegExp('##'+key+'##','g'),"##"+attributes[key].replace(/[\r\n]+/g," ")+"##");
-                                    }
-                                }
-                                this.item_content = this.item_content.replace('"','\"');
-                            }
-                        }
-                    }else{
-                        var itemJSONString = this.screen_item_new.item_template.templates[dynmicNumber].layout;
-                        itemJSONString = this.replaceAttribute(itemJSONString)
-                        this.item_content =  itemJSONString;
+                    let attributes = JSON.parse(JSON.stringify(this.screen_item.item_template.templates[dynmicNumber].layout.attributes))
+                    let typeView = this.screen_item_new.item_template.templates[dynmicNumber].layout.type
+                    if(typeView == "divkit-minimal"){
+                        let divkit_attributes = JSON.parse(JSON.stringify(this.screen_item.item_template.templates[dynmicNumber].layout.attributes))
+                        this.renderDivkitMinimal(divkit_attributes)
+                        this.divkit = true
                     }
-                    if(this.screen_item_new.item_template.templates[dynmicNumber].layout.type == "web-page"){
-                        let lang = vm.lang;
-                        let webpage = JSON.parse(JSON.stringify(this.screen_item_new.item_template.templates[dynmicNumber].layout.attributes)).content
-                        if(lang==='vi'){
-                            webpage = webpage.replace(/<en>.*<\/en>/,'')
-                        }else{
-                            webpage = webpage.replace(/<vi>.*<\/vi>/,'')
-                        }
-                        let functionApp = `
-                        <script>
-                            class App{
-                                static callActionButton(json){
-                                    let moduleCode = '`+this.object.moduleCode+`';
-                                    let subModuleCode = '`+this.object.subModuleCode+`';
-                                    let componentCode = '`+this.object.componentCode+`';
-                                    let code = '`+this.object.code+`';
-                                    let rawComponentCode = '`+this.object.rawComponentCode+`';
-                                    window.parent.vm.callActionButton(json,moduleCode,subModuleCode,componentCode,code,rawComponentCode)
-                                }}  
-                        <\/script>`
-                        this.listJS = true;
-                        this.item_content = webpage + functionApp
+                    if(typeView == "divkit"){
+                        let divkit_attributes = JSON.parse(JSON.stringify(this.screen_item.item_template.templates[dynmicNumber].layout.attributes))
+                        this.renderDivkit(divkit_attributes)
+                        this.divkit = true
                     }
-                    this.handleItem();
-                    this.handleButtons();
-                    this.handleDynamicButtons();
+                    if(typeView == "adaptive-card"){
+                        let adaptive_attributes = JSON.parse(JSON.stringify(this.screen_item.item_template.templates[dynmicNumber].layout.attributes))
+                        this.renderAdaptiveCard(adaptive_attributes)
+                        this.divkit = true
+                    }
+                    if(typeView == 'article'){
+                        this.handleArticle(attributes)
+                    }
+                    else if(typeView == 'contact'){
+                        this.handleContact(attributes)
+                    }
+                    else if(typeView == "gallery"){
+                        this.handleGallery(attributes)
+                    }
+                    else if(typeView == "gallery2"){
+                        this.handleGallery2(attributes)  
+                    }
+                    else if(typeView == "html"){
+                        this.handleHtml(attributes)
+                    }
+                    this.handleContentAttribute(attributes,this.screen_item_new.item_template.templates[dynmicNumber].layout)
+                }else{
+                    var itemJSONString = this.screen_item_new.item_template.templates[dynmicNumber].layout;
+                    itemJSONString = this.replaceAttribute(itemJSONString)
+                    this.item_content =  itemJSONString;
+                }
+                if(typeView == "web-page"){
+                    this.handleWebPage(this.screen_item_new.item_template.templates[dynmicNumber].layout.attributes)
+                }
+                this.handleItem();
+                this.handleButtons();
+                this.handleDynamicButtons();
                         
             },
             mouseDown:function(){
@@ -1286,36 +1141,7 @@
             renderDivkitMinimal(attributes){
                 let that = this
                 let schema_temp = JSON.stringify(attributes)
-                schema_temp = vm.aggregateFunction(schema_temp,this.list_item)
-                for (var key in this.list_item) {
-                    if(this.list_item[key]==null){
-                        this.list_item[key]='';
-                    }
-                    if (this.list_item.hasOwnProperty(key) && this.list_item[key]!==null ) {
-                        if(typeof(this.list_item[key]) == 'object'){
-                            schema_temp = schema_temp.replace(new RegExp('##'+key+'##','g'),JSON.stringify(this.list_item[key]).toString().replace(/[\r\n]+/g," ").replace(/["]/g,'\\\"'));
-                        }else{
-                            schema_temp = schema_temp.replace(new RegExp('##'+key+'##','g'),this.list_item[key].toString().replace(/[\r\n]+/g," ").replace(/["]/g,'\\\"'));
-                        }
-                        schema_temp = schema_temp.replace('"','\"');
-                    }
-                }
-                for (var key in this.flatRuntimeAttributes) {
-                    if (this.flatRuntimeAttributes.hasOwnProperty(key)) {
-
-                        schema_temp = schema_temp.replace(new RegExp('##'+key+'##','g'),this.flatRuntimeAttributes[key].toString().replace(/[\r\n\t]+/g," "));
-                        schema_temp = schema_temp.replace('"','\"');
-                    }
-                }
-                for (var key in vm.current.parent) {
-                    if (vm.current.parent.hasOwnProperty(key)) {
-                        schema_temp = vm.current.parent[key] != null ? (schema_temp.replace(new RegExp('##'+key+'##','g'),vm.current.parent[key].toString().replace(/[\r\n\t]+/g," "))) : schema_temp;
-                        schema_temp = schema_temp.replace('"','\"');
-                    }
-                }
-                if(schema_temp.indexOf('##')>-1){
-                    schema_temp = schema_temp.replace(/##(.*?)##/g,"");
-                }
+                schema_temp = this.handleSchema(schema_temp)
                 attributes = JSON.parse(schema_temp)
                 let json = {
                     "templates": {},
@@ -1671,6 +1497,61 @@
                     this.item_content = '<iframe src="'+source_tem+'" frameborder="0" height="100%" width="100%"></iframe>'
                 }
             },
+            handleContentAttribute(attributes,layout){
+                for(let key in attributes){
+                    if (attributes.hasOwnProperty(key)) {
+                        if(typeof(attributes[key])!='string'){
+                            continue;
+                        }
+                        if(key == 'phone' && layout != '' && layout.cloud == true){
+                            this.phoneNum = this.list_item[attributes[key]];
+                            if (this.phoneNum == "" || this.phoneNum == null || this.phoneNum == undefined) {
+                                this.phoneNum = false;
+                            }
+                        }
+                        if(attributes[key].length < 1){
+                            this.item_content = this.item_content.replace(new RegExp('##'+key+'##','g'),attributes[key].toString().replace(/[\r\n]+/g," "));
+                        }
+                        else{
+                            if(key == 'thumbnail'){
+                                if(this.list_item[attributes[key]] !== '' && this.list_item[attributes[key]] != null && this.list_item[attributes[key]] != undefined){
+                                    this.item_content = this.item_content.replace(new RegExp('##'+key+'##','g'),"##"+attributes[key].replace(/[\r\n]+/g," ")+"##");
+                                }else{
+                                    this.item_content = this.item_content.replace(new RegExp('##'+key+'##','g'),"/metronic6/images/rta_nophoto.webp");
+                                }
+                            }else if(key == 'description' && attributes[key].toString().indexOf('##')>-1){
+
+                            }else{
+                                this.item_content = this.item_content.replace(new RegExp('##'+key+'##','g'),"##"+attributes[key].replace(/[\r\n]+/g," ")+"##");
+                            }
+                        }
+                        this.item_content = this.item_content.replace('"','\"');
+                    }
+                }
+            },
+            handleWebPage(attributes){
+                let lang = vm.lang;
+                let webpage = JSON.parse(JSON.stringify(attributes)).content
+                if(lang==='vi'){
+                    webpage = webpage.replace(/<en>.*<\/en>/,'')
+                }else{
+                    webpage = webpage.replace(/<vi>.*<\/vi>/,'')
+                }
+                let functionApp = `
+                <script>
+                    class App{
+                        static callActionButton(json){
+                            let moduleCode = '`+this.object.moduleCode+`';
+                            let subModuleCode = '`+this.object.subModuleCode+`';
+                            let componentCode = '`+this.object.componentCode+`';
+                            let code = '`+this.object.code+`';
+                            let rawComponentCode = '`+this.object.rawComponentCode+`';
+                            window.parent.vm.callActionButton(json,moduleCode,subModuleCode,componentCode,code,rawComponentCode)
+                        }}  
+                <\/script>`
+                this.listJS = true;
+                this.item_content = webpage + functionApp
+            }
         },
         watch: {
             statusButton: function(statusButton){
