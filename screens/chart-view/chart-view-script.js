@@ -1,4 +1,4 @@
-    Vue.component('chart-view', {
+Vue.component('chart-view', {
         template: '#chart-view',
         props: ['object', 'body_area','task','item_filter_attributes','refresh_rate','skip_object','status_ref','list_data_object'],
         data: function () {
@@ -23,7 +23,7 @@
             }
         },
         created: function () {
-            this.lang = vm.lang;
+            this.lang = "<?php echo explode("_", Yii::app()->language)[0]; ?>";
             if(this.object.hasOwnProperty('rule') && this.object.rule.length>0 && typeof(this.object.rule)=='object'){
                 this.stateRule = true;
             }
@@ -781,151 +781,6 @@
                     $("#rtaChart-"+chartCode).next('.loading').remove()
                     $('#'+that.object.componentCode+' .lds-spinner').css({'display':'none'})
             },
-            refreshRate: function(){
-                    let that = this;
-                    let token = "your_token_here";
-                    let dm_name = this.object.dm_name;
-                    let max_order = 0;
-                    let format = "json";
-                    let mode = "download";
-                    let bodyArea = this.body_area
-                    let where = "";
-                    let get=null;
-                    let elasticsearch="";
-                    if(this.object.query_params != null && this.object.query_params.hasOwnProperty('where') &&  this.object.query_params.where != null){
-                        where = this.object.query_params.where;
-                    }
-                    if(this.object.query_params != null && this.object.query_params.hasOwnProperty('get') &&  this.object.query_params.get != null){
-                        get = this.object.query_params.get;
-                    }
-                    if(this.object.query_params != null && this.object.query_params.hasOwnProperty('post_body') &&  this.object.query_params.post_body != null){
-                        elasticsearch = this.object.query_params.post_body;
-                    }
-                    if(this.task.hasOwnProperty('where') != -1 && this.task.where != null && this.task.where.length > 0){
-                        if(where != ""){
-                            where = '(' + where + ') AND ' + this.task.where
-                        }
-                        else{
-                            where = this.task.where;
-                        }
-                    }
-                    if(this.task.hasOwnProperty('get') != -1 && this.task.get != null){
-                        if(get != null){
-                            Object.assign(get,this.task.get)
-                        }
-                        else{
-                            get = this.task.get;
-                        }
-                    }
-                    this.where = where
-                    this.get = get
-                    let host = this.object.dm_host;
-                    if(this.task.hasOwnProperty('post') && this.task.post != null){
-                        elasticsearch = this.task.post;
-                    }
-                    if(this.object.dm_type == "Elasticsearch" && get != null && get !== "" && typeof(get) == 'string'){
-                        get=JSON.parse(get);
-                    }
-                    if(this.object.dm_type == "Elasticsearch" && elasticsearch != "" && typeof(elasticsearch) == 'string'){
-                        elasticsearch=JSON.parse(elasticsearch)
-                    }
-                    let order = "";
-               
-                    if(this.body_area.hasOwnProperty('filterConfig') && Object.keys(this.body_area.filterConfig).length > 0){
-                        if(this.body_area.filterConfig.hasOwnProperty('sortCol')!=true){
-                            this.body_area.filterConfig['sortCol'] = this.object.key_attribute;
-                        }
-                        if(this.body_area.filterConfig.hasOwnProperty('order')!=true){
-                            this.body_area.filterConfig['order'] = 'ASC';
-                        }
-                        order = "`"+this.body_area.filterConfig['sortCol']+"` "+this.body_area.filterConfig['order']+"";
-                    }
-                    else if(this.body_area.hasOwnProperty('sort')){
-                        order = "`"+this.body_area.sort.column+"` "+this.body_area.sort.order+"";
-                        this.body_area['filterConfig']={
-                            'sortCol':this.body_area.sort.column,
-                            'order':this.body_area.sort.order
-                        }
-                    }
-                    else{
-                        order = "`"+this.object.key_attribute+"` ASC";
-                        this.body_area['filterConfig']={
-                            'sortCol':this.object.key_attribute,
-                            'order':'ASC'
-                        }
-                    }
-                    $.ajax({
-                    url:that.object.dm_host + (that.object.dm_type=="V1" ? '/api/download/query' : that.object.dm_type=="V2" ? "/api/dm/getData" : that.object.dm_type=="Chained" ? '/api/dm/getChainedData' :  "/" +that.object.dm_name + '/_search'),
-                    data: (that.object.dm_type=="V1" || that.object.dm_type=="V2") ? {token:token, dm_name:dm_name, max_order:max_order,format:format,mode:mode,where,...get} : that.object.dm_type=="Chained" ?
-                    {
-                        chain_name:that.object.dm_name,
-                        token:that.object.token,
-                        type:'group',
-                        begin_at:'root',
-                        conditions:where,
-                        ...get
-                    } : (that.object.dm_type == "Elasticsearch" &&  elasticsearch !="" ) ? JSON.stringify(elasticsearch) : {...get},
-                    type: (that.object.dm_type == "Elasticsearch" &&  elasticsearch !="" ) ? 'POST' : 'GET',
-                    dataType:'json',
-                    contentType: (that.object.dm_type == "Elasticsearch" &&  elasticsearch != "" ) ? 'application/json' : false,
-                })
-                .done(function (json) {
-                    if( (that.object.dm_type=="Elasticsearch" && !that.object.hasOwnProperty('data_path')) || (that.object.dm_type=="Elasticsearch" && that.object.hasOwnProperty('data_path') && (that.object.data_path=='' || that.object.data_path==null))){
-                        let elasticsearch_data=JSON.parse(JSON.stringify(json));
-                        json=jsonPath(elasticsearch_data,'hits.hits[*]._source')
-                    }
-                    if(that.object.dm_type=="Elasticsearch" && that.object.hasOwnProperty('data_path') && that.object.data_path!='' && that.object.data_path!=null){
-                        let elasticsearch_data=JSON.parse(JSON.stringify(json));
-                        json=jsonPath(elasticsearch_data.aggregations,that.object.data_path)
-                    }
-                    if(that.stateRule && json.length>0){
-                        vm.configRule(json,that.object.rule)
-                    }
-                    
-                    that.ChainData=json;
-                  
-                    
-                    let filterVM = vm.activeListFilters.map(function(filter) {
-                        if(filter.screen_code===that.body_area.screenCode){
-                            if((filter.hasOwnProperty('entries') && filter.entries[0]!=undefined && filter.entries[0].toString().indexOf('lite_connection')>-1 ) || filter.hasOwnProperty('check')){
-                                if(!filter.hasOwnProperty('check')){
-                                    filter['check'] = filter.entries[0];
-                                }else{
-                                    filter.entries = []
-                                    filter.entries[0] = filter['check']
-                                }
-                                
-                                let regExp = /\(([^)]+)\)/;
-                                let matches = regExp.exec(filter.entries[0])[1];
-                                if(that.object.lite_connection[matches]!=undefined){
-                                    vm.dynamicFilter(that.object.lite_connection[matches],index)
-                                }else{
-                                    filter.entries=[];
-                                }
-                            }
-                            else{
-                                let entries =  json.map(d => d[filter.column]);
-                                if(filter.hasOwnProperty('entries') && filter.entries[0]!=undefined && (filter.entries[0]=='__daterange__' || filter.entries[0]=='__date__' || filter.entries[0]=='__userinput__' || filter.entries[0]=='__datelast__' || filter.entries[0]=='__daterecent__')){
-                                    if(filter.entries[0]=='__datelast__' || filter.entries[0]=='__daterecent__') {
-                                        filter.timeLast = new Date(Math.max.apply(null, json.map(function(e) {
-                                            return new Date(e[filter.column]) == 'Invalid Date' ? 0 : new Date(e[filter.column]);
-                                        })));
-                                        return
-                                    }
-                                    filter.entries=[].concat(filter.entries[0])
-                                }else{
-                                    filter.entries=[]
-                                }
-                                filter.entries = filter.entries.concat(entries).filter((x, i, d) => d.indexOf(x) == i && x != '');
-                            }
-                        }
-                        return filter;
-                    });
-                    that.filterforVM = JSON.stringify(filterVM)
-                    that.filterEs(that.filter_reload);
-                        
-                    });
-            }
         },
         watch: {
             list_data_object(list_data_object_new,list_data_object_old){

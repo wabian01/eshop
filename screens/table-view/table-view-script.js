@@ -1,4 +1,4 @@
-    var table_lang = {
+let table_lang = {
         "processing": "Đang xử lý...",
         "aria": {
             "sortAscending": ": Sắp xếp thứ tự tăng dần",
@@ -318,35 +318,21 @@
             
         },
         methods: {
-            applyFilter: function(){
-                this.apply_filter = !this.apply_filter;
-                $('#'+this.id).modal('hide');
-            },
-            cancelFilter: function(){
-                $('#'+this.id).modal('hide');
-                this.cancel_filter = !this.cancel_filter;
-            },
-            filterTableview:function(item_filter_attributes,check=false){
-                Object.assign(this.filterTable_temp,JSON.parse(item_filter_attributes))
-                
-                let filter_attributes = this.filterTable_temp
-                let temp=[]
+            handleFilter(filter_attributes){
                 let filter_query=[]
-                let filter_query1=[]
                 let time
-                let json
                 Object.keys(filter_attributes).map(function(key){
                     if(filter_attributes[key]=='_all'){
                         return;
                     }
                     if(key.indexOf("date")>-1 || key.indexOf("time")>-1 || ((filter_attributes[key][0].length==24 || filter_attributes[key][0].length==40) && filter_attributes[key][0].indexOf("->")>-1) || filter_attributes[key][0].length==10 && new Date(filter_attributes[key][0])!='Invalid Date'){
                         if(filter_attributes[key][0].indexOf("->")>-1){   
-                            let filter_attributes_temp = []
-                            filter_attributes_temp[key]=filter_attributes[key][0].split(" -> ");
-                            filter_query.push('(moment(item.'+key+').unix()>=moment("'+filter_attributes_temp[key][0]+'").unix() && moment(item.'+key+').unix()<=moment("'+filter_attributes_temp[key][1]+'").unix())')
+                        filter_attributes[key]=filter_attributes[key][0].split(" -> ");
+                        
+                            filter_query.push('(moment(item.'+key+').unix()>=moment("'+filter_attributes[key][0]+'").unix() && moment(item.'+key+').unix()<=moment("'+filter_attributes[key][1]+'").unix())')
                         }
-                        else if(filter_attributes[key][0].length==10 && new Date(filter_attributes[key][0])!='Invalid Date'){
-                            time='((0<= moment(item.'+key+').unix() - moment("'+filter_attributes[key][0]+'").unix() && moment(item.'+key+').unix()-moment("'+filter_attributes[key][0]+'").unix()<=86399 )'
+                        else if(filter_attributes[key][0].length==10 && moment(filter_attributes[key][0])!='Invalid Date'){
+                            time='((0<=moment(item.'+key+').unix()-moment("'+filter_attributes[key][0]+'").unix() && moment(item.'+key+').unix()-moment("'+filter_attributes[key][0]+'").unix()<=86399 )'
                             for (let i = 1; i < filter_attributes[key].length; i++) {
                                 time=time +'|| (0<=moment(item.'+key+').unix()-moment("'+filter_attributes[key][i]+'").unix() && moment(item.'+key+').unix()-moment("'+filter_attributes[key][i]+'").unix()<=86399 )'
                                 
@@ -359,9 +345,27 @@
                         }
                     }else{
                         filter_query.push('(item.'+key+'=="'+filter_attributes[key].join('" || '+'item.'+key+'=="')+'")')
-                    }
-                    
+                    }   
                 })
+                return filter_query
+            },
+            applyFilter: function(){
+                this.apply_filter = !this.apply_filter;
+                $('#'+this.id).modal('hide');
+            },
+            cancelFilter: function(){
+                $('#'+this.id).modal('hide');
+                this.cancel_filter = !this.cancel_filter;
+            },
+            filterTableview:function(item_filter_attributes,check=false){
+                Object.assign(this.filterTable_temp,JSON.parse(item_filter_attributes))
+                
+                let filter_attributes = this.filterTable_temp
+                let filter_query1=[]
+                let json
+
+                filter_query = this.handleFilter(filter_attributes)
+
                 filter_query1.push(filter_query.join(' && '))
                 if(filter_query1[0]==""){
                     json=this.dataStore;
@@ -750,170 +754,6 @@
                         }       
                         that.getDataTable(ctv,paging,dataSet,columns,columnDefs,order);
             },
-            refreshRate: function(){
-                
-                let object = this.object;
-                let body_area = this.body_area;
-                let that = this;
-                where = 'true';
-                let order = "";   
-                let get=null;         
-                let elasticsearch="";
-
-                if (typeof  object.query_params != 'undefined' && object.query_params != null) {
-                    if (typeof  object.query_params.where != 'undefined' && object.query_params.where != null) {
-                        if (where == "true") {
-                            where = object.query_params.where;
-                        }
-                    }
-                    if (typeof  object.query_params.get != 'undefined' && object.query_params.get != null) {
-                            get = object.query_params.get;
-                    }
-                    if(typeof  object.query_params.post_body != 'undefined' && object.query_params.post_body != null){
-                            elasticsearch = object.query_params.post_body;
-                    }
-                }
-               if(this.task.hasOwnProperty('where') != -1 && this.task.where != null && this.task.where.length > 0){
-                    if(where != 'true'){
-                        where = '(' + where + ') AND ' + this.task.where
-                    }
-                    else{
-                        where = this.task.where
-                    }
-                }
-                if(this.task.hasOwnProperty('get') != -1 && this.task.get != null){
-                    if(get != null){
-                        Object.assign(get,this.task.get)
-                    }
-                    else{
-                        get = this.task.get
-                    }
-                }
-                if(this.body_area.hasOwnProperty('filterConfig')&&Object.keys(this.body_area.filterConfig).length > 0){
-                    order = "`"+this.body_area.filterConfig['sortCol']+"` "+this.body_area.filterConfig['order']+"";
-                }
-                else{
-                    order = "`"+this.object.key_attribute+"` ASC";
-                }
-                if(this.task.hasOwnProperty('post') && this.task.post != null){
-                    elasticsearch = this.task.post;
-                }
-                if(object.dm_type == "Elasticsearch" && get != null && get !== "" && typeof(get) =='string'){
-                    get=JSON.parse(get);
-                }
-                if(object.dm_type == "Elasticsearch" && elasticsearch != "" && typeof(elasticsearch) == 'string'){
-                    elasticsearch=JSON.parse(elasticsearch)
-                }
-                $.ajax({
-                    url:that.object.dm_host + (that.object.dm_type=="V1" ? '/api/download/query' : that.object.dm_type=="V2" ? "/api/dm/getData" : that.object.dm_type=="Chained" ? '/api/dm/getChainedData' :  "/" +that.object.dm_name + '/_search'),
-                    type: (that.object.dm_type == "Elasticsearch" &&  elasticsearch !="" ) ? 'POST' : 'GET',
-                    dataType:'json',
-                    contentType: (that.object.dm_type == "Elasticsearch" &&  elasticsearch != "" ) ? 'application/json' : false,
-                    data:(that.object.dm_type=="V1" || that.object.dm_type=="V2") ? 
-                    {
-                        token:that.object.token,
-                        dm_name:that.object.dm_name,
-                        where:where,
-                        download:0,
-                        mode:'query',
-                        format:'json',
-                        ...get
-                    }: that.object.dm_type=="Chained" ?
-                    {
-                        chain_name:that.object.dm_name,
-                        token:that.object.token,
-                        type:'group',
-                        begin_at:'root',
-                        conditions:where,
-                        ...get
-                    } : (that.object.dm_type == "Elasticsearch" &&  elasticsearch !="" ) ? JSON.stringify(elasticsearch) : {...get},
-                    success:function (data) {  
-                        if( (that.object.dm_type=="Elasticsearch" && !that.object.hasOwnProperty('data_path')) || (that.object.dm_type=="Elasticsearch" && that.object.hasOwnProperty('data_path') && (that.object.data_path=='' || that.object.data_path==null))){
-                            let elasticsearch_data=JSON.parse(JSON.stringify(data));
-                            data=jsonPath(elasticsearch_data,'hits.hits[*]._source')
-                        }
-                        if(that.object.dm_type=="Elasticsearch" && that.object.hasOwnProperty('data_path') && that.object.data_path!='' && that.object.data_path!=null){
-                            let elasticsearch_data=JSON.parse(JSON.stringify(data));
-                            data=jsonPath(elasticsearch_data.aggregations,that.object.data_path)
-                        }
-                        if(that.stateRule){
-                            vm.configRule(data,that.object.rule)
-                        }
-                        vm.activeListFilters.map(function(filter,index) {
-                            if(filter.screen_code===that.body_area.screenCode){
-                                if((filter.hasOwnProperty('entries') && filter.entries[0]!=undefined && filter.entries[0].toString().indexOf('lite_connection')>-1 ) || filter.hasOwnProperty('check')){
-                                    if(!filter.hasOwnProperty('check')){
-                                        filter['check'] = filter.entries[0];
-                                    }else{
-                                        filter.entries = []
-                                        filter.entries[0] = filter['check']
-                                    }
-                                    
-                                    let regExp = /\(([^)]+)\)/;
-                                    let matches = regExp.exec(filter.entries[0])[1];
-                                    if(that.object.lite_connection[matches]!=undefined){
-                                        vm.dynamicFilter(that.object.lite_connection[matches],index)
-                                    }else{
-                                        filter.entries=[];
-                                    }
-                                }
-                                else{
-                                    let entries =  data.map(d => d[filter.column]);
-                                    if(filter.hasOwnProperty('entries') && filter.entries[0]!=undefined && (filter.entries[0]=='__daterange__' || filter.entries[0]=='__date__' || filter.entries[0]=='__userinput__' || filter.entries[0]=='__datelast__' || filter.entries[0]=='__daterecent__')){
-                                        if(filter.entries[0]=='__datelast__' || filter.entries[0]=='__daterecent__') {
-                                            filter.timeLast = new Date(Math.max.apply(null, data.map(function(e) {
-                                                return new Date(e[filter.column]) == 'Invalid Date' ? 0 : new Date(e[filter.column]);
-                                            })));
-                                            return
-                                        }
-                                        filter.entries=[].concat(filter.entries[0])
-                                    }else{
-                                        filter.entries=[]
-                                    }
-                                    filter.entries = filter.entries.concat(entries).filter((x, i, d) => d.indexOf(x) == i && x != '');
-                                }
-                            }
-                            return filter;
-                        }); 
-                        let page1 = $("#rtaTable-"+that.id).DataTable().page.info().page;
-                        let scroll1 = $("#rtaTable-"+that.id+"_wrapper .dataTables_scrollBody").scrollTop();
-                      
-                        let data1=JSON.stringify(data)
-                            let data_temp=[];
-                            let dataSet=[];
-                          data.forEach(key => {
-                            let row2=[];
-                            that.body_area.attributes.columns.map(function(table){
-                                let value_template = vm.aggregateFunction(table.template,key)
-                                if(value_template.indexOf('${')===0){
-                                    row2.push(handleDMFunction(value_template.replace(/##(.*?)##/g,function (match, capture) {
-                                        let test=jsonPath(key,capture);
-                                        return test===false?'""':'"'+test+'"';
-                                    })));
-                                }else{
-                                    value_template.replace(/##(.*?)##/g,function (match, capture) {
-                                        let test=jsonPath(key,capture);
-                                        row2.push(test===false?"":test)
-                                    });
-                                }
-                            })
-                            dataSet.push(row2);
-                        })
-                        if(that.body_area.attributes.layout['hide-header-rows'] === false){
-                            var stt = 1;
-                            dataSet.forEach(element => {
-                                element.unshift(stt)
-                                stt = stt + 1;
-                            });
-                        }
-                        $("#rtaTable-"+that.id).DataTable().clear().draw()
-                        $("#rtaTable-"+that.id).DataTable().rows.add(dataSet).draw(false)
-                        $("#rtaTable-"+that.id).DataTable().page(page1).draw('page')
-                        $("#rtaTable-"+that.id+"_wrapper .dataTables_scrollBody").scrollTop(scroll1);
-                        
-                    }
-                });
-            }
         },
         watch: {
             list_data_object(list_data_object_new,list_data_object_old){
