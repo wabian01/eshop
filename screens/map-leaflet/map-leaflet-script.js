@@ -1,6 +1,7 @@
- Vue.component('map-leaflet', {
+Vue.component('map-leaflet', {
         template: '#map-leaflet',
         props: ['list_items_origin','id_random','body_area','item_search_string','task','object','item_filter_attributes','update_map','refresh_rate'],
+        mixins: [handleFilter],
         data: function () {
         return {
             searchs: [],
@@ -138,7 +139,7 @@
                                 confirmButtonText: that.lang=='en'?'OK':'Xác Nhận'
                             })
                         }
-                        mymap.flyTo([latitude,longitude], zoom, {
+                        mymap.flyTo([latitude,longitude], 18, {
                             animate: true,
                         });
                     }).addTo(mymap);
@@ -200,38 +201,11 @@
                         Object.assign(this.filterMap_temp,JSON.parse(item_filter_attributes))
                         
                         let filter_attributes = this.filterMap_temp
-                        let temp=[]
                         let filter_query=[]
                         let filter_query1=[]
-                        let time
                         let json
-                        Object.keys(filter_attributes).map(function(key){
-                            if(filter_attributes[key]=='_all'){
-                                return;
-                            }
-                            if(key.indexOf("date")>-1 || key.indexOf("time")>-1 || ((filter_attributes[key][0].length==24 || filter_attributes[key][0].length==40) && filter_attributes[key][0].indexOf("->")>-1) || filter_attributes[key][0].length==10 && new Date(filter_attributes[key][0])!='Invalid Date'){
-                                if(filter_attributes[key][0].indexOf("->")>-1){   
-                                filter_attributes[key]=filter_attributes[key][0].split(" -> ");
-                                
-                                    filter_query.push('(moment(item.'+key+').unix()>=moment("'+filter_attributes[key][0]+'").unix() && moment(item.'+key+').unix()<=moment("'+filter_attributes[key][1]+'").unix())')
-                                }
-                                else if(filter_attributes[key][0].length==10 && moment(filter_attributes[key][0])!='Invalid Date'){
-                                    time='((0<=moment(item.'+key+').unix()-moment("'+filter_attributes[key][0]+'").unix() && moment(item.'+key+').unix()-moment("'+filter_attributes[key][0]+'").unix()<=86399 )'
-                                    for (let i = 1; i < filter_attributes[key].length; i++) {
-                                        time=time +'|| (0<=moment(item.'+key+').unix()-moment("'+filter_attributes[key][i]+'").unix() && moment(item.'+key+').unix()-moment("'+filter_attributes[key][i]+'").unix()<=86399 )'
-                                        
-                                    }
-                                    time=time +')';
-                                    filter_query.push(time);
-                                }
-                                else {
-                                    filter_query.push('(item.'+key+'=="'+filter_attributes[key].join('" || '+'item.'+key+'=="')+'")')
-                                }
-                            }else{
-                                filter_query.push('(item.'+key+'=="'+filter_attributes[key].join('" || '+'item.'+key+'=="')+'")')
-                            }
-                            
-                        })
+                        filter_query = this.handleFilter(filter_attributes)
+
                         filter_query1.push(filter_query.join(' && '))
                         if(filter_query1[0]==""){
                             json=this.dataStore;
