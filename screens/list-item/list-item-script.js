@@ -209,29 +209,33 @@ Vue.component('list-item', {
                         : processedValue.toString().replace(/\"/g, "\\\"").replace(/\s/g, " ");
                 });
             },
+            replaceAttribute(itemJSONString){
+                itemJSONString = this.replaceJsonPaths(itemJSONString);
+                for (let key in this.list_item) {
+                    if (this.list_item.hasOwnProperty(key) && this.list_item[key] != null ) {
+                        if(this.list_item[key].toString().search("##") != -1){
+                            this.list_item[key] = this.list_item[key].replace(new RegExp('^(##).*(##)','gm'),'null')
+                        }
+                        itemJSONString = itemJSONString.replace(new RegExp('##'+key+'##','g'),this.list_item[key].toString().replace(/[\r\n]+/g," ").replace(/["]/g,'\\\"'));
+                    }
+                }
+                for (let key in this.flatRuntimeAttributes) {
+                    if (this.flatRuntimeAttributes.hasOwnProperty(key)) {
+                        itemJSONString = itemJSONString.replace(new RegExp('##'+key+'##','g'),this.flatRuntimeAttributes[key].replace(/[\r\n]+/g," ").replace(/["]/g,'\\\"'));
+                    }
+                }
+                for(let key in vm.current.parent){
+                    try {
+                        itemJSONString = itemJSONString.replace(new RegExp('##'+key+'##','g'),vm.current.parent[key].replace(/[\r\n]+/g," ").replace(/["]/g,'\\\"'));
+                    } catch (error) {
+                    }
+                }
+                return itemJSONString
+            },
             handleHideView(){
                     this.screen_item_new.when_empty = vm.aggregateFunction(this.screen_item_new.when_empty,this.list_item)                  
                     let itemJSONString = this.screen_item_new.when_empty
-                    itemJSONString = this.replaceJsonPaths(itemJSONString);
-                    for (var key in this.list_item) {
-                       if (this.list_item.hasOwnProperty(key) && this.list_item[key] != null ) {
-                            if(this.list_item[key].toString().search("##") != -1){
-                                this.list_item[key] = this.list_item[key].replace(new RegExp('^(##).*(##)','gm'),'null')
-                            }
-                            itemJSONString = itemJSONString.replace(new RegExp('##'+key+'##','g'),this.list_item[key].toString().replace(/[\r\n]+/g," ").replace(/["]/g,'\\\"'));
-                        }
-                    }
-                    for (var key in this.flatRuntimeAttributes) {
-                        if (this.flatRuntimeAttributes.hasOwnProperty(key)) {
-                            itemJSONString = itemJSONString.replace(new RegExp('##'+key+'##','g'),this.flatRuntimeAttributes[key].replace(/[\r\n]+/g," ").replace(/["]/g,'\\\"'));
-                        }
-                    }
-                    for(var key in vm.current.parent){
-                        try {
-                            itemJSONString = itemJSONString.replace(new RegExp('##'+key+'##','g'),vm.current.parent[key].replace(/[\r\n]+/g," ").replace(/["]/g,'\\\"'));
-                        } catch (error) {
-                        }
-                    }
+                    itemJSONString = this.replaceAttribute(itemJSONString)
                     if(itemJSONString.indexOf('<script')>-1){
                         let functionApp = `
                             <script>
@@ -371,26 +375,7 @@ Vue.component('list-item', {
                     this.screen_item_new.item_template = vm.aggregateFunction(this.screen_item_new.item_template,this.list_item)
                     var temp_screen_item = this.screen_item_new;                        
                     let itemJSONString = JSON.stringify(temp_screen_item);
-                    itemJSONString = this.replaceJsonPaths(itemJSONString);
-                    for (var key in this.list_item) {
-                       if (this.list_item.hasOwnProperty(key) && this.list_item[key] != null ) {
-                            if(this.list_item[key].toString().search("##") != -1){
-                                this.list_item[key] = this.list_item[key].replace(new RegExp('^(##).*(##)','gm'),'null')
-                            }
-                            itemJSONString = itemJSONString.replace(new RegExp('##'+key+'##','g'),this.list_item[key].toString().replace(/[\r\n]+/g," ").replace(/["]/g,'\\\"'));
-                        }
-                    }
-                    for (var key in this.flatRuntimeAttributes) {
-                        if (this.flatRuntimeAttributes.hasOwnProperty(key)) {
-                            itemJSONString = itemJSONString.replace(new RegExp('##'+key+'##','g'),this.flatRuntimeAttributes[key].replace(/[\r\n]+/g," ").replace(/["]/g,'\\\"'));
-                        }
-                    }
-                    for(var key in vm.current.parent){
-                        try {
-                            itemJSONString = itemJSONString.replace(new RegExp('##'+key+'##','g'),vm.current.parent[key].replace(/[\r\n]+/g," ").replace(/["]/g,'\\\"'));
-                        } catch (error) {
-                        }
-                    }
+                    itemJSONString = this.replaceAttribute(itemJSONString)
                     this.screen_item_new = JSON.parse(itemJSONString);
                     this.item_content = this.screen_item_new.item_template;
 
@@ -1137,7 +1122,7 @@ Vue.component('list-item', {
                             }
                         }
                         return $.ajax({
-                                url: button.source.replace("./","<?php echo AppEnv::BASE_URL ?>"+"/"),
+                                url: button.source.replace("./",window.location.origin+"/"),
                                 type: "GET",
                                 contentType: "application/json",
                                 dataType: "json",
@@ -1245,7 +1230,7 @@ Vue.component('list-item', {
                             }
                         }
                         return $.ajax({
-                                url: button.source.replace("./","<?php echo AppEnv::BASE_URL ?>"+"/"),
+                                url: button.source.replace("./",window.location.origin+"/"),
                                 type: "GET",
                                 contentType: "application/json",
                                 dataType: "json",
@@ -1643,7 +1628,7 @@ Vue.component('list-item', {
                         }
                         else if(this.screen_item_new.item_onclick[i].type == 'detail'){
                             try{
-                                var temp = vm.lang
+                                var temp = vm.lang;
                             }
                             catch(err){
                                 if(String(err).indexOf('en is not defined')){
@@ -1774,7 +1759,7 @@ Vue.component('list-item', {
                             }
                         }
                         else{
-                                toastr.error("<?php echo Yii::t('app','Screen definition not found')?>");
+                                toastr.error(translations["Screen definition not found"]);
                         }
                         break;
                     }
