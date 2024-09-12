@@ -213,22 +213,22 @@ Vue.component('list-item', {
                 itemJSONString = this.replaceJsonPaths(itemJSONString);
                 for (let key in this.list_item) {
                     if (this.list_item.hasOwnProperty(key) && this.list_item[key] != null ) {
-                        if(this.list_item[key].toString().search("##") != -1){
-                            this.list_item[key] = this.list_item[key].replace(new RegExp('^(##).*(##)','gm'),'null')
-                        }
-                        itemJSONString = itemJSONString.replace(new RegExp('##'+key+'##','g'),this.list_item[key].toString().replace(/[\r\n]+/g," ").replace(/["]/g,'\\\"'));
+                        itemJSONString = itemJSONString.replace(new RegExp('##'+key+'##','g'),this.list_item[key].toString().replace(/[\r\n]+/g," "));
+                        itemJSONString = itemJSONString.replace('"','\"');
                     }
                 }
                 for (let key in this.flatRuntimeAttributes) {
                     if (this.flatRuntimeAttributes.hasOwnProperty(key)) {
-                        itemJSONString = itemJSONString.replace(new RegExp('##'+key+'##','g'),this.flatRuntimeAttributes[key].replace(/[\r\n]+/g," ").replace(/["]/g,'\\\"'));
+                        itemJSONString = itemJSONString.replace(new RegExp('##'+key+'##','g'),this.flatRuntimeAttributes[key].replace(/[\r\n]+/g," "));
+                        itemJSONString = itemJSONString.replace('"','\"');
                     }
                 }
                 for(let key in vm.current.parent){
                     try {
-                        itemJSONString = itemJSONString.replace(new RegExp('##'+key+'##','g'),vm.current.parent[key].replace(/[\r\n]+/g," ").replace(/["]/g,'\\\"'));
+                        itemJSONString = itemJSONString.replace(new RegExp('##'+key+'##','g'),vm.current.parent[key].replace(/[\r\n]+/g," "));
                     } catch (error) {
                     }
+                    itemJSONString = itemJSONString.replace('"','\"');
                 }
                 return itemJSONString
             },
@@ -446,29 +446,10 @@ Vue.component('list-item', {
                                     return;
                                 }
                                 if(element.key == this.list_item[cond]){
-                                        var itemJSONString = element.html;
-                                        itemJSONString = vm.aggregateFunction(itemJSONString,this.list_item)
-                                        temp_default = true;
-                                        itemJSONString = this.replaceJsonPaths(itemJSONString);
-                                        for (var key in this.list_item) {
-                                        if (this.list_item.hasOwnProperty(key) && this.list_item[key] != null ) {
-                                            itemJSONString = itemJSONString.replace(new RegExp('##'+key+'##','g'),this.list_item[key].toString().replace(/[\r\n]+/g," "));
-                                            itemJSONString = itemJSONString.replace('"','\"');
-                                        }
-                                    }
-                                    for (var key in this.flatRuntimeAttributes) {
-                                        if (this.flatRuntimeAttributes.hasOwnProperty(key)) {
-                                            itemJSONString = itemJSONString.replace(new RegExp('##'+key+'##','g'),this.flatRuntimeAttributes[key].replace(/[\r\n]+/g," "));
-                                            itemJSONString = itemJSONString.replace('"','\"');
-                                        }
-                                    }
-                                    for(var key in vm.current.parent){
-                                        try {
-                                            itemJSONString = itemJSONString.replace(new RegExp('##'+key+'##','g'),vm.current.parent[key].replace(/[\r\n]+/g," "));
-                                        } catch (error) {
-                                        }
-                                        itemJSONString = itemJSONString.replace('"','\"');
-                                    }
+                                    var itemJSONString = element.html;
+                                    itemJSONString = vm.aggregateFunction(itemJSONString,this.list_item)
+                                    temp_default = true;
+                                    itemJSONString = this.replaceAttribute(itemJSONString)
                                     this.item_content =  itemJSONString;
 
                                     this.handleItem();
@@ -677,26 +658,7 @@ Vue.component('list-item', {
                             }else{
                                 var itemJSONString = this.screen_item_new.item_template.template_default;
                                 itemJSONString = vm.aggregateFunction(itemJSONString,this.list_item)
-                                itemJSONString = this.replaceJsonPaths(itemJSONString);
-                                for (var key in this.list_item) {
-                                if (this.list_item.hasOwnProperty(key) && this.list_item[key] != null) {
-                                        itemJSONString = itemJSONString.replace(new RegExp('##'+key+'##','g'),this.list_item[key].toString().replace(/[\r\n]+/g," "));
-                                        itemJSONString = itemJSONString.replace('"','\"');
-                                    }
-                                }
-                                for (var key in this.flatRuntimeAttributes) {
-                                    if (this.flatRuntimeAttributes.hasOwnProperty(key)) {
-                                        itemJSONString = itemJSONString.replace(new RegExp('##'+key+'##','g'),this.flatRuntimeAttributes[key].replace(/[\r\n]+/g," "));
-                                        itemJSONString = itemJSONString.replace('"','\"');
-                                    }
-                                }
-                                for(var key in vm.current.parent){
-                                    try {
-                                        itemJSONString = itemJSONString.replace(new RegExp('##'+key+'##','g'),vm.current.parent[key].replace(/[\r\n]+/g," "));
-                                    } catch (error) {
-                                    }
-                                    itemJSONString = itemJSONString.replace('"','\"');
-                                }
+                                itemJSONString = this.replaceAttribute(itemJSONString)
                                 this.item_content =  itemJSONString;
                             }
 
@@ -1528,26 +1490,7 @@ Vue.component('list-item', {
                                 }
                             }else{
                                 var itemJSONString = this.screen_item_new.item_template.templates[dynmicNumber].layout;
-                                itemJSONString = this.replaceJsonPaths(itemJSONString);
-                                for (var key in this.list_item) {
-                                if (this.list_item.hasOwnProperty(key) && this.list_item[key] != null) {
-                                        itemJSONString = itemJSONString.replace(new RegExp('##'+key+'##','g'),this.list_item[key].toString().replace(/[\r\n]+/g," "));
-                                        itemJSONString = itemJSONString.replace('"','\"');
-                                    }
-                                }
-                                for (var key in this.flatRuntimeAttributes) {
-                                    if (this.flatRuntimeAttributes.hasOwnProperty(key)) {
-                                        itemJSONString = itemJSONString.replace(new RegExp('##'+key+'##','g'),this.flatRuntimeAttributes[key].replace(/[\r\n]+/g," "));
-                                        itemJSONString = itemJSONString.replace('"','\"');
-                                    }
-                                }
-                                for(var key in vm.current.parent){
-                                    try {
-                                        itemJSONString = itemJSONString.replace(new RegExp('##'+key+'##','g'),vm.current.parent[key].replace(/[\r\n]+/g," "));
-                                    } catch (error) {
-                                    }
-                                    itemJSONString = itemJSONString.replace('"','\"');
-                                }
+                                itemJSONString = this.replaceAttribute(itemJSONString)
                                 this.item_content =  itemJSONString;
                             }
                             if(this.screen_item_new.item_template.templates[dynmicNumber].layout.type == "web-page"){
