@@ -143,39 +143,7 @@ Vue.component('button-group', {
                 this.body_area_temp = JSON.parse(body_area_replace);
             },
             buttonData(){
-                let body_area_replace = JSON.stringify(JSON.parse(JSON.stringify(this.body_area)))
-                for(var key in this.item_data){
-                    if(this.item_data.hasOwnProperty(key) && this.item_data[key] != null){
-                        body_area_replace = body_area_replace.toString().replace(new RegExp('"##'+key+'##"','g'),'"'+(this.item_data[key].toString().replace(/[\r\n]+/g," ").replace(/["]/g,'\\\"'))+'"');
-                        body_area_replace = body_area_replace.toString().replace(new RegExp('\'##'+key+'##\'','g'),"'"+(this.item_data[key].toString().replace(/[\r\n]+/g," ").replace(/["]/g,'\\\"'))+"'");
-                        body_area_replace = body_area_replace.toString().replace(new RegExp('##'+key+'##','g'),"'"+(this.item_data[key].toString().replace(/[\r\n]+/g," ").replace(/["]/g,'\\\"'))+"'");
-                    }
-                }
-                body_area_replace = body_area_replace.replace(/\\"'(.*?)'\\"/g,'\\"$1\\"')
-                for (var key in vm.flatRuntimeAttributes) {
-                            if (vm.flatRuntimeAttributes.hasOwnProperty(key)) {
-                                body_area_replace = body_area_replace.replace(new RegExp('##'+key+'##','g'),vm.flatRuntimeAttributes[key].replace(/[\r\n]+/g," "));
-                                body_area_replace = body_area_replace.replace('"','\"');
-                            }
-                        }  
-                for(var key in vm.current.parent){
-                    try {
-                        body_area_replace = body_area_replace.replace(new RegExp('##'+key+'##','g'),vm.current.parent[key].replace(/[\r\n]+/g," "));
-                    } catch (error) {
-                    }
-                    body_area_replace = body_area_replace.replace('"','\"');
-                }
-                if(body_area_replace.indexOf('${getdata_dmobj')>-1){
-                        body_area_replace = vm.getDataDmobj(body_area_replace)
-                }
-                if(body_area_replace.indexOf('##source:dmobj')>-1){
-                    body_area_replace = vm.getSourceDmobj(body_area_replace)
-                }
-                body_area_replace = vm.jsonHolderData(body_area_replace,'buttonGroup')
-                if(body_area_replace.indexOf('##')>-1){
-                    body_area_replace = body_area_replace.replace(/##(.*?)##/g,"");
-                }
-                this.body_area_temp = JSON.parse(body_area_replace);
+                this.handleJsonHolder()
                 this.handleDynamicButtons();
             },
             handleShowButton: function(check){
@@ -195,40 +163,40 @@ Vue.component('button-group', {
                         indexbutton++;
                     }
                 })
-                var itemJSONString = JSON.stringify(dynamic_buttons);
-                for (var key in that.data_button) {
+                let stringDynamicButton = JSON.stringify(dynamic_buttons);
+                for (let key in that.data_button) {
                     if (that.data_button.hasOwnProperty(key)) {
                         if(that.data_button[key] == null){
                             that.data_button[key] = "";
                         }
-                        itemJSONString = itemJSONString.replace(new RegExp('##'+key+'##','g'),that.data_button[key].toString().replace(/[\r\n]+/g," "));
-                        itemJSONString = itemJSONString.replace('"','\"');
+                        stringDynamicButton = stringDynamicButton.replace(new RegExp('##'+key+'##','g'),that.data_button[key].toString().replace(/[\r\n]+/g," "));
+                        stringDynamicButton = stringDynamicButton.replace('"','\"');
                     }
                 }
-                for (var key in vm.flatRuntimeAttributes) {
+                for (let key in vm.flatRuntimeAttributes) {
                     if (vm.flatRuntimeAttributes.hasOwnProperty(key)) {
-                        itemJSONString = itemJSONString.replace(new RegExp('##'+key+'##','g'),vm.flatRuntimeAttributes[key].replace(/[\r\n]+/g," "));
-                        itemJSONString = itemJSONString.replace('"','\"');
+                        stringDynamicButton = stringDynamicButton.replace(new RegExp('##'+key+'##','g'),vm.flatRuntimeAttributes[key].replace(/[\r\n]+/g," "));
+                        stringDynamicButton = stringDynamicButton.replace('"','\"');
                     }
                 }                
-                for(var key in vm.current.parent){
+                for(let key in vm.current.parent){
                     try {
-                        itemJSONString = itemJSONString.replace(new RegExp('##'+key+'##','g'),vm.current.parent[key].replace(/[\r\n]+/g," "));
+                        stringDynamicButton = stringDynamicButton.replace(new RegExp('##'+key+'##','g'),vm.current.parent[key].replace(/[\r\n]+/g," "));
                     } catch (error) {
                     }
-                    itemJSONString = itemJSONString.replace('"','\"');
+                    stringDynamicButton = stringDynamicButton.replace('"','\"');
                 }
-                if(itemJSONString.indexOf('${getdata_dmobj')>-1){
-                        itemJSONString = vm.getDataDmobj(itemJSONString)
+                if(stringDynamicButton.indexOf('${getdata_dmobj')>-1){
+                        stringDynamicButton = vm.getDataDmobj(stringDynamicButton)
                 }
-                if(itemJSONString.indexOf('##source:dmobj')>-1){
-                    itemJSONString = vm.getSourceDmobj(itemJSONString)
+                if(stringDynamicButton.indexOf('##source:dmobj')>-1){
+                    stringDynamicButton = vm.getSourceDmobj(stringDynamicButton)
                 }
-                itemJSONString = vm.jsonHolderData(itemJSONString,'buttonGroup')                
-                if(itemJSONString.indexOf('##') > -1) {
-                    itemJSONString = itemJSONString.replace(/##(.*?)##/g,"");
+                stringDynamicButton = vm.jsonHolderData(stringDynamicButton,'buttonGroup')                
+                if(stringDynamicButton.indexOf('##') > -1) {
+                    stringDynamicButton = stringDynamicButton.replace(/##(.*?)##/g,"");
                 }  
-                that.body_area_temp.buttons = JSON.parse(itemJSONString);
+                that.body_area_temp.buttons = JSON.parse(stringDynamicButton);
             },
             handleDynamicButtons: async function(){
                 let that = this;
@@ -272,48 +240,8 @@ Vue.component('button-group', {
                                             buttons: data
                                         }
                                     }
-                                    data=data.sort((a,b)=>a.orderNumber-b.orderNumber)
-                                    data.forEach(dynamic_button => {
-                                        if(dynamic_button.actionID!=""){
-                                            dynamic_buttons.splice(indexbutton, 0, dynamic_button)
-                                            indexbutton++;
-                                        }
-                                    })
-                                    
-                                    var itemJSONString = JSON.stringify(dynamic_buttons);
-                                    for (var key in that.data_button) {
-                                        if (that.data_button.hasOwnProperty(key)) {
-                                            if(that.data_button[key] == null){
-                                                that.data_button[key] = "";
-                                            }
-                                            itemJSONString = itemJSONString.replace(new RegExp('##'+key+'##','g'),that.data_button[key].toString().replace(/[\r\n]+/g," "));
-                                            itemJSONString = itemJSONString.replace('"','\"');
-                                        }
-                                    }
-                                    for (var key in vm.flatRuntimeAttributes) {
-                                        if (vm.flatRuntimeAttributes.hasOwnProperty(key)) {
-                                            itemJSONString = itemJSONString.replace(new RegExp('##'+key+'##','g'),vm.flatRuntimeAttributes[key].replace(/[\r\n]+/g," "));
-                                            itemJSONString = itemJSONString.replace('"','\"');
-                                        }
-                                    }                
-                                    for(var key in vm.current.parent){
-                                        try {
-                                            itemJSONString = itemJSONString.replace(new RegExp('##'+key+'##','g'),vm.current.parent[key].replace(/[\r\n]+/g," "));
-                                        } catch (error) {
-                                        }
-                                        itemJSONString = itemJSONString.replace('"','\"');
-                                    }
-                                    if(itemJSONString.indexOf('${getdata_dmobj')>-1){
-                                            itemJSONString = vm.getDataDmobj(itemJSONString)
-                                    }
-                                    if(itemJSONString.indexOf('##source:dmobj')>-1){
-                                        itemJSONString = vm.getSourceDmobj(itemJSONString)
-                                    }
-                                    itemJSONString = vm.jsonHolderData(itemJSONString,'buttonGroup')                
-                                    if(itemJSONString.indexOf('##') > -1) {
-                                        itemJSONString = itemJSONString.replace(/##(.*?)##/g,"");
-                                    }  
-                                    that.body_area_temp.buttons = JSON.parse(itemJSONString);
+                                    that.replaceABDynamic(data,indexbutton,dynamic_buttons)
+                                    indexbutton = indexbutton + data.length
                                     that.statusButton = false;
 
                                 }, error: function (error) {
