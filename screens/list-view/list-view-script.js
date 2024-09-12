@@ -1,6 +1,7 @@
 Vue.component('list-view', {
         template: '#list-view',
         props: ['object','body_area','item_search_string','item_filter_attributes','task','screen','refresh_rate','status_ref','status_sort','json_holder','list_data_object'],
+        mixins: [addBgColor],
         data: function () {
             return {
                 'list_items':[],
@@ -171,42 +172,7 @@ Vue.component('list-view', {
             }
             let body_area_bg = JSON.parse(JSON.stringify(this.screen_item));
 
-            if (typeof body_area_bg.background_color === 'string' && body_area_bg.background_color.includes('##')) {
-                for (let key in vm.flatRuntimeAttributes) {
-                    if (vm.flatRuntimeAttributes.hasOwnProperty(key)) {
-                        const replacement = vm.flatRuntimeAttributes[key]?.toString().replace(/[\r\n]+/g, ' ');
-                        body_area_bg.background_color = body_area_bg.background_color.replace(new RegExp('##' + key + '##', 'g'), replacement);
-                        body_area_bg.background_color = body_area_bg.background_color.replace(/"/g, '\\"');
-                    }
-                }
-
-                for (let key in vm.current.parent) {
-                    if (vm.current.parent.hasOwnProperty(key)) {
-                        const parentValue = vm.current.parent[key]?.toString().replace(/[\r\n\t]+/g, ' ');
-                        body_area_bg.background_color = parentValue !== null ? body_area_bg.background_color.replace(new RegExp('##' + key + '##', 'g'), parentValue) : body_area_bg.background_color;
-                        body_area_bg.background_color = body_area_bg.background_color.replace(/"/g, '\\"');
-                    }
-                }
-
-                body_area_bg.background_color = body_area_bg.background_color.replace(/##(.*?)##/g, '');
-            }
-            if (body_area_bg.background_color !== undefined &&  
-                body_area_bg.background_color !== null && 
-                body_area_bg.background_color !== "" 
-            ) {
-                if (body_area_bg.background_color.length == 7 && body_area_bg.background_color.startsWith("#")) {
-                    this.bgColor = "background-color: "+body_area_bg.background_color+";"; 
-                } else if (!body_area_bg.background_color.startsWith("#")) {
-                    this.bgColor = "background-color: "+body_area_bg.background_color+";"; 
-                } else {
-                    // have # but length !== 7
-                    this.bgColor = "";
-                }  
-
-                if(vm.modules[this.object.moduleCode].functionCode === "SM_HOMEVIEW"){
-                    vm.bgcolorHomeview += "background-color: "+body_area_bg.background_color+";"; 
-                }
-            } 
+            this.addBgColor("",body_area_bg)
 
             // Change column with other types in default case (empty dynamic_style. except: articel/gallery/gallery2).
             if (this.screen_item.type === "gridView" && !this.screen_item.hasOwnProperty('dynamic_style')) {
