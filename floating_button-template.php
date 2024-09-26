@@ -1,18 +1,20 @@
 <template id='floating_button'>
     <div v-if="list_items && list_items.length > 0" class='floating_button'>
-        <div v-if="list_items.length <= 2" :style="screen.floating_buttons.appearance.type === 'regular' ? { display: 'flex', flexDirection: 'column', alignItems: 'flex-end' } : {}">
-            <action-button 
-                v-for="(action, index) in list_items" 
-                :indexsearch="true" 
-                :end="list_items.length-1" 
-                :key="action" 
-                :item_button="action" 
-                :task="task" 
-                :list_item="list_items" 
+        <div v-if="list_items.length <= 2" 
+            :style="screen.floating_buttons.appearance.type === 'regular' ? 
+                            { display: 'flex', flexDirection: 'column', alignItems: 'flex-end' } : {}">
+            <action-button
+                v-for="(action, index) in list_items"
+                :indexsearch="true"
+                :end="list_items.length-1"
+                :key="action"
+                :item_button="action"
+                :task="task"
+                :list_item="list_items"
                 :floating_button="true" 
-                style="margin-right:10px;" 
+                style="margin-right:10px;"
                 :appearance="screen.floating_buttons.appearance"
-            > 
+            >
             </action-button>
         </div>
         <div v-else class="btn-group dropup">
