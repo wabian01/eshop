@@ -804,13 +804,13 @@
                 if (this.item_search_string === '' && filter_query.length === 0) {
                     this.list_items = this.ChainData.slice(0, 19);
                 } else if (this.item_search_string !== '' && filter_query.length === 0) {
-                    this.dataApiTemp = this.ChainData.filter(item => eval(search_query));
+                    this.dataApiTemp = this.ChainData.filter(item => eval("eval(search_query)"));
                     this.list_items = this.dataApiTemp.slice(0, 19);
                 } else if (this.item_search_string === '' && filter_query.length > 0) {
-                    this.dataApiTemp = eval("this.ChainData.filter(item => eval(filter_query.join(' && ')))");
+                    this.dataApiTemp = this.ChainData.filter(item => eval("eval(filter_query.join(' && '))"));
                     this.list_items = this.dataApiTemp.slice(0, 19);
                 } else {
-                    this.dataApiTemp = this.ChainData.filter(item => eval(filter_query.join(' && ')) && eval(search_query));
+                    this.dataApiTemp = this.ChainData.filter(item => eval("eval(filter_query.join(' && ')) && eval(search_query)"));
                     this.list_items = this.dataApiTemp.slice(0, 19);
                 }
 
