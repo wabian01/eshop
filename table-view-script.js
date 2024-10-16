@@ -263,7 +263,7 @@
         created: function() {
             this.initializeQuickFilter();
             this.initializeArrfil();
-            this.id = generateSecureId(10);
+            this.id = this.generateSecureId(10);
             this.createItemContent();
             this.handleTypeFilter2();
             this.handleTaskCode9999();
@@ -588,53 +588,85 @@
                     page = ctv.DataTable().page();
                 });
             },
-            activeListFilter(data){
-                let that = this
-                vm.activeListFilters.map(function(filter,index) {
-                    if(filter.screen_code===that.body_area.screenCode && !filter.hasOwnProperty('type')){
-                        if((filter.hasOwnProperty('entries') && filter.entries[0]!=undefined && filter.entries[0].toString().indexOf('lite_connection')>-1 ) || filter.hasOwnProperty('check')){
-                            if(!filter.hasOwnProperty('check')){
-                                filter['check'] = filter.entries[0];
-                            }else{
-                                filter.entries = []
-                                filter.entries[0] = filter['check']
-                            }
-                            
-                            let regExp = /\(([^)]+)\)/;
-                            let matches = regExp.exec(filter.entries[0])[1];
-                            if(that.object.lite_connection[matches]!=undefined){
-                                vm.dynamicFilter(that.object.lite_connection[matches],index)
-                            }else{
-                                filter.entries=[];
-                            }
+            activeListFilter(data) {
+                const that = this;
+            
+                vm.activeListFilters.forEach((filter, index) => {
+                    if (filter.screen_code === that.body_area.screenCode) {
+                        if (!filter.hasOwnProperty('type')) {
+                            this.handleStandardFilter(filter, data, index);
+                        } else {
+                            this.handleTypeFilter(filter, data);
                         }
-                        else{
-                            let entries =  data.map(d => d[filter.column]);
-                            if(filter.hasOwnProperty('entries') && filter.entries[0]!=undefined && (filter.entries[0]=='__daterange__' || filter.entries[0]=='__date__' || filter.entries[0]=='__userinput__' || filter.entries[0]=='__datelast__' || filter.entries[0]=='__daterecent__')){
-                                if(filter.entries[0]=='__datelast__' || filter.entries[0]=='__daterecent__') {
-                                    filter.timeLast = new Date(Math.max.apply(null, data.map(function(e) {
-                                        return new Date(e[filter.column]) == 'Invalid Date' ? 0 : new Date(e[filter.column]);
-                                    })));
-                                    return
-                                }
-                                filter.entries=[].concat(filter.entries[0])
-                            }else{
-                                filter.entries=[]
-                            }
-                            filter.entries = filter.entries.concat(entries).filter((x, i, d) => d.indexOf(x) == i && x != '');
-                        }
-                    }else if(filter.screen_code===that.body_area.screenCode && filter.hasOwnProperty('type')){
-                        filter.entries = filter.entries.map(value => {
-                            const count = data.filter(obj =>  {
-                                return Object.keys(obj).some(key => {
-                                        return String(obj[key]).includes(value)
-                                })
-                            }).length;
-                            return `${value} (${count})`;
-                        });
                     }
-                    return filter;
-                });   
+                });
+            },
+            
+            handleStandardFilter(filter, data, index) {
+                if (this.hasLiteConnection(filter)) {
+                    this.processLiteConnection(filter, index);
+                } else {
+                    this.updateEntriesFromData(filter, data);
+                }
+            },
+            
+            hasLiteConnection(filter) {
+                return filter.hasOwnProperty('entries') && 
+                       filter.entries[0] !== undefined && 
+                       filter.entries[0].toString().indexOf('lite_connection') > -1;
+            },
+            
+            processLiteConnection(filter, index) {
+                if (!filter.hasOwnProperty('check')) {
+                    filter['check'] = filter.entries[0];
+                } else {
+                    filter.entries = [filter['check']];
+                }
+            
+                const matches = this.extractMatches(filter.entries[0]);
+                if (this.object.lite_connection[matches] !== undefined) {
+                    vm.dynamicFilter(this.object.lite_connection[matches], index);
+                } else {
+                    filter.entries = [];
+                }
+            },
+            
+            extractMatches(entry) {
+                const regExp = /\(([^)]*)\)/;
+                const matches = regExp.exec(entry);
+                return matches ? matches[1] : null;
+            },
+            
+            updateEntriesFromData(filter, data) {
+                const entries = data.map(d => d[filter.column]);
+                
+                if (this.isSpecialEntry(filter)) {
+                    this.handleSpecialEntry(filter);
+                } else {
+                    filter.entries = [...new Set([...entries, ...filter.entries])].filter(x => x !== '');
+                }
+            },
+            
+            isSpecialEntry(filter) {
+                return filter.hasOwnProperty('entries') && 
+                       filter.entries[0] !== undefined && 
+                       ['__daterange__', '__date__', '__userinput__', '__datelast__', '__daterecent__'].includes(filter.entries[0]);
+            },
+            
+            handleSpecialEntry(filter) {
+                if (filter.entries[0] === '__datelast__' || filter.entries[0] === '__daterecent__') {
+                    filter.timeLast = new Date(Math.max(...data.map(e => new Date(e[filter.column]))));
+                    return;
+                }
+                
+                filter.entries = [filter.entries[0]];
+            },
+            
+            handleTypeFilter(filter, data) {
+                filter.entries = filter.entries.map(value => {
+                    const count = data.filter(obj => Object.keys(obj).some(key => String(obj[key]).includes(value))).length;
+                    return `${value} (${count})`;
+                });
             },
             handleDataObject(){
                 let id = this.id;
