@@ -350,275 +350,311 @@
                 }
                 return {};
             },
-            handleDataObject:function () { 
-                let temp = vm.activeScreenCode
-                if(temp != ''){
-                    if((this.screen_item.screenCode.indexOf(temp) == -1 && this.task.code !== 9999) || this.more == false){
-                        return;
+            handleDataObject: function () {
+
+                this.initializeSearchChainData();
+                this.setupFilterConfig();
+
+                if (this.isJsonHolder()) {
+                    this.handleJsonHolderData();
+                    return;
+                }
+
+                let data = this.prepareData();
+                if (data.length > 0) {
+                    this.processDataFilters(data);
+                    this.handleDataPresence(data);
+                } else {
+                    this.handleEmptyData();
+                }
+            },
+
+            initializeSearchChainData: function() {
+                if (this.searchChainData === '') {
+                    this.searchChainData = this.buildSearchChainData();
+                }
+            },
+
+            buildSearchChainData: function() {
+                let column_list = [];
+                let key_temp = Object.keys(vm.flatRuntimeAttributes);
+
+                this.addAttributesToColumnList(column_list, this.screen_item?.item_template?.template_default?.attributes);
+                this.addTemplateAttributesToColumnList(column_list, this.screen_item?.item_template?.templates);
+
+                let template_temp = JSON.stringify(this.screen_item.item_template);
+                template_temp.replace(/##(.*?)##/g, (_, to) => column_list.push(to));
+
+                return column_list.filter(x => !key_temp.includes(x) && x !== '').filter((x, i, d) => d.indexOf(x) === i);
+            },
+
+            addAttributesToColumnList: function(column_list, attributes) {
+                if (attributes) {
+                    for (let key in attributes) {
+                        if (typeof attributes[key] === 'string' && !attributes[key].includes('##') && !attributes[key].trim().includes(' ')) {
+                            column_list.push(attributes[key]);
+                        }
                     }
                 }
-                else{
-                    if((this.screen_item.screenCode!=vm.activeScreenCode && this.task.code !== 9999) || this.more == false){
-                        return;
+            },
+
+            addTemplateAttributesToColumnList: function(column_list, templates) {
+                if (templates) {
+                    templates.forEach(element => {
+                        this.addAttributesToColumnList(column_list, element?.layout?.attributes);
+                    });
+                }
+            },
+
+            setupFilterConfig: function() {
+                if (this.screen_item.hasOwnProperty('sort') && Object.keys(this.screen_item.sort).length > 0) {
+                    this.screen_item.filterConfig = {
+                        sortCol: this.screen_item.sort.column,
+                        order: this.screen_item.sort.order
+                    };
+                } else if (this.screen_item.hasOwnProperty('filterConfig') && Object.keys(this.screen_item.filterConfig).length > 0) {
+                    if (!this.screen_item.filterConfig.hasOwnProperty('sortCol')) {
+                        this.screen_item.filterConfig.sortCol = this.object.key_attribute;
                     }
+                    if (!this.screen_item.filterConfig.hasOwnProperty('order')) {
+                        this.screen_item.filterConfig.order = 'ASC';
+                    }
+                } else {
+                    this.screen_item.filterConfig = {
+                        sortCol: this.object.key_attribute,
+                        order: 'ASC'
+                    };
+                }
+            },
+
+            isJsonHolder: function() {
+                return this.object.dm_type === 'JsonHolder';
+            },
+
+            handleJsonHolderData: function() {
+                vm.refresh_rate = !vm.refresh_rate;
+                this.list_items = {0:'notfound'};
+                setTimeout(() => {
+                    this.loadCacheJsonHolder()
+                    .then((value) => {
+                        let jsonholder = typeof(value) === 'string' ? JSON.parse(value) : value;
+                        if (jsonholder != null) {
+                            vm.jsonHolder = value;
+                            if (jsonholder[this.object.dm_name] === undefined || jsonholder[this.object.dm_name].length === 0) {
+                                this.list_items = {0:'notfound'};
+                            } else {
+                                this.list_items = vm.paramJsonHolder(jsonholder, this.task, this.object);
+                            }
+                        }
+                        this.updateUIAfterDataLoad();
+                    });
+                }, 100);
+            },
+
+            prepareData: function() {
+                return JSON.parse(JSON.stringify(this.list_data_object));
+            },
+
+            processDataFilters: function(data) {
+                this.addQuickFilter(data);
+                data = this.removeDuplicates(data);
+                this.updateActiveListFilters(data);
+            },
+
+            addQuickFilter: function(data) {
+                if (Object.keys(this.quickfilter).length > 0 && !this.quickfilter.hasOwnProperty('entries')) {
+                    this.quickfilter.entries = [];
+                    let entries = data.map(d => jsonPath(d, this.quickfilter.column)[0]);
+                    this.quickfilter.entries = this.quickfilter.entries.concat(entries).filter((x, i, d) => d.indexOf(x) === i && x !== '');
+                }
+            },
+
+            removeDuplicates: function(data) {
+                if (this.object.hasOwnProperty('key_attribute') && this.object.key_attribute !== "") {
+                    let keyid = this.object.key_attribute;
+                    return data.filter((thing, index) => {
+                        const _thing = thing[keyid];
+                        return index === data.findIndex(obj => obj[keyid] === _thing);
+                    });
+                }
+                return data;
+            },
+
+            updateActiveListFilters: function(data) {
+                let that = this;
+                let filterVM = vm.activeListFilters.map(function(filter, index) {
+                    if (filter.screen_code === that.screen_item.screenCode && !filter.hasOwnProperty('type')) {
+                        that.handleNonTypeFilter(filter, data, index);
+                    } else if (filter.screen_code === that.screen_item.screenCode && filter.hasOwnProperty('type')) {
+                        that.handleTypeFilter(filter, data);
+                    }
+                    return filter;
+                });
+                that.filterforVM = JSON.stringify(filterVM);
+            },
+
+            handleNonTypeFilter: function(filter, data, index) {
+                if (this.isLiteConnectionFilter(filter)) {
+                    this.handleLiteConnectionFilter(filter, index);
+                } else {
+                    this.handleFilter(filter, data);
+                }
+            },
+
+            isLiteConnectionFilter: function(filter) {
+                return (filter.hasOwnProperty('entries') && filter.entries[0] != undefined && filter.entries[0].toString().indexOf('lite_connection') > -1) || filter.hasOwnProperty('check');
+            },
+
+            handleLiteConnectionFilter: function(filter, index) {
+                if (!filter.hasOwnProperty('check')) {
+                    filter.check = filter.entries[0];
+                } else {
+                    filter.entries = [filter.check];
                 }
                 
-                var that = this;
+                let regExp = /\(([^)]+)\)/;
+                let matches = regExp.exec(filter.entries[0])[1];
+                if (this.object.lite_connection[matches] != undefined) {
+                    vm.dynamicFilter(this.object.lite_connection[matches], index);
+                } else {
+                    filter.entries = [];
+                }
+            },
 
-                var column_list = [];  
-                let key_temp = [];
+            handleFilter: function(filter, data) {
+                let entries = this.getFilterEntries(filter, data);
                 
-                if(this.searchChainData === ''){
-                    if(this.screen_item?.item_template?.template_default?.attributes){
-                        let attributes_temp = this.screen_item.item_template.template_default.attributes
-                            for(var key in attributes_temp){
-                                if(typeof(attributes_temp[key]) === 'string' && attributes_temp[key].indexOf('##')<0 && !attributes_temp[key].trim().includes(' ')){
-                                    column_list.push(attributes_temp[key])
-                                }
-                            }
-                    }
-                    if(this.screen_item?.item_template?.templates){
-                        let templates_temp = this.screen_item.item_template.templates
-                        templates_temp.forEach(element => {
-                            if(element?.layout?.attributes){
-                                let attributes_layout = element.layout.attributes
-                                for(var key in attributes_layout){
-                                    if(typeof(attributes_layout[key]) === 'string' && attributes_layout[key].indexOf('##')<0 && !attributes_layout[key].trim().includes(' ')){
-                                        column_list.push(attributes_layout[key])
-                                    }
-                                }
-                            }
-                        })
-                    }
-                    let template_temp = JSON.stringify(this.screen_item.item_template)
-                    template_temp.replace(/##(.*?)##/g,function(me,to){
-                                column_list.push(to)
-                            })
-                    Object.keys(vm.flatRuntimeAttributes).map(key=>{
-                        key_temp.push(key);
-                    })       
-                    column_list = column_list.filter(x => !key_temp.includes(x));
-                    column_list = column_list.filter((x, i, d) => d.indexOf(x) == i && x != '');
-                    this.searchChainData=column_list;
-                }
-
-                let order = ""
-               
-                if(this.screen_item.hasOwnProperty('sort') && Object.keys(this.screen_item.sort).length > 0){
-                    this.screen_item['filterConfig']={
-                        'sortCol':this.screen_item.sort.column,
-                        'order':this.screen_item.sort.order
-                    }
-                }
-                else if(this.screen_item.hasOwnProperty('filterConfig') && Object.keys(this.screen_item.filterConfig).length > 0){
-                    if(this.screen_item.filterConfig.hasOwnProperty('sortCol')!=true){
-                        this.screen_item.filterConfig['sortCol'] = this.object.key_attribute;
-                    }
-                    if(this.screen_item.filterConfig.hasOwnProperty('order')!=true){
-                        this.screen_item.filterConfig['order'] = 'ASC';
-                    }
-                }
-                else{
-                    this.screen_item['filterConfig']={
-                        'sortCol':this.object.key_attribute,
-                        'order':'ASC'
-                    }
+                if (this.isSpecialFilterType(filter)) {
+                    this.handleSpecialFilterType(filter, data);
+                } else {
+                    filter.entries = [];
                 }
                 
-                if(this.screen_item.hasOwnProperty('sort')){
-                    if(this.screen_item.sort.hasOwnProperty('column') && this.screen_item.sort.column == 'RANDOM()'){
-                        order = "RAND()";
+                filter.entries = filter.entries.concat(entries).filter((x, i, d) => d.indexOf(x) === i && x !== '');
+            },
+
+            getFilterEntries: function(filter, data) {
+                if (filter.column === undefined || filter.column === null) {
+                    return data.map(d => d);
+                } else {
+                    return data.map(d => jsonPath(d, filter.column)[0]);
+                }
+            },
+
+            isSpecialFilterType: function(filter) {
+                return filter.hasOwnProperty('entries') && filter.entries[0] != undefined && 
+                       ['__daterange__', '__date__', '__userinput__', '__datelast__', '__daterecent__'].includes(filter.entries[0]);
+            },
+
+            handleSpecialFilterType: function(filter, data) {
+                if (filter.entries[0] === '__datelast__' || filter.entries[0] === '__daterecent__') {
+                    filter.timeLast = new Date(Math.max.apply(null, data.map(function(e) {
+                        return new Date(e[filter.column]) == 'Invalid Date' ? 0 : new Date(e[filter.column]);
+                    })));
+                    return;
+                }
+                filter.entries = [].concat(filter.entries[0]);
+            },
+
+            handleTypeFilter: function(filter, data) {
+                filter.entries = filter.entries.map(value => {
+                    const count = data.filter(obj => {
+                        return Object.keys(obj).some(key => String(obj[key]).includes(value));
+                    }).length;
+                    return `${value} (${count})`;
+                });
+            },
+
+            handleDataPresence: function(data) {
+                if (data.length > 0) {
+                    this.processValidData(data);
+                } else {
+                    this.handleEmptyData();
+                }
+            },
+
+            processValidData: function(data) {
+                this.removeEmptyElements(data);
+                this.list_items = data;
+                this.sortData();
+                this.updateUIAfterDataLoad();
+                this.page++;
+                this.updateCache(data);
+                this.callParentHandlers();
+            },
+
+            removeEmptyElements: function(data) {
+                data.forEach((element, index) => {
+                    if (Object.values(element).every(value => value === "")) {
+                        data.splice(index, 1);
                     }
-                }
-                if(this.object.dm_type == 'JsonHolder'){
-                    vm.refresh_rate = !vm.refresh_rate;
-                    that.list_items = {0:'notfound'};
-                    setTimeout(() => {
-                        this.loadCacheJsonHolder()
-                        .then((value)=>{
-                            let jsonholder = typeof(value) == 'string' ? JSON.parse(value) : value
-                            if(jsonholder != null){
-                                vm.jsonHolder = value
-                                if(jsonholder[that.object.dm_name] == undefined || jsonholder[that.object.dm_name].length==0){
-                                    that.list_items = {0:'notfound'};
-                                }else{
-                                    that.list_items = vm.paramJsonHolder(jsonholder,that.task,that.object);
-                                }
-                            }
-                            $("#task-modal-"+that.task.code+" .sk-circle").css({'display': 'none'  });
-                            $('.loadingItem').css({'display':'none'});
-                            $("#task-modal-"+that.task.code+' .'+that.screen_item.screenCode).css({'display':'none'})
-                            $('#'+that.object.componentCode+' .lds-spinner').css({'display':'none'})
-                            $('#'+that.object.componentCode+' .nothing-display').css({'display':'block'})
-                            that.more = false
-                        })
-                    }, 100);
-                    return
-                }
-                let data = JSON.parse(JSON.stringify(this.list_data_object));
+                });
+            },
 
-                if(data.length>0){
-                            if(Object.keys(that.quickfilter).length>0){
-                                if(!that.quickfilter.hasOwnProperty('entries')){
-                                    that.quickfilter.entries = []
-                                    let entries =  data.map(d => jsonPath(d,that.quickfilter.column)[0]);
-                                    that.quickfilter.entries = that.quickfilter.entries.concat(entries).filter((x, i, d) => d.indexOf(x) == i && x != '');
-                                }
-                            }
-                            if(that.object.hasOwnProperty('key_attribute') && (that.object.key_attribute != "" || that.object.key_attribute != null)){
-                                let keyid = that.object.key_attribute;
-                                data = data.filter((thing, index) => {
-                                    const _thing = thing[keyid];
-                                    return index === data.findIndex(obj => {
-                                        return obj[keyid] === _thing;
-                                    });
-                                });
-                            }
-                            let filterVM = vm.activeListFilters.map(function(filter,index) {
-                                if(filter.screen_code===that.screen_item.screenCode  && !filter.hasOwnProperty('type')){
-                                    if((filter.hasOwnProperty('entries') && filter.entries[0]!=undefined && filter.entries[0].toString().indexOf('lite_connection')>-1 ) || filter.hasOwnProperty('check')){
-                                            if(!filter.hasOwnProperty('check')){
-                                                filter['check'] = filter.entries[0];
-                                            }else{
-                                                filter.entries = []
-                                                filter.entries[0] = filter['check']
-                                            }
-                                            
-                                            let regExp = /\(([^)]+)\)/;
-                                            let matches = regExp.exec(filter.entries[0])[1];
-                                            if(that.object.lite_connection[matches]!=undefined){
-                                                vm.dynamicFilter(that.object.lite_connection[matches],index)
-                                            }else{
-                                                filter.entries=[];
-                                            }
-                                    }
-                                    else{
-                                        let entries = [];
-                                        if (filter.column === undefined || filter.column === null) {
-                                            entries = data.map(d => (d));
-                                        } else {
-                                            entries = data.map(d => jsonPath(d,filter.column)[0]);
-                                        }
-                                        
-                                        if(filter.hasOwnProperty('entries') && filter.entries[0]!=undefined && (filter.entries[0]=='__daterange__' || filter.entries[0]=='__date__' || filter.entries[0]=='__userinput__' || filter.entries[0]=='__datelast__' || filter.entries[0]=='__daterecent__')){
-                                            if(filter.entries[0]=='__datelast__' || filter.entries[0]=='__daterecent__') {
-                                                filter.timeLast = new Date(Math.max.apply(null, data.map(function(e) {
-                                                    return new Date(e[filter.column]) == 'Invalid Date' ? 0 : new Date(e[filter.column]);
-                                                })));
-                                                return
-                                            }
-                                            filter.entries=[].concat(filter.entries[0])
-                                        }else{
-                                            filter.entries=[]
-                                        }
-                                        filter.entries = filter.entries.concat(entries).filter((x, i, d) => d.indexOf(x) == i && x != '');
-                                    }
-                                    
-                                }else if(filter.screen_code===that.screen_item.screenCode && filter.hasOwnProperty('type')){
-                                    filter.entries = filter.entries.map(value => {
-                                        const count = data.filter(obj =>  {
-                                            return Object.keys(obj).some(key => {
-                                                 return String(obj[key]).includes(value)
-                                            })
-                                        }).length;
-                                        return `${value} (${count})`;
-                                    });
-                                }
-                                return filter;
-                                
-                            });
-                            that.filterforVM = JSON.stringify(filterVM)
-                        }
-                        var flag = 0;
-
-                if(typeof data !='undefined') {
-                    if (data.length > 0) {
-                        if(data.length == 1){
-                            let check = 0;
-                            for(var key in data[0]){                                        
-                                if(data[0][key] != undefined && data[0][key] != null && data[0][key] != ""){
-                                    check = 1;
-                                }
-                            }
-                            if(check == 0){
-                                that.more = false;
-                            }
-                        }
-                        data.forEach(element => {
-                            for(let key in element){
-                                if(element[key] !== ""){
-                                    flag = 1;
-                                }                
-                            }
-                            if(flag == 0 ) {
-                                data.splice( data.indexOf(element), 1 );
-                            }
-                        });
-
-                        that.list_items = data;
-                        if( that.screen_item.hasOwnProperty('filterConfig') && Object.keys(that.screen_item.filterConfig).length > 0 && order !== 'RAND()'){
-                            if(that.screen_item.filterConfig.hasOwnProperty('sortCol') && that.screen_item.filterConfig.hasOwnProperty('order') && that.screen_item.filterConfig.order=='DESC'){
-                                    that.list_items.sort(function(a, b) {
-                                        if(new Date(jsonPath(a,that.screen_item.filterConfig.sortCol))!='Invalid Date' && isNaN(Number(jsonPath(a,that.screen_item.filterConfig.sortCol))) ){
-                                            return new Date(jsonPath(b,that.screen_item.filterConfig.sortCol))-new Date(jsonPath(a,that.screen_item.filterConfig.sortCol));
-                                        }else if(!isNaN(parseFloat(jsonPath(a,that.screen_item.filterConfig.sortCol)))){
-                                            return (parseFloat(jsonPath(b,that.screen_item.filterConfig.sortCol)))-(parseFloat(jsonPath(a,that.screen_item.filterConfig.sortCol)));
-                                        }else{
-                                            return (String(jsonPath(b,that.screen_item.filterConfig.sortCol))).localeCompare(String((jsonPath(a,that.screen_item.filterConfig.sortCol))));
-                                        }
-                                    })
-                                    that.ChainData=that.list_items
-                                    that.list_items=that.ChainData.slice(0,19)
-                            }else if(that.screen_item.filterConfig.hasOwnProperty('sortCol') && that.screen_item.filterConfig.hasOwnProperty('order') && that.screen_item.filterConfig.order=='ASC'){
-                                    that.list_items.sort(function(b, a) {
-                                        if(new Date(jsonPath(a,that.screen_item.filterConfig.sortCol))!='Invalid Date' && isNaN(Number(jsonPath(a,that.screen_item.filterConfig.sortCol))) ){
-                                            return new Date(jsonPath(b,that.screen_item.filterConfig.sortCol))-new Date(jsonPath(a,that.screen_item.filterConfig.sortCol));
-                                        }else if(!isNaN(parseFloat(jsonPath(b,that.screen_item.filterConfig.sortCol)))){
-                                            return (parseFloat(jsonPath(b,that.screen_item.filterConfig.sortCol)))-(parseFloat(jsonPath(a,that.screen_item.filterConfig.sortCol)));
-                                        }else{
-                                            return (String(jsonPath(b,that.screen_item.filterConfig.sortCol))).localeCompare(String((jsonPath(a,that.screen_item.filterConfig.sortCol))));
-                                        }
-                                    })
-                                    that.ChainData=that.list_items
-                                    that.list_items=that.ChainData.slice(0,19)
-                            }else{
-                                    that.ChainData=that.list_items
-                                    that.list_items=that.ChainData.slice(0,19)
-                            }
-                        }else {
-                            that.ChainData=that.list_items
-                            that.list_items=that.ChainData.slice(0,19)
-                        }
-                        $("#task-modal-"+that.task.code+" .sk-circle").css({'display': 'none'  });
-                        $('.loadingItem').css({'display':'none'});
-                        $("#task-modal-"+that.task.code+' .'+that.screen_item.screenCode).css({'display':'none'})
-                        $('#'+that.object.componentCode+' .lds-spinner').css({'display':'none'})
-                        $('#'+that.object.componentCode+' .nothing-display').css({'display':'block'})
-                        that.page++;
-                        if(that.object.alias != "" && data.length>0){
-                            data.map(value=>{
-                                id = value[that.object.key_attribute]
-                                vm.dmobj[that.object.alias] = {...vm.dmobj[that.object.alias],...{[id] : value}}
-                            })
-                            vm.saveToCache('dmobj',vm.dmobj)
-                        }
-                        if(that.$parent.$parent.$parent.hasOwnProperty('handleDataAB')){
-                            that.$parent.$parent.$parent.handleDataAB(that.ChainData[0])
-                        }
-                        if(that.$parent.$parent.$parent.$parent.hasOwnProperty('handleDataAB')){
-                            that.$parent.$parent.$parent.$parent.handleDataAB(that.ChainData[0])
-                        }
-                    } else {
-                        if(that.page === 1){
-                            that.list_items = {0:'notfound'}
-                        }
-                        $('#'+that.object.componentCode+' .lds-spinner').css({'display':'none'})
-                        $('#'+that.object.componentCode+' .nothing-display').css({'display':'block'})
-                        $('.loadingItem').css({'display':'none'});
-                        $("#task-modal-"+that.task.code+" .sk-circle").css({'display': 'none'  });
-                        that.more = false;
-                    }
+            sortData: function() {
+                if (this.screen_item.hasOwnProperty('filterConfig') && Object.keys(this.screen_item.filterConfig).length > 0 && this.screen_item.sort?.column !== 'RANDOM()') {
+                    this.sortListItems();
+                } else {
+                    this.ChainData = this.list_items;
+                    this.list_items = this.ChainData.slice(0, 19);
                 }
+            },
+
+            sortListItems: function() {
+                const { sortCol, order } = this.screen_item.filterConfig;
+                if (sortCol && order) {
+                    this.list_items.sort((a, b) => this.compareValues(a, b, sortCol, order));
+                    this.ChainData = this.list_items;
+                    this.list_items = this.ChainData.slice(0, 19);
+                }
+            },
+
+            compareValues: function(a, b, sortCol, order) {
+                const aValue = jsonPath(a, sortCol);
+                const bValue = jsonPath(b, sortCol);
+                
+                if (new Date(aValue) != 'Invalid Date' && isNaN(Number(aValue))) {
+                    return order === 'DESC' ? new Date(bValue) - new Date(aValue) : new Date(aValue) - new Date(bValue);
+                } else if (!isNaN(parseFloat(aValue))) {
+                    return order === 'DESC' ? parseFloat(bValue) - parseFloat(aValue) : parseFloat(aValue) - parseFloat(bValue);
+                } else {
+                    return order === 'DESC' ? String(bValue).localeCompare(String(aValue)) : String(aValue).localeCompare(String(bValue));
+                }
+            },
+
+            updateUIAfterDataLoad: function() {
+                $("#task-modal-" + this.task.code + " .sk-circle").css({'display': 'none'});
+                $('.loadingItem').css({'display': 'none'});
+                $("#task-modal-" + this.task.code + ' .' + this.screen_item.screenCode).css({'display': 'none'});
+                $('#' + this.object.componentCode + ' .lds-spinner').css({'display': 'none'});
+                $('#' + this.object.componentCode + ' .nothing-display').css({'display': 'block'});
+            },
+
+            updateCache: function(data) {
+                if (this.object.alias !== "" && data.length > 0) {
+                    data.forEach(value => {
+                        let id = value[this.object.key_attribute];
+                        vm.dmobj[this.object.alias] = {...vm.dmobj[this.object.alias], ...{[id]: value}};
+                    });
+                    vm.saveToCache('dmobj', vm.dmobj);
+                }
+            },
+
+            callParentHandlers: function() {
+                if (this.$parent.$parent.$parent.hasOwnProperty('handleDataAB')) {
+                    this.$parent.$parent.$parent.handleDataAB(this.ChainData[0]);
+                }
+                if (this.$parent.$parent.$parent.$parent.hasOwnProperty('handleDataAB')) {
+                    this.$parent.$parent.$parent.$parent.handleDataAB(this.ChainData[0]);
+                }
+            },
+
+            handleEmptyData: function() {
+                if (this.page === 1) {
+                    this.list_items = {0: 'notfound'};
+                }
+                this.updateUIAfterDataLoad();
+                this.more = false;
             },
             handleScrollListView: function (event) {
                 if(this.list_items[0] == 'notfound'){
@@ -766,7 +802,7 @@
             isDateOrTimeFilter: function(key, value) {
                 return key.includes("date") || key.includes("time") || 
                        ((value.length === 24 || value.length === 40) && value.includes("->")) || 
-                       (value.length === 10 && new Date(value) !== 'Invalid Date');
+                       (value.length === 10 && new Date(value) != 'Invalid Date');
             },
 
             createDateOrTimeFilterFunction: function(key, values) {
@@ -803,7 +839,7 @@
                 // NOSONAR: The use of eval in this context is necessary for dynamic filtering based on user input.
                 if (this.item_search_string === '' && filter_query.length === 0) {
                     this.list_items = this.ChainData.slice(0, 19);
-                } else if (this.item_search_string !== '' && filter_query.length === 0) {
+                } else if (search_query && this.item_search_string !== '' && filter_query.length === 0) {
                     this.dataApiTemp = this.ChainData.filter(item => eval("eval(search_query)"));
                     this.list_items = this.dataApiTemp.slice(0, 19);
                 } else if (this.item_search_string === '' && filter_query.length > 0) {
