@@ -632,7 +632,7 @@
             },
             
             extractMatches(entry) {
-                const regExp = /\((.*?)\)/;
+                const regExp = /\(([^()]+)\)/;
                 const matches = regExp.exec(entry);
                 return matches ? matches[1] : null;
             },
