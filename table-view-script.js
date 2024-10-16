@@ -410,7 +410,10 @@
                 if(filter_query1[0]==""){
                     json=this.dataStore;
                 }else{
-                    json=this.dataStore.filter(function(item) { return eval(filter_query1[0])});
+                	if(typeof filter_query1[0] === 'string'){
+                		json=this.dataStore.filter(function(item) { return eval(filter_query1[0])});
+                	}
+                    
                 }
                 let data = json;
                 
