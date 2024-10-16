@@ -623,18 +623,13 @@
                     filter.entries = [filter['check']];
                 }
             
-                const matches = this.extractMatches(filter.entries[0]);
+                let regExp = /\(([^)]+)\)/;
+                let matches = regExp.exec(filter.entries[0])[1];
                 if (that.object.lite_connection[matches] !== undefined) {
                     vm.dynamicFilter(that.object.lite_connection[matches], index);
                 } else {
                     filter.entries = [];
                 }
-            },
-            
-            extractMatches(entry) {
-                const regExp = /\(([^)]+)\)/;
-                const matches = regExp.exec(entry);
-                return matches ? matches[1] : null;
             },
             
             updateEntriesFromData(filter, data) {
