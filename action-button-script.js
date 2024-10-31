@@ -199,7 +199,7 @@ Vue.component('action-button', {
     methods: {
         initializeButtonDescription(){
             let button_description = []
-            if(this.body_area && this.body_area.hasOwnProperty('button_description')){
+            if(this.body_area?.button_description){
                 button_description = structuredClone(this.body_area.button_description)
             }else if(this.button_description && Object.keys(this.button_description).length > 0){
                 button_description = structuredClone(this.button_description);
@@ -264,18 +264,30 @@ Vue.component('action-button', {
             const textColor = `color:${description.text_color || "orange"};`;
             const strokeColor = `border: 1px solid ${description.stroke_color || "#bec1c7"};`;
             const fillColor = `background-color:${description.fill_color || "#fff"};`;
-            const shadowEnable = description.shadow_enable ? 
-                (description.shadow_enable === true || description.shadow_enable === "true" ? 
-                    "box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px !important;" : "") : "";
-        
+            let shadowEnable = "";
+
+            if (description.shadow_enable) {
+                if (description.shadow_enable === true || description.shadow_enable === "true") {
+                    shadowEnable = "box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px !important;";
+                }
+            }
+
             this.styleButton += `border-radius: 5px !important; ${textColor} ${strokeColor} ${fillColor} ${shadowEnable}`;
         
             this.handleIconSize(description.icon_size , "custom");
         },
         handleIconSize(size , type) {
-            let iconSize = size === "large" ? "2rem" : size === "medium" ? "1.5rem" : "1rem";
-            let fontSize = size === "large" ? "25px;" : size === "medium" ? "20px;" : "";
-        
+            let iconSize = "1rem";
+            let fontSize = ""
+            
+            if (size === "large") {
+                iconSize = "2rem";
+                fontSize = "25px"
+            } else if (size === "medium") {
+                iconSize = "1.5rem";
+                fontSize = "20px"
+            }
+
             if(type === "custom"){
                 this.styleIcon += `width:${iconSize}; font-size:${fontSize};`;
             }
@@ -290,39 +302,35 @@ Vue.component('action-button', {
         visibleButton(){
             if(this.item_button.hasOwnProperty("visible")) {
                 if(this.item_button.visible != 'true' && this.item_button.visible !== ""){   
-                    if(this.item_button.visible != 'false' && this.item_button.visible != false){
+                    if(this.item_button.visible != 'false' && Boolean(this.item_button.visible) !== false){
                         this.item_button.visible = String(this.item_button.visible);
                         this.item_button.visible = this.item_button.visible.trim();
-                        if(!handleDMFunction(this.item_button.visible.replaceAll('\\\"',"\"")) || handleDMFunction(this.item_button.visible.replaceAll('\\\"',"\""))=='error'){
-                            try {
-                                if(this.overflow_menu!=undefined){
-                                    this.$parent.checkOverflow(false)
-                                }
-                                this.$parent.handleShowButton(false); 
-                            } catch (error) {}                         
+                        if(!handleDMFunction(this.item_button.visible.replaceAll('\\"',"\"")) || handleDMFunction(this.item_button.visible.replaceAll('\\"',"\""))=='error'){
+                            this.handleButtonAction();                        
                             return true;
                         }
-                    }else if(this.item_button.visible == 'false' || this.item_button.visible == false){
-                        try {
-                            if(this.overflow_menu!=undefined){
-                                this.$parent.checkOverflow(false)
-                            }
-                            this.$parent.handleShowButton(false); 
-                        } catch (error) {} 
+                    }else if(this.item_button.visible == 'false' || !this.item_button.visible){
+                        this.handleButtonAction();
                         return true;
                     }
                 }
             }
+            return false
+        },
+        handleButtonAction() {
+            try {
+                if (this.overflow_menu !== undefined) {
+                    this.$parent.checkOverflow(false);
+                }
+                this.$parent.handleShowButton(false);
+            } catch (error) {}
         },
         getDisabled(){
             let disabled = ""
             if(this.item_button.hasOwnProperty("enable") && this.item_button.enable!=null) {
                 this.item_button.enable = String(this.item_button.enable);
                 this.item_button.enable = this.item_button.enable.trim();
-                if(this.item_button.enable == ""){
-                    disabled = "";
-                }
-                else if(this.item_button.enable == 'true' || this.item_button.enable == 'false'){
+                if(this.item_button.enable == 'true' || this.item_button.enable == 'false'){
                     disabled = this.item_button.enable;
                 }
                 else if(!handleDMFunction(this.item_button.enable)){
@@ -334,67 +342,54 @@ Vue.component('action-button', {
             }
             return disabled
         },
-        handleBadgeIcon(){
-            let showBIcon, contentBIcon, bgBIcon, txtBIcon, borderColorBIcon, shadowBIcon = "";
-            if (this.item_button.hasOwnProperty("badge_icon") && this.item_button.badge_icon !== "") {
-                let badge_icon = this.item_button.badge_icon;
-                // visible
-                if (badge_icon.visible === true || badge_icon.visible === 'true') {
-                    showBIcon = "flex"
-                } else {
-                    showBIcon = "none"
-                }
-                // content
-                if (badge_icon.content == "") {
-                    contentBIcon = ""
-                } else {
-                    let lang = vm.lang;
-                    if (lang == 'vi') {
-                        if (badge_icon.content.includes('vi')) {
-                            badge_icon.content.replace(/<vi>(.*)<\/vi>/, function(key1,key2) {
-                                badge_icon.content = key2;
-                            })
-                        }
-                    } else {
-                        if (badge_icon.content.includes('en')) {
-                            badge_icon.content.replace(/<en>(.*)<\/en>/, function(key1,key2) {
-                                badge_icon.content = key2;
-                            })
-                        }
-                    }
-
-                    contentBIcon = badge_icon.content
-                }
-                // background_color
-                if (badge_icon.background_color == "") {
-                    bgBIcon = "#FF0000"
-                } else {
-                    bgBIcon = badge_icon.background_color
-                }
-                // text_color
-                if (badge_icon.text_color == "") {
-                    txtBIcon = "#FFFFFF"
-                } else {
-                    txtBIcon = badge_icon.text_color
-                }
-                // border_color
-                if (badge_icon.border_color != "") {
-                    borderColorBIcon = '1px solid ' + badge_icon.border_color
-                } else {
-                    borderColorBIcon = 'none' 
-                }
-                // shadow_enable
-                if (badge_icon.shadow_enable === true || badge_icon.shadow_enable === 'true' || !badge_icon.hasOwnProperty('shadow_enable')) {
-                    if (badge_icon.border_color != "") {
-                        shadowBIcon = "0px 5px 8px " + badge_icon.border_color + ";"
-                    } else if (badge_icon.border_color == "" && badge_icon.background_color != "") {
-                        shadowBIcon = "0px 5px 8px " + badge_icon.background_color + ";"
-                    } else {
-                        shadowBIcon = "0px 5px 8px grey;"
-                    }    
-                }
+        handleVisibility(badge_icon) {
+            return badge_icon.visible === true || badge_icon.visible === 'true' ? 'flex' : 'none';
+        },
+        
+        handleContent(badge_icon) {
+            let content = badge_icon.content;
+            if (content === "") {
+                return "";
             }
-            return {showBIcon, contentBIcon, bgBIcon, txtBIcon, borderColorBIcon, shadowBIcon}
+        
+            let lang = vm.lang;
+            let langPattern = lang === 'vi' ? /<vi>(.*)<\/vi>/ : /<en>(.*)<\/en>/;
+            return content.replace(langPattern, function(match, key) {
+                return key;
+            });
+        },
+        
+        handleColor(value, defaultColor) {
+            return value === "" ? defaultColor : value;
+        },
+        
+        handleBorder(badge_icon) {
+            return badge_icon.border_color !== "" ? `1px solid ${badge_icon.border_color}` : 'none';
+        },
+        
+        handleShadow(badge_icon) {
+            if (badge_icon.shadow_enable !== false && badge_icon.shadow_enable !== 'false' && (!badge_icon.hasOwnProperty('shadow_enable'))) {
+                let color = badge_icon.border_color !== "" ? badge_icon.border_color : (badge_icon.background_color !== "" ? badge_icon.background_color : 'grey');
+                return `0px 5px 8px ${color}`;
+            }
+        
+            return "";
+        },
+        
+        handleBadgeIcon() {
+            let { badge_icon } = this.item_button;
+            if (!badge_icon || badge_icon === "") {
+                return {};
+            }
+        
+            let showBIcon = this.handleVisibility(badge_icon);
+            let contentBIcon = this.handleContent(badge_icon);
+            let bgBIcon = this.handleColor(badge_icon.background_color, "#FF0000");
+            let txtBIcon = this.handleColor(badge_icon.text_color, "#FFFFFF");
+            let borderColorBIcon = this.handleBorder(badge_icon);
+            let shadowBIcon = this.handleShadow(badge_icon);
+        
+            return { showBIcon, contentBIcon, bgBIcon, txtBIcon, borderColorBIcon, shadowBIcon };
         },
         renderItem:function () {
             let button_description = this.initializeButtonDescription()
@@ -408,7 +403,9 @@ Vue.component('action-button', {
                 this.styleAll += 'text-align:'+((button_description.hasOwnProperty('text_gravity') && button_description.text_gravity!=="") ? button_description.text_gravity : "start")+';'
             }
             
-            this.visibleButton()
+            if(this.visibleButton()){
+                return
+            }
 
             if(this.item_button.type == 'act_call_cloudphone' && this.item_button.phone.length == 0 ){
                 return true;
