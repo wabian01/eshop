@@ -42,11 +42,11 @@ const iconSet = {
                 case 'bootstrap':
                     return `src='${basePath}/bootstrap/${name}.svg'`;
                 
-                case 'fontawesome':
+                case 'fontawesome':{
                     const [typeIcon, ...nameParts] = name.split('-');
                     const nameIcon = nameParts.join('-');
                     return `src='${basePath}/fontawesome/${typeIcon}/${nameIcon}.svg'`;
-        
+                }
                 default:
                     return "";
             }
@@ -60,7 +60,7 @@ const iconSet = {
             const array = regexPattern.exec(imgString);
 
             if (array) {
-                const [_, typeIcon, nameIcon, paramIcon] = array;
+                const [, typeIcon, nameIcon, paramIcon] = array;
 
                 iconSetUrl = vm.generateIconSetUrl(basePath, typeIcon, nameIcon);
 
