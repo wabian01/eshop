@@ -501,11 +501,11 @@ Vue.component('action-button', {
                 this.item_button.label = this.item_button.name || this.item_button.title || ""
             }
 
-            this.renderButtonContent(disabled, showBIcon, contentBIcon, bgBIcon, txtBIcon, borderColorBIcon, shadowBIcon)
+            this.renderButtonContent(font_icon, disabled, showBIcon, contentBIcon, bgBIcon, txtBIcon, borderColorBIcon, shadowBIcon)
             
             this.renderFloatButton()
         },
-        renderButtonContent(disabled, showBIcon, contentBIcon, bgBIcon, txtBIcon, borderColorBIcon, shadowBIcon){
+        renderButtonContent(font_icon, disabled, showBIcon, contentBIcon, bgBIcon, txtBIcon, borderColorBIcon, shadowBIcon){
             let icon = "";
             let iconfont = "";
             let iconSetUrl = "";
@@ -623,7 +623,7 @@ Vue.component('action-button', {
                 if(this.appearance.type == 'extended'){
                     label = this.item_button.label;
                 }
-                else if(this.floating_button == false){
+                else if(!this.floating_button){
                     label = this.item_button.label;
                 }
                 if(label == undefined || label.length == 0){
