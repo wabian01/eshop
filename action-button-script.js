@@ -369,10 +369,18 @@ Vue.component('action-button', {
         
         handleShadow(badge_icon) {
             if (badge_icon.shadow_enable !== false && badge_icon.shadow_enable !== 'false' && (!badge_icon.hasOwnProperty('shadow_enable'))) {
-                let color = badge_icon.border_color !== "" ? badge_icon.border_color : (badge_icon.background_color !== "" ? badge_icon.background_color : 'grey');
+                let color;
+
+                if (badge_icon.border_color !== "") {
+                    color = badge_icon.border_color;
+                } else if (badge_icon.background_color !== "") {
+                    color = badge_icon.background_color;
+                } else {
+                    color = 'grey';
+                }
                 return `0px 5px 8px ${color}`;
             }
-        
+
             return "";
         },
         
@@ -449,7 +457,7 @@ Vue.component('action-button', {
                     break
                 case "act_call_cloudphone":
                     if (typeof makeCall === "function" && this.item_button['phone'] !== "undefined") {
-                        let phoneNumber = this.item_button['phone'].replace(new RegExp('##','g'),"")
+                        let phoneNumber = this.item_button['phone'].replace(/##/g, "");
                         if(!this.item_button.label){
                             this.item_button.label = phoneNumber
                         }
@@ -495,10 +503,11 @@ Vue.component('action-button', {
                 this.item_button.label = this.item_button.name || this.item_button.title || ""
             }
 
+            let iconfont = "";
             let iconSetUrl = "";
             let iconSetStyle = "";
             let iconSetFallBack = "";
-            if (this.item_button.imageUrl && this.item_button.imageUrl.includes('rta://icon')) {
+            if (this.item_button?.imageUrl?.includes('rta://icon')) {
                 ({ iconSetUrl, iconSetStyle, iconSetFallBack } = vm.handleIconSetAB(this.item_button.imageUrl));
             }
            
@@ -603,6 +612,9 @@ Vue.component('action-button', {
                 this.button_content = '<button '+disabled+' type="button" style="'+this.styleAll+'padding: 3px 9px !important; border-radius: 5px !important;'+''+'" class="btn default">'+icon+'<span style="'+this.styleAll+'padding:0 5px;width:100%;">'+(button_description.hasOwnProperty('show_text') ? button_description.show_text == true ? this.item_button['label']: '' :this.item_button['label'])+'</span></button>';
             }
             
+            this.renderFloatButton()
+        },
+        renderFloatButton(){
             if(this.floating_button != undefined){
                 let label='';
                 let fontSize='15px';
