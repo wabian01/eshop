@@ -197,103 +197,97 @@ Vue.component('action-button', {
         }
     },
     methods: {
-        renderItem:function () {
-            var button_description = [];
-            if(this.body_area != undefined && this.body_area.hasOwnProperty('button_description')){
-                button_description = this.body_area.button_description
+        initializeButtonDescription(){
+            let button_description = []
+            if(this.body_area && this.body_area.hasOwnProperty('button_description')){
+                button_description = structuredClone(this.body_area.button_description)
+            }else if(this.button_description && Object.keys(this.button_description).length > 0){
+                button_description = structuredClone(this.button_description);
             }
-            else if(this.button_description != undefined && Object.keys(this.button_description).length > 0){
-                button_description = this.button_description;
-            }
-            if(Object.keys(button_description).length > 0 ){
-                for(var key in button_description){
+            return button_description
+        },
+        addStyleButton(button_description){
+            if (Object.keys(button_description).length > 0) {
+                for (const key in button_description) {
                     switch (key) {
                         case 'type':
-                            switch (button_description[key]) {
-                                case 'outline':
-                                    if (this.item_button.hasOwnProperty("badge_icon") && this.item_button.badge_icon !== "") {
-                                        this.styleButton += 'background-color: #fff; border: 1px solid #bec1c7; color:orange; border-radius: 5px !important; position: relative;'
-                                    } else {
-                                        this.styleButton += 'background-color: #fff; border: 1px solid #bec1c7; color:orange; border-radius: 5px !important;'
-                                    }
-                                    break;
-                                case 'icon':
-                                // https://rtgit.rta.vn/rtlab/tech-document/-/blob/main/datamodel/AB-in-DMView.md
-                                case 'text':
-                                    if (this.item_button.hasOwnProperty("badge_icon") && this.item_button.badge_icon !== "") {
-                                        this.styleButton += 'border: 0px; background-color: transparent; color: #FFCC00; position: relative;'
-                                    } else {
-                                        this.styleButton += 'border: 0px; background-color: transparent; color: #FFCC00;'
-                                    }
-                                    break;
-                                case 'contain':
-                                    if (this.item_button.hasOwnProperty("badge_icon") && this.item_button.badge_icon !== "") {
-                                        this.styleButton += 'background-color:#FFCC00; color: white; border-radius: 5px !important; border-color: transparent !important; position: relative;'
-                                    } else {
-                                        this.styleButton += 'background-color:#FFCC00; color: white; border-radius: 5px !important; border-color: transparent !important;'
-                                    }
-                                    break;
-                                case 'bigIcon':
-                                    this.isBigIcon += 'bigIcon';
-                                    if (this.item_button.hasOwnProperty("badge_icon") && this.item_button.badge_icon !== "") {
-                                        this.styleButton += 'border-radius: 50% !important; padding: 12px 16px !important; font-size: 18px !important; margin: 0px !important; position: relative;'
-                                    } else {
-                                        this.styleButton += 'border-radius: 50% !important; padding: 12px 16px !important; font-size: 18px !important; margin: 0px !important;'
-                                    }
-                                    break;
-                                case 'custom':
-                                    let text_color = 'color:'+((button_description.hasOwnProperty('text_color') && button_description.text_color !== "") ? button_description.text_color : "orange")+';'
-                                    let stroke_color = 'border: 1px solid '+((button_description.hasOwnProperty('stroke_color') && button_description.stroke_color !== "") ? button_description.stroke_color : "#bec1c7")+';'
-                                    let fill_color = 'background-color:'+((button_description.hasOwnProperty('fill_color') && button_description.fill_color !== "") ? button_description.fill_color : "#fff")+';'
-                                    let shadow_enable = ((button_description.hasOwnProperty('shadow_enable') && button_description.shadow_enable !== "") 
-                                                        ? (button_description.shadow_enable === true || button_description.shadow_enable === "true")
-                                                            ? "box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px !important" 
-                                                            : ""
-                                                        : "") + ';'
-                                    this.styleButton += 'border-radius: 5px !important;' + text_color + stroke_color + fill_color + shadow_enable;        
-
-                                    let icon_size = 'width:'+((button_description.hasOwnProperty('icon_size') && button_description.icon_size !== "") ? (button_description.icon_size == "large" ? "2rem" : (button_description.icon_size == "medium" ? "1.5rem" : "1rem")) : "1rem")+';'
-                                        icon_size += 'font-size:'+((button_description.hasOwnProperty('icon_size') && button_description.icon_size !== "") ? (button_description.icon_size == "large" ? "25px;" : (button_description.icon_size == "medium" ? "20px;" : "")) : "")+';'
-                                    this.styleIcon += icon_size
-                                    break;
-                                default:
-                                    break;
-                            }
-                            break;  
+                            this.handleButtonType(button_description[key],button_description);
+                            break;
                         case 'bold':
-                            if(button_description.bold){
+                            if (button_description.bold) {
                                 this.styleAll += 'font-weight: bold;';
                             }
                             break;
                         case 'upper_case':
-                            if(button_description.upper_case){
+                            if (button_description.upper_case) {
                                 this.styleAll += 'text-transform: uppercase;';
                             }
                             break; 
                         case 'icon_size':
-                            if(button_description.icon_size == 'large'){
-                                this.styleAll += 'line-height: 2.5;';
-                                this.stylefontasome =''
-                                this.stylefontasome += 'padding:4px;'
-                            }else if(button_description.icon_size == 'medium'){
-                                this.styleAll += 'line-height: 2;';
-                                this.stylefontasome =''
-                                this.stylefontasome += 'padding:4px;'
-                            }
+                            this.handleIconSize(button_description.icon_size , "icon_size");
                             break;                              
                         default:
                             break;
                     }
                 }
             }
-
-            // Default Button
-            if (this.item_button.hasOwnProperty("badge_icon") && this.item_button.badge_icon !== "") {
-                this.styleAll += 'position: relative; text-align:'+((button_description.hasOwnProperty('text_gravity') && button_description.text_gravity!=="") ? button_description.text_gravity : "start")+';'
-            } else {
-                this.styleAll += 'text-align:'+((button_description.hasOwnProperty('text_gravity') && button_description.text_gravity!=="") ? button_description.text_gravity : "start")+';'
+        },
+        handleButtonType(type,button_description) {
+            // https://rtgit.rta.vn/rtlab/tech-document/-/blob/main/datamodel/AB-in-DMView.md
+            const hasBadgeIcon = this.item_button.hasOwnProperty("badge_icon") && this.item_button.badge_icon !== "";
+            const baseStyles = hasBadgeIcon ? 
+                'position: relative;' : '';
+        
+            switch (type) {
+                case 'outline':
+                    this.styleButton += `background-color: #fff; border: 1px solid #bec1c7; color: orange; border-radius: 5px !important; ${baseStyles}`;
+                    break;
+                case 'icon':
+                case 'text':
+                    this.styleButton += `border: 0px; background-color: transparent; color: #FFCC00; ${baseStyles}`;
+                    break;
+                case 'contain':
+                    this.styleButton += `background-color: #FFCC00; color: white; border-radius: 5px !important; border-color: transparent !important; ${baseStyles}`;
+                    break;
+                case 'bigIcon':
+                    this.isBigIcon += 'bigIcon';
+                    this.styleButton += `border-radius: 50% !important; padding: 12px 16px !important; font-size: 18px !important; margin: 0px !important; ${baseStyles}`;
+                    break;
+                case 'custom':
+                    this.handleCustomButton(button_description);
+                    break;
+                default:
+                    break;
             }
-            
+        },
+        handleCustomButton(description) {
+            const textColor = `color:${description.text_color || "orange"};`;
+            const strokeColor = `border: 1px solid ${description.stroke_color || "#bec1c7"};`;
+            const fillColor = `background-color:${description.fill_color || "#fff"};`;
+            const shadowEnable = description.shadow_enable ? 
+                (description.shadow_enable === true || description.shadow_enable === "true" ? 
+                    "box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px !important;" : "") : "";
+        
+            this.styleButton += `border-radius: 5px !important; ${textColor} ${strokeColor} ${fillColor} ${shadowEnable}`;
+        
+            this.handleIconSize(description.icon_size , "custom");
+        },
+        handleIconSize(size , type) {
+            let iconSize = size === "large" ? "2rem" : size === "medium" ? "1.5rem" : "1rem";
+            let fontSize = size === "large" ? "25px;" : size === "medium" ? "20px;" : "";
+        
+            if(type === "custom"){
+                this.styleIcon += `width:${iconSize}; font-size:${fontSize};`;
+            }
+            if(type === "icon_size"){
+                if (size === "large" || size === "medium") {
+                    this.styleAll += `line-height: ${size === "large" ? "2.5" : "2"};`;
+                    this.stylefontasome =''
+                    this.stylefontasome += 'padding:4px;';
+                }
+            }
+        },
+        visibleButton(){
             if(this.item_button.hasOwnProperty("visible")) {
                 if(this.item_button.visible != 'true' && this.item_button.visible !== ""){   
                     if(this.item_button.visible != 'false' && this.item_button.visible != false){
@@ -318,14 +312,9 @@ Vue.component('action-button', {
                         return true;
                     }
                 }
-                
             }
-            if(this.item_button.type == 'act_call_cloudphone' && this.item_button.phone.length == 0 ){
-                return true;
-            }
-            if(this.$parent.$vnode.componentOptions.Ctor.options.name === 'taskmodal'){
-                this.$parent.countSumAB(this.item_button)
-            }
+        },
+        getDisabled(){
             let disabled = ""
             if(this.item_button.hasOwnProperty("enable") && this.item_button.enable!=null) {
                 this.item_button.enable = String(this.item_button.enable);
@@ -343,17 +332,10 @@ Vue.component('action-button', {
             if(disabled === 'false'){
                 disabled = "disabled";
             }
-            this.disabled = disabled;
-            if(this.disabled == "disabled"){
-                this.styleIconDisable = 'filter: contrast(0);'
-                this.styleAll += 'color: #808080d1 !important;'
-            }
-            if(vm.time_tracking_id.hasOwnProperty(this.item_button.tracking_id)){
-                this.handleTracking(this.item_button.tracking_id)
-            }
-            var icon = ''
-            // Has Badge_Icon:
-            var showBIcon, contentBIcon, bgBIcon, txtBIcon, borderColorBIcon, shadowBIcon = "";
+            return disabled
+        },
+        handleBadgeIcon(){
+            let showBIcon, contentBIcon, bgBIcon, txtBIcon, borderColorBIcon, shadowBIcon = "";
             if (this.item_button.hasOwnProperty("badge_icon") && this.item_button.badge_icon !== "") {
                 let badge_icon = this.item_button.badge_icon;
                 // visible
@@ -412,9 +394,50 @@ Vue.component('action-button', {
                     }    
                 }
             }
+            return {showBIcon, contentBIcon, bgBIcon, txtBIcon, borderColorBIcon, shadowBIcon}
+        },
+        renderItem:function () {
+            let button_description = this.initializeButtonDescription()
+
+            this.addStyleButton(button_description)
+
+            // Default Button
+            if (this.item_button.hasOwnProperty("badge_icon") && this.item_button.badge_icon !== "") {
+                this.styleAll += 'position: relative; text-align:'+((button_description.hasOwnProperty('text_gravity') && button_description.text_gravity!=="") ? button_description.text_gravity : "start")+';'
+            } else {
+                this.styleAll += 'text-align:'+((button_description.hasOwnProperty('text_gravity') && button_description.text_gravity!=="") ? button_description.text_gravity : "start")+';'
+            }
+            
+            this.visibleButton()
+
+            if(this.item_button.type == 'act_call_cloudphone' && this.item_button.phone.length == 0 ){
+                return true;
+            }
+            if(this.$parent.$vnode.componentOptions.Ctor.options.name === 'taskmodal'){
+                this.$parent.countSumAB(this.item_button)
+            }
+
+            let disabled = this.getDisabled()
+
+            this.disabled = disabled;
+
+            if(this.disabled == "disabled"){
+                this.styleIconDisable = 'filter: contrast(0);'
+                this.styleAll += 'color: #808080d1 !important;'
+            }
+
+            if(vm.time_tracking_id.hasOwnProperty(this.item_button.tracking_id)){
+                this.handleTracking(this.item_button.tracking_id)
+            }
+
+            let icon = ''
+            
+            let {showBIcon, contentBIcon, bgBIcon, txtBIcon, borderColorBIcon, shadowBIcon} = this.handleBadgeIcon();
+
             if( button_description.hasOwnProperty("show_text") && typeof(button_description.show_text) == 'string' ) {
                 button_description.show_text = Boolean(button_description.show_text)
             }
+
             let font_icon = ''
             switch(this.item_button.type) {
                 case "act_call":
