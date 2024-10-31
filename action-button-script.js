@@ -434,8 +434,6 @@ Vue.component('action-button', {
             if(vm.time_tracking_id.hasOwnProperty(this.item_button.tracking_id)){
                 this.handleTracking(this.item_button.tracking_id)
             }
-
-            let icon = ''
             
             let {showBIcon, contentBIcon, bgBIcon, txtBIcon, borderColorBIcon, shadowBIcon} = this.handleBadgeIcon();
 
@@ -480,7 +478,7 @@ Vue.component('action-button', {
 
                 case "act_check":
                     return true;
-                    this.button_content = '<label class="mt-checkbox mt-checkbox-outline"><input  '+disabled+' type="checkbox">'+(button_description.hasOwnProperty('show_text') ? button_description.show_text == true ? this.item_button['label']: '' :this.item_button['label'])+' <span></span></label>';
+                    // this.button_content = '<label class="mt-checkbox mt-checkbox-outline"><input  '+disabled+' type="checkbox">'+(button_description.hasOwnProperty('show_text') ? button_description.show_text == true ? this.item_button['label']: '' :this.item_button['label'])+' <span></span></label>';
                     break
 
                 case "act_report":
@@ -503,6 +501,12 @@ Vue.component('action-button', {
                 this.item_button.label = this.item_button.name || this.item_button.title || ""
             }
 
+            this.renderButtonContent(disabled, showBIcon, contentBIcon, bgBIcon, txtBIcon, borderColorBIcon, shadowBIcon)
+            
+            this.renderFloatButton()
+        },
+        renderButtonContent(disabled, showBIcon, contentBIcon, bgBIcon, txtBIcon, borderColorBIcon, shadowBIcon){
+            let icon = "";
             let iconfont = "";
             let iconSetUrl = "";
             let iconSetStyle = "";
@@ -611,8 +615,6 @@ Vue.component('action-button', {
                 }
                 this.button_content = '<button '+disabled+' type="button" style="'+this.styleAll+'padding: 3px 9px !important; border-radius: 5px !important;'+''+'" class="btn default">'+icon+'<span style="'+this.styleAll+'padding:0 5px;width:100%;">'+(button_description.hasOwnProperty('show_text') ? button_description.show_text == true ? this.item_button['label']: '' :this.item_button['label'])+'</span></button>';
             }
-            
-            this.renderFloatButton()
         },
         renderFloatButton(){
             if(this.floating_button != undefined){
