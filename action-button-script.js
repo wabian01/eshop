@@ -479,7 +479,7 @@ Vue.component('action-button', {
                 case "act_check":
                     return true;
                     // this.button_content = '<label class="mt-checkbox mt-checkbox-outline"><input  '+disabled+' type="checkbox">'+(button_description.hasOwnProperty('show_text') ? button_description.show_text == true ? this.item_button['label']: '' :this.item_button['label'])+' <span></span></label>';
-                    break
+                    // break
 
                 case "act_report":
                     font_icon = 'flaticon-diagram'
@@ -620,10 +620,7 @@ Vue.component('action-button', {
             if(this.floating_button != undefined){
                 let label='';
                 let fontSize='15px';
-                if(this.appearance.type == 'extended'){
-                    label = this.item_button.label;
-                }
-                else if(!this.floating_button){
+                if(this.appearance.type == 'extended' || !this.floating_button){
                     label = this.item_button.label;
                 }
                 if(label == undefined || label.length == 0){
