@@ -500,8 +500,8 @@ Vue.component('action-button', {
             if(!this.item_button.label){
                 this.item_button.label = this.item_button.name || this.item_button.title || ""
             }
-
-            this.renderButtonContent(button_description, font_icon, disabled, showBIcon, contentBIcon, bgBIcon, txtBIcon, borderColorBIcon, shadowBIcon)
+            let styleCustom = {showBIcon, contentBIcon, bgBIcon, txtBIcon, borderColorBIcon, shadowBIcon}
+            this.renderButtonContent(button_description, font_icon, disabled, styleCustom)
             
             this.renderFloatButton()
         },
@@ -580,29 +580,31 @@ Vue.component('action-button', {
             this.button_content = '<button '+disabled+' type="button" class="btn default"'+this.styleButton+'>'+icon+'<span style="'+this.styleAll+'width:100%;overflow: hidden;text-overflow: ellipsis;padding:0 5px;"> '+label+' </span></button>';
         },
         renderIconAlignment(buttonDescription, icon, disabled, showBIcon, contentBIcon, bgBIcon, txtBIcon, borderColorBIcon, shadowBIcon){
+            icon = this.isShowIcon(buttonDescription,icon)
+            let label = this.isShowLabel(buttonDescription)
             if(buttonDescription.hasOwnProperty('icon_alignment')){
                 switch (buttonDescription.icon_alignment) {
                     case 'end':
-                        this.button_content = '<button '+disabled+' type="button" class="btn default"'+this.styleButton+'><span style="'+this.styleAll+'width:100%;overflow: hidden;text-overflow: ellipsis;padding:0 5px;display: -webkit-box;-webkit-box-orient: vertical;white-space: break-spaces;word-wrap: break-word;margin: auto;-webkit-line-clamp:'+((buttonDescription.hasOwnProperty('max_text_line') && buttonDescription.max_text_line!=null)?buttonDescription.max_text_line:(1+";white-space: unset !important"))+';">'+(buttonDescription.hasOwnProperty('show_text') ? buttonDescription.show_text == true ? this.item_button['label']: '' :this.item_button['label'])+' </span>'+(buttonDescription.hasOwnProperty('show_icon') ? ((buttonDescription.show_icon == true || buttonDescription.show_icon == 'true') == true ? icon: '') :icon)+'</button>';
+                        this.button_content = '<button '+disabled+' type="button" class="btn default"'+this.styleButton+'><span style="'+this.styleAll+'width:100%;overflow: hidden;text-overflow: ellipsis;padding:0 5px;display: -webkit-box;-webkit-box-orient: vertical;white-space: break-spaces;word-wrap: break-word;margin: auto;-webkit-line-clamp:'+(buttonDescription?.max_text_line ?? (1+";white-space: unset !important"))+';">'+label+' </span>'+icon+'</button>';
                         break;
                     case 'top':
                         this.styleButton = this.styleButton.replace('text-align:start;','').replace('display:flex;','')
-                        this.button_content = '<button '+disabled+' type="button" class="btn default"'+this.styleButton+'>'+(buttonDescription.hasOwnProperty('show_icon') ? ((buttonDescription.show_icon == true || buttonDescription.show_icon == 'true') == true ? icon: '') :icon)+'<span style="'+this.styleAll+'width:100%;overflow: hidden;text-overflow: ellipsis;padding:0 5px;display:block;"> '+(buttonDescription.hasOwnProperty('show_text') ? buttonDescription.show_text == true ? this.item_button['label']: '' :this.item_button['label'])+' </span></button>';
+                        this.button_content = '<button '+disabled+' type="button" class="btn default"'+this.styleButton+'>'+icon+'<span style="'+this.styleAll+'width:100%;overflow: hidden;text-overflow: ellipsis;padding:0 5px;display:block;"> '+label+' </span></button>';
                         break;
                     case 'bottom':
                         this.styleButton = this.styleButton.replace('text-align:start;','').replace('display:flex;','')
-                        this.button_content = '<button '+disabled+' type="button" class="btn default"'+this.styleButton+'><span style="'+this.styleAll+'width:100%;overflow: hidden;text-overflow: ellipsis;padding:0 5px;display:block;"> '+(buttonDescription.hasOwnProperty('show_text') ? buttonDescription.show_text == true ? this.item_button['label']: '' :this.item_button['label'])+' </span>'+(buttonDescription.hasOwnProperty('show_icon') ? ((buttonDescription.show_icon == true || buttonDescription.show_icon == 'true') == true ? icon: '') :icon)+'</button>';
+                        this.button_content = '<button '+disabled+' type="button" class="btn default"'+this.styleButton+'><span style="'+this.styleAll+'width:100%;overflow: hidden;text-overflow: ellipsis;padding:0 5px;display:block;"> '+label+' </span>'+icon+'</button>';
                         break;
                 
                     default:
-                        this.button_content = '<button '+disabled+' type="button" class="btn default"'+this.styleButton+'>'+(buttonDescription.hasOwnProperty('show_icon') ? ((buttonDescription.show_icon == true || buttonDescription.show_icon == 'true') == true ? icon: '') :icon)+'<span style="'+this.styleAll+'width:100%;overflow: hidden;text-overflow: ellipsis;padding:0 5px;display: -webkit-box;-webkit-box-orient: vertical;white-space: break-spaces;word-wrap: break-word;margin: auto;-webkit-line-clamp:'+((buttonDescription.hasOwnProperty('max_text_line') && buttonDescription.max_text_line!=null)?buttonDescription.max_text_line:(1+";white-space: unset !important"))+';">'+(buttonDescription.hasOwnProperty('show_text') ? buttonDescription.show_text == true ? this.item_button['label']: '' :this.item_button['label'])+' </span></button>';
+                        this.button_content = '<button '+disabled+' type="button" class="btn default"'+this.styleButton+'>'+icon+'<span style="'+this.styleAll+'width:100%;overflow: hidden;text-overflow: ellipsis;padding:0 5px;display: -webkit-box;-webkit-box-orient: vertical;white-space: break-spaces;word-wrap: break-word;margin: auto;-webkit-line-clamp:'+(buttonDescription?.max_text_line ??(1+";white-space: unset !important"))+';">'+label+' </span></button>';
                         break;
                 }
             }else{
                 if (this.item_button.hasOwnProperty("badge_icon") && this.item_button.badge_icon !== "") {
-                    this.button_content = '<button '+disabled+' type="button" class="btn default"'+this.styleButton+'>'+(buttonDescription.hasOwnProperty('show_icon') ? ((buttonDescription.show_icon == true || buttonDescription.show_icon == 'true') == true ? icon: '') :icon)+'<span style="'+this.styleAll+'width:100%;overflow: hidden;text-overflow: ellipsis;padding:0 5px;display: -webkit-box;-webkit-box-orient: vertical;white-space: break-spaces;word-wrap: break-word;margin: auto;-webkit-line-clamp:'+((buttonDescription.hasOwnProperty('max_text_line') && buttonDescription.max_text_line!=null)?buttonDescription.max_text_line:(1+";white-space: unset !important"))+';">'+(buttonDescription.hasOwnProperty('show_text') ? buttonDescription.show_text == true ? this.item_button['label']: '' :this.item_button['label'])+' </span><span style="background:'+bgBIcon+'; box-shadow:'+shadowBIcon+'; color:'+txtBIcon+'; display:'+showBIcon+'; border:'+borderColorBIcon+'; width:fit-content; height:fit-content; position:absolute; top:-10px; right:-10px; justify-content:center; align-items:center; text-transform: none; padding: 3px 7px !important" class="badge">'+contentBIcon+'</span></button>';
+                    this.button_content = '<button '+disabled+' type="button" class="btn default"'+this.styleButton+'>'+icon+'<span style="'+this.styleAll+'width:100%;overflow: hidden;text-overflow: ellipsis;padding:0 5px;display: -webkit-box;-webkit-box-orient: vertical;white-space: break-spaces;word-wrap: break-word;margin: auto;-webkit-line-clamp:'+(buttonDescription?.max_text_line ??(1+";white-space: unset !important"))+';">'+label+' </span><span style="background:'+bgBIcon+'; box-shadow:'+shadowBIcon+'; color:'+txtBIcon+'; display:'+showBIcon+'; border:'+borderColorBIcon+'; width:fit-content; height:fit-content; position:absolute; top:-10px; right:-10px; justify-content:center; align-items:center; text-transform: none; padding: 3px 7px !important" class="badge">'+contentBIcon+'</span></button>';
                 } else {
-                    this.button_content = '<button '+disabled+' type="button" class="btn default"'+this.styleButton+'>'+(buttonDescription.hasOwnProperty('show_icon') ? ((buttonDescription.show_icon == true || buttonDescription.show_icon == 'true') == true ? icon: '') :icon)+'<span style="'+this.styleAll+'width:100%;overflow: hidden;text-overflow: ellipsis;padding:0 5px;display: -webkit-box;-webkit-box-orient: vertical;white-space: break-spaces;word-wrap: break-word;margin: auto;-webkit-line-clamp:'+((buttonDescription.hasOwnProperty('max_text_line') && buttonDescription.max_text_line!=null)?buttonDescription.max_text_line:(1+";white-space: unset !important"))+';">'+(buttonDescription.hasOwnProperty('show_text') ? buttonDescription.show_text == true ? this.item_button['label']: '' :this.item_button['label'])+' </span></button>';
+                    this.button_content = '<button '+disabled+' type="button" class="btn default"'+this.styleButton+'>'+icon+'<span style="'+this.styleAll+'width:100%;overflow: hidden;text-overflow: ellipsis;padding:0 5px;display: -webkit-box;-webkit-box-orient: vertical;white-space: break-spaces;word-wrap: break-word;margin: auto;-webkit-line-clamp:'+(buttonDescription?.max_text_line ??(1+";white-space: unset !important"))+';">'+label+' </span></button>';
                 }
             }
         },
@@ -616,7 +618,8 @@ Vue.component('action-button', {
             }
             return "";
         },
-        renderButtonContent(button_description, font_icon, disabled, showBIcon, contentBIcon, bgBIcon, txtBIcon, borderColorBIcon, shadowBIcon){
+        renderButtonContent(button_description, font_icon, disabled, styleCustom){
+            let {showBIcon, contentBIcon, bgBIcon, txtBIcon, borderColorBIcon, shadowBIcon} = styleCustom
             let icon = "";
             let iconfont = "";
             let iconSetUrl = "";
@@ -655,11 +658,11 @@ Vue.component('action-button', {
                     this.renderIconAlignment(button_description, icon, disabled, showBIcon, contentBIcon, bgBIcon, txtBIcon, borderColorBIcon, shadowBIcon)
                 }
                 else{
-                    this.renderNormalButtonStyle(button_description, font_icon)
+                    this.renderNormalButtonStyle(button_description, font_icon, disabled, iconSetUrl, iconSetStyle, iconSetFallBack)
                 }
             }
             else{
-                this.renderNormalButton(button_description, font_icon)
+                this.renderNormalButton(button_description, font_icon, disabled, iconSetUrl, iconSetStyle, iconSetFallBack)
             }
         },
         renderFloatButton(){
