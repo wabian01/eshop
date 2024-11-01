@@ -519,13 +519,33 @@ Vue.component('action-button', {
                 icon = ''
             }
             if(this.item_button.hasOwnProperty('imageUrl')){
-                iconfont = icon.replace('isShowIcon', 'isShowIcon d-none');
+                let iconfont = icon.replace('isShowIcon', 'isShowIcon d-none');
                 icon = '<img src="'+this.item_button.imageUrl+'" onerror="this.onerror=null;$(this).addClass(\'d-none\');$(this).next().removeClass(\'d-none\');" style="'+this.styleIconDisable+'width:1rem;"></i> '+iconfont;
                 if(iconSetUrl!==""){
                     icon = `<img ${iconSetFallBack} src="${iconSetUrl}" style="${iconSetStyle};${this.styleIconDisable}width:1rem;"></i>`;
                 }
             }
-            this.button_content = '<button '+disabled+' type="button" class="btn"'+this.styleButton+'>'+(buttonDescription.hasOwnProperty('show_icon') ? ((buttonDescription.show_icon == true || buttonDescription.show_icon == 'true') == true ? icon: '') :icon)+'</button><p style="'+this.styleAll+'overflow: hidden;text-overflow: ellipsis;margin: 6px;display: -webkit-box;-webkit-box-orient: vertical;-webkit-line-clamp:'+((buttonDescription.hasOwnProperty('max_text_line') && buttonDescription.max_text_line!=null)?buttonDescription.max_text_line:1)+';">'+(buttonDescription.hasOwnProperty('show_text') ? buttonDescription.show_text == true ? this.item_button['label']: '' :this.item_button['label'])+'</p>';
+            icon = this.isShowIcon(buttonDescription,icon)
+            let label = this.isShowLabel(buttonDescription)
+            this.button_content = '<button '+disabled+' type="button" class="btn"'+this.styleButton+'>'+icon+'</button><p style="'+this.styleAll+'overflow: hidden;text-overflow: ellipsis;margin: 6px;display: -webkit-box;-webkit-box-orient: vertical;-webkit-line-clamp:'+(buttonDescription?.max_text_line ?? 1)+';">'+label+'</p>';
+        },
+        isShowIcon(buttonDescription,icon){
+            if(buttonDescription.hasOwnProperty('show_icon')){
+                if(buttonDescription?.show_icon == true || buttonDescription?.show_icon == 'true'){
+                    return icon
+                }
+                return ""
+            }
+            return icon
+        },
+        isShowLabel(buttonDescription){
+            if(buttonDescription.hasOwnProperty('show_text')){
+                if(buttonDescription.show_text){
+                    return this.item_button['label']
+                }
+                return ""
+            }
+            return this.item_button['label']
         },
         renderButtonContent(button_description, font_icon, disabled, showBIcon, contentBIcon, bgBIcon, txtBIcon, borderColorBIcon, shadowBIcon){
             let icon = "";
