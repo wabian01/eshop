@@ -579,6 +579,43 @@ Vue.component('action-button', {
             let label = this.isShowLabel(buttonDescription)
             this.button_content = '<button '+disabled+' type="button" class="btn default"'+this.styleButton+'>'+icon+'<span style="'+this.styleAll+'width:100%;overflow: hidden;text-overflow: ellipsis;padding:0 5px;"> '+label+' </span></button>';
         },
+        renderIconAlignment(buttonDescription, icon, disabled, showBIcon, contentBIcon, bgBIcon, txtBIcon, borderColorBIcon, shadowBIcon){
+            if(buttonDescription.hasOwnProperty('icon_alignment')){
+                switch (buttonDescription.icon_alignment) {
+                    case 'end':
+                        this.button_content = '<button '+disabled+' type="button" class="btn default"'+this.styleButton+'><span style="'+this.styleAll+'width:100%;overflow: hidden;text-overflow: ellipsis;padding:0 5px;display: -webkit-box;-webkit-box-orient: vertical;white-space: break-spaces;word-wrap: break-word;margin: auto;-webkit-line-clamp:'+((buttonDescription.hasOwnProperty('max_text_line') && buttonDescription.max_text_line!=null)?buttonDescription.max_text_line:(1+";white-space: unset !important"))+';">'+(buttonDescription.hasOwnProperty('show_text') ? buttonDescription.show_text == true ? this.item_button['label']: '' :this.item_button['label'])+' </span>'+(buttonDescription.hasOwnProperty('show_icon') ? ((buttonDescription.show_icon == true || buttonDescription.show_icon == 'true') == true ? icon: '') :icon)+'</button>';
+                        break;
+                    case 'top':
+                        this.styleButton = this.styleButton.replace('text-align:start;','').replace('display:flex;','')
+                        this.button_content = '<button '+disabled+' type="button" class="btn default"'+this.styleButton+'>'+(buttonDescription.hasOwnProperty('show_icon') ? ((buttonDescription.show_icon == true || buttonDescription.show_icon == 'true') == true ? icon: '') :icon)+'<span style="'+this.styleAll+'width:100%;overflow: hidden;text-overflow: ellipsis;padding:0 5px;display:block;"> '+(buttonDescription.hasOwnProperty('show_text') ? buttonDescription.show_text == true ? this.item_button['label']: '' :this.item_button['label'])+' </span></button>';
+                        break;
+                    case 'bottom':
+                        this.styleButton = this.styleButton.replace('text-align:start;','').replace('display:flex;','')
+                        this.button_content = '<button '+disabled+' type="button" class="btn default"'+this.styleButton+'><span style="'+this.styleAll+'width:100%;overflow: hidden;text-overflow: ellipsis;padding:0 5px;display:block;"> '+(buttonDescription.hasOwnProperty('show_text') ? buttonDescription.show_text == true ? this.item_button['label']: '' :this.item_button['label'])+' </span>'+(buttonDescription.hasOwnProperty('show_icon') ? ((buttonDescription.show_icon == true || buttonDescription.show_icon == 'true') == true ? icon: '') :icon)+'</button>';
+                        break;
+                
+                    default:
+                        this.button_content = '<button '+disabled+' type="button" class="btn default"'+this.styleButton+'>'+(buttonDescription.hasOwnProperty('show_icon') ? ((buttonDescription.show_icon == true || buttonDescription.show_icon == 'true') == true ? icon: '') :icon)+'<span style="'+this.styleAll+'width:100%;overflow: hidden;text-overflow: ellipsis;padding:0 5px;display: -webkit-box;-webkit-box-orient: vertical;white-space: break-spaces;word-wrap: break-word;margin: auto;-webkit-line-clamp:'+((buttonDescription.hasOwnProperty('max_text_line') && buttonDescription.max_text_line!=null)?buttonDescription.max_text_line:(1+";white-space: unset !important"))+';">'+(buttonDescription.hasOwnProperty('show_text') ? buttonDescription.show_text == true ? this.item_button['label']: '' :this.item_button['label'])+' </span></button>';
+                        break;
+                }
+            }else{
+                if (this.item_button.hasOwnProperty("badge_icon") && this.item_button.badge_icon !== "") {
+                    this.button_content = '<button '+disabled+' type="button" class="btn default"'+this.styleButton+'>'+(buttonDescription.hasOwnProperty('show_icon') ? ((buttonDescription.show_icon == true || buttonDescription.show_icon == 'true') == true ? icon: '') :icon)+'<span style="'+this.styleAll+'width:100%;overflow: hidden;text-overflow: ellipsis;padding:0 5px;display: -webkit-box;-webkit-box-orient: vertical;white-space: break-spaces;word-wrap: break-word;margin: auto;-webkit-line-clamp:'+((buttonDescription.hasOwnProperty('max_text_line') && buttonDescription.max_text_line!=null)?buttonDescription.max_text_line:(1+";white-space: unset !important"))+';">'+(buttonDescription.hasOwnProperty('show_text') ? buttonDescription.show_text == true ? this.item_button['label']: '' :this.item_button['label'])+' </span><span style="background:'+bgBIcon+'; box-shadow:'+shadowBIcon+'; color:'+txtBIcon+'; display:'+showBIcon+'; border:'+borderColorBIcon+'; width:fit-content; height:fit-content; position:absolute; top:-10px; right:-10px; justify-content:center; align-items:center; text-transform: none; padding: 3px 7px !important" class="badge">'+contentBIcon+'</span></button>';
+                } else {
+                    this.button_content = '<button '+disabled+' type="button" class="btn default"'+this.styleButton+'>'+(buttonDescription.hasOwnProperty('show_icon') ? ((buttonDescription.show_icon == true || buttonDescription.show_icon == 'true') == true ? icon: '') :icon)+'<span style="'+this.styleAll+'width:100%;overflow: hidden;text-overflow: ellipsis;padding:0 5px;display: -webkit-box;-webkit-box-orient: vertical;white-space: break-spaces;word-wrap: break-word;margin: auto;-webkit-line-clamp:'+((buttonDescription.hasOwnProperty('max_text_line') && buttonDescription.max_text_line!=null)?buttonDescription.max_text_line:(1+";white-space: unset !important"))+';">'+(buttonDescription.hasOwnProperty('show_text') ? buttonDescription.show_text == true ? this.item_button['label']: '' :this.item_button['label'])+' </span></button>';
+                }
+            }
+        },
+        getIconSize(buttonDescription){
+            if (buttonDescription.hasOwnProperty('icon_size') && buttonDescription.icon_size !== "") {
+                if (buttonDescription.icon_size === "large") {
+                    return "25px";
+                } else if (buttonDescription.icon_size === "medium") {
+                    return "24px";
+                }
+            }
+            return "";
+        },
         renderButtonContent(button_description, font_icon, disabled, showBIcon, contentBIcon, bgBIcon, txtBIcon, borderColorBIcon, shadowBIcon){
             let icon = "";
             let iconfont = "";
@@ -605,8 +642,8 @@ Vue.component('action-button', {
                     }
                     if(this.item_button.hasOwnProperty('imageUrl')){
 
-                        let icon_size_more  = 'height:'+((button_description.hasOwnProperty('icon_size') && button_description.icon_size !== "") ? (button_description.icon_size == "large" ? "25px;" : (button_description.icon_size == "medium" ? "24px" : "")) : "")+';'
-                            icon_size_more += 'min-width:'+((button_description.hasOwnProperty('icon_size') && button_description.icon_size !== "") ? (button_description.icon_size == "large" ? "25px;" : (button_description.icon_size == "medium" ? "24px" : "")) : "")+';'
+                        let icon_size_more  = 'height:'+this.getIconSize(button_description)+';'
+                            icon_size_more += 'min-width:'+this.getIconSize(button_description)+';'
                             this.styleIcon += icon_size_more
                         
                         iconfont = icon.replace('isShowIcon', 'isShowIcon d-none');
@@ -615,31 +652,7 @@ Vue.component('action-button', {
                             icon = `<img ${iconSetFallBack} src="${iconSetUrl}" style="${iconSetStyle};${this.styleIconDisable}${this.styleIcon}margin-bottom:3px;"></i>`;
                         }
                     }
-                    if(button_description.hasOwnProperty('icon_alignment')){
-                        switch (button_description.icon_alignment) {
-                            case 'end':
-                                this.button_content = '<button '+disabled+' type="button" class="btn default"'+this.styleButton+'><span style="'+this.styleAll+'width:100%;overflow: hidden;text-overflow: ellipsis;padding:0 5px;display: -webkit-box;-webkit-box-orient: vertical;white-space: break-spaces;word-wrap: break-word;margin: auto;-webkit-line-clamp:'+((button_description.hasOwnProperty('max_text_line') && button_description.max_text_line!=null)?button_description.max_text_line:(1+";white-space: unset !important"))+';">'+(button_description.hasOwnProperty('show_text') ? button_description.show_text == true ? this.item_button['label']: '' :this.item_button['label'])+' </span>'+(button_description.hasOwnProperty('show_icon') ? ((button_description.show_icon == true || button_description.show_icon == 'true') == true ? icon: '') :icon)+'</button>';
-                                break;
-                            case 'top':
-                                this.styleButton = this.styleButton.replace('text-align:start;','').replace('display:flex;','')
-                                this.button_content = '<button '+disabled+' type="button" class="btn default"'+this.styleButton+'>'+(button_description.hasOwnProperty('show_icon') ? ((button_description.show_icon == true || button_description.show_icon == 'true') == true ? icon: '') :icon)+'<span style="'+this.styleAll+'width:100%;overflow: hidden;text-overflow: ellipsis;padding:0 5px;display:block;"> '+(button_description.hasOwnProperty('show_text') ? button_description.show_text == true ? this.item_button['label']: '' :this.item_button['label'])+' </span></button>';
-                                break;
-                            case 'bottom':
-                                this.styleButton = this.styleButton.replace('text-align:start;','').replace('display:flex;','')
-                                this.button_content = '<button '+disabled+' type="button" class="btn default"'+this.styleButton+'><span style="'+this.styleAll+'width:100%;overflow: hidden;text-overflow: ellipsis;padding:0 5px;display:block;"> '+(button_description.hasOwnProperty('show_text') ? button_description.show_text == true ? this.item_button['label']: '' :this.item_button['label'])+' </span>'+(button_description.hasOwnProperty('show_icon') ? ((button_description.show_icon == true || button_description.show_icon == 'true') == true ? icon: '') :icon)+'</button>';
-                                break;
-                        
-                            default:
-                                this.button_content = '<button '+disabled+' type="button" class="btn default"'+this.styleButton+'>'+(button_description.hasOwnProperty('show_icon') ? ((button_description.show_icon == true || button_description.show_icon == 'true') == true ? icon: '') :icon)+'<span style="'+this.styleAll+'width:100%;overflow: hidden;text-overflow: ellipsis;padding:0 5px;display: -webkit-box;-webkit-box-orient: vertical;white-space: break-spaces;word-wrap: break-word;margin: auto;-webkit-line-clamp:'+((button_description.hasOwnProperty('max_text_line') && button_description.max_text_line!=null)?button_description.max_text_line:(1+";white-space: unset !important"))+';">'+(button_description.hasOwnProperty('show_text') ? button_description.show_text == true ? this.item_button['label']: '' :this.item_button['label'])+' </span></button>';
-                                break;
-                        }
-                    }else{
-                        if (this.item_button.hasOwnProperty("badge_icon") && this.item_button.badge_icon !== "") {
-                            this.button_content = '<button '+disabled+' type="button" class="btn default"'+this.styleButton+'>'+(button_description.hasOwnProperty('show_icon') ? ((button_description.show_icon == true || button_description.show_icon == 'true') == true ? icon: '') :icon)+'<span style="'+this.styleAll+'width:100%;overflow: hidden;text-overflow: ellipsis;padding:0 5px;display: -webkit-box;-webkit-box-orient: vertical;white-space: break-spaces;word-wrap: break-word;margin: auto;-webkit-line-clamp:'+((button_description.hasOwnProperty('max_text_line') && button_description.max_text_line!=null)?button_description.max_text_line:(1+";white-space: unset !important"))+';">'+(button_description.hasOwnProperty('show_text') ? button_description.show_text == true ? this.item_button['label']: '' :this.item_button['label'])+' </span><span style="background:'+bgBIcon+'; box-shadow:'+shadowBIcon+'; color:'+txtBIcon+'; display:'+showBIcon+'; border:'+borderColorBIcon+'; width:fit-content; height:fit-content; position:absolute; top:-10px; right:-10px; justify-content:center; align-items:center; text-transform: none; padding: 3px 7px !important" class="badge">'+contentBIcon+'</span></button>';
-                        } else {
-                            this.button_content = '<button '+disabled+' type="button" class="btn default"'+this.styleButton+'>'+(button_description.hasOwnProperty('show_icon') ? ((button_description.show_icon == true || button_description.show_icon == 'true') == true ? icon: '') :icon)+'<span style="'+this.styleAll+'width:100%;overflow: hidden;text-overflow: ellipsis;padding:0 5px;display: -webkit-box;-webkit-box-orient: vertical;white-space: break-spaces;word-wrap: break-word;margin: auto;-webkit-line-clamp:'+((button_description.hasOwnProperty('max_text_line') && button_description.max_text_line!=null)?button_description.max_text_line:(1+";white-space: unset !important"))+';">'+(button_description.hasOwnProperty('show_text') ? button_description.show_text == true ? this.item_button['label']: '' :this.item_button['label'])+' </span></button>';
-                        }
-                    }
+                    this.renderIconAlignment(button_description, icon, disabled, showBIcon, contentBIcon, bgBIcon, txtBIcon, borderColorBIcon, shadowBIcon)
                 }
                 else{
                     this.renderNormalButtonStyle(button_description, font_icon)
