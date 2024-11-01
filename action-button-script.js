@@ -618,51 +618,51 @@ Vue.component('action-button', {
             }
             return "";
         },
+        renderCustomButtom(button_description,font_icon, disabled, styleCustom, iconSetUrl, iconSetStyle, iconSetFallBack){
+            if (this.item_button.hasOwnProperty("badge_icon") && this.item_button.badge_icon !== "") {
+                this.styleButton = 'style=\''+this.styleButton+this.styleAll+"display:flex; position:relative;'";
+            } else {
+                this.styleButton = 'style=\''+this.styleButton+this.styleAll+"display:flex;'";
+            }
+            let icon = '<i class="isShowIcon '+font_icon+'" aria-hidden="true" style="'+this.styleIconDisable+this.styleIcon+this.stylefontasome+'color:#00c5dc; margin:auto;"></i> '
+            if(font_icon==='none'){
+                icon = ''
+            }
+            if(this.item_button.hasOwnProperty('imageUrl')){
+
+                let icon_size_more  = 'height:'+this.getIconSize(button_description)+';'
+                    icon_size_more += 'min-width:'+this.getIconSize(button_description)+';'
+                    this.styleIcon += icon_size_more
+                
+                let iconfont = icon.replace('isShowIcon', 'isShowIcon d-none');
+                icon = '<img src="'+this.item_button.imageUrl+'" onerror="this.onerror=null;$(this).addClass(\'d-none\');$(this).next().removeClass(\'d-none\');" style="'+this.styleIconDisable+this.styleIcon+'margin-bottom:3px;"></i> '+iconfont;
+                if(iconSetUrl!==""){
+                    icon = `<img ${iconSetFallBack} src="${iconSetUrl}" style="${iconSetStyle};${this.styleIconDisable}${this.styleIcon}margin-bottom:3px;"></i>`;
+                }
+            }
+            this.renderIconAlignment(button_description, icon, disabled, styleCustom)
+        },
         renderButtonContent(button_description, font_icon, disabled, styleCustom){
-            let icon = "";
-            let iconfont = "";
             let iconSetUrl = "";
             let iconSetStyle = "";
             let iconSetFallBack = "";
-        
             if (this.item_button?.imageUrl?.includes('rta://icon')) {
                 ({ iconSetUrl, iconSetStyle, iconSetFallBack } = vm.handleIconSetAB(this.item_button.imageUrl));
             }
-        
+           
             if(this.styleButton != ""){
                 if(this.isBigIcon != ""){ 
-                    this.renderBigIcon(button_description, font_icon, disabled, iconSetUrl, iconSetStyle, iconSetFallBack);
-                } else {
-                    if(button_description.hasOwnProperty('type') && button_description.type === 'custom'){
-                        this.styleButton = 'style=\'' + this.styleButton + this.styleAll + "display:flex;";
-                        if (this.item_button.hasOwnProperty("badge_icon") && this.item_button.badge_icon !== "") {
-                            this.styleButton += "position:relative;";
-                        }
-                        
-                        icon += '<i class="isShowIcon ' + font_icon + '" aria-hidden="true" style="' + this.styleIconDisable + this.styleIcon + this.stylefontasome + 'color:#00c5dc; margin:auto;"></i> ';
-                        if(font_icon === 'none'){
-                            icon = '';
-                        }
-        
-                        if(this.item_button.hasOwnProperty('imageUrl')){
-                            let icon_size_more = 'height:' + this.getIconSize(button_description) + '; min-width:' + this.getIconSize(button_description) + ';';
-                            this.styleIcon += icon_size_more;
-                            
-                            iconfont = icon.replace('isShowIcon', 'isShowIcon d-none');
-                            icon = '<img src="' + this.item_button.imageUrl + '" onerror="this.onerror=null;$(this).addClass(\'d-none\');$(this).next().removeClass(\'d-none\');" style="' + this.styleIconDisable + this.styleIcon + 'margin-bottom:3px;"></i> ' + iconfont;
-                            
-                            if(iconSetUrl !== ""){
-                                icon = `<img ${iconSetFallBack} src="${iconSetUrl}" style="${iconSetStyle};${this.styleIconDisable}${this.styleIcon}margin-bottom:3px;"></i>`;
-                            }
-                        }
-        
-                        this.renderIconAlignment(button_description, icon, disabled, styleCustom);
-                    } else {
-                        this.renderNormalButtonStyle(button_description, font_icon, disabled, iconSetUrl, iconSetStyle, iconSetFallBack);
-                    }
+                    this.renderBigIcon(button_description, font_icon, disabled, iconSetUrl, iconSetStyle, iconSetFallBack)
                 }
-            } else {
-                this.renderNormalButton(button_description, font_icon, disabled, iconSetUrl, iconSetStyle, iconSetFallBack);
+                else if(button_description.hasOwnProperty('type') && button_description.type === 'custom'){
+                    this.renderCustomButtom(button_description,font_icon, disabled, styleCustom, iconSetUrl, iconSetStyle, iconSetFallBack)
+                }
+                else{
+                    this.renderNormalButtonStyle(button_description, font_icon, disabled, iconSetUrl, iconSetStyle, iconSetFallBack)
+                }
+            }
+            else{
+                this.renderNormalButton(button_description, font_icon, disabled, iconSetUrl, iconSetStyle, iconSetFallBack)
             }
         },
         renderFloatButton(){
