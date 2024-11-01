@@ -399,25 +399,24 @@ Vue.component('action-button', {
         
             return { showBIcon, contentBIcon, bgBIcon, txtBIcon, borderColorBIcon, shadowBIcon };
         },
+        addStyleBadgeIcon(buttonDescription){
+            if (this.item_button.hasOwnProperty("badge_icon") && this.item_button.badge_icon !== "") {
+                this.styleAll += 'position: relative; text-align:'+((buttonDescription.hasOwnProperty('text_gravity') && buttonDescription.text_gravity!=="") ? buttonDescription.text_gravity : "start")+';'
+            } else {
+                this.styleAll += 'text-align:'+((buttonDescription.hasOwnProperty('text_gravity') && buttonDescription.text_gravity!=="") ? buttonDescription.text_gravity : "start")+';'
+            }
+        },
         renderItem:function () {
             let button_description = this.initializeButtonDescription()
 
             this.addStyleButton(button_description)
 
-            // Default Button
-            if (this.item_button.hasOwnProperty("badge_icon") && this.item_button.badge_icon !== "") {
-                this.styleAll += 'position: relative; text-align:'+((button_description.hasOwnProperty('text_gravity') && button_description.text_gravity!=="") ? button_description.text_gravity : "start")+';'
-            } else {
-                this.styleAll += 'text-align:'+((button_description.hasOwnProperty('text_gravity') && button_description.text_gravity!=="") ? button_description.text_gravity : "start")+';'
+            this.addStyleBadgeIcon(button_description)
+
+            if(this.visibleButton() || this.item_button.type == 'act_call_cloudphone' && this.item_button.phone.length == 0 ){
+                return;
             }
             
-            if(this.visibleButton()){
-                return
-            }
-
-            if(this.item_button.type == 'act_call_cloudphone' && this.item_button.phone.length == 0 ){
-                return true;
-            }
             if(this.$parent.$vnode.componentOptions.Ctor.options.name === 'taskmodal'){
                 this.$parent.countSumAB(this.item_button)
             }
