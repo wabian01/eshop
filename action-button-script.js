@@ -406,6 +406,14 @@ Vue.component('action-button', {
                 this.styleAll += 'text-align:'+((buttonDescription.hasOwnProperty('text_gravity') && buttonDescription.text_gravity!=="") ? buttonDescription.text_gravity : "start")+';'
             }
         },
+        handleTaskModal(){
+            if(this.$parent.$vnode.componentOptions.Ctor.options.name === 'taskmodal'){
+                this.$parent.countSumAB(this.item_button)
+            }
+            if(vm.time_tracking_id.hasOwnProperty(this.item_button.tracking_id)){
+                this.handleTracking(this.item_button.tracking_id)
+            }
+        },
         renderItem:function () {
             let button_description = this.initializeButtonDescription()
 
@@ -415,10 +423,6 @@ Vue.component('action-button', {
 
             if(this.visibleButton() || this.item_button.type == 'act_call_cloudphone' && this.item_button.phone.length == 0 ){
                 return;
-            }
-            
-            if(this.$parent.$vnode.componentOptions.Ctor.options.name === 'taskmodal'){
-                this.$parent.countSumAB(this.item_button)
             }
 
             let disabled = this.getDisabled()
@@ -430,9 +434,7 @@ Vue.component('action-button', {
                 this.styleAll += 'color: #808080d1 !important;'
             }
 
-            if(vm.time_tracking_id.hasOwnProperty(this.item_button.tracking_id)){
-                this.handleTracking(this.item_button.tracking_id)
-            }
+            this.handleTaskModal()            
             
             let {showBIcon, contentBIcon, bgBIcon, txtBIcon, borderColorBIcon, shadowBIcon} = this.handleBadgeIcon();
 
