@@ -547,6 +547,38 @@ Vue.component('action-button', {
             }
             return this.item_button['label']
         },
+        renderNormalButton(buttonDescription, fontIcon, disabled, iconSetUrl, iconSetStyle, iconSetFallBack){
+            let icon='<i class="isShowIcon '+fontIcon+'" aria-hidden="true" style="'+this.styleIconDisable+this.stylefontasome+'color:#00c5dc;padding:1px !important;"></i> ';
+            if(fontIcon==='none'){
+                icon = ''
+            }
+            if(this.item_button.hasOwnProperty('imageUrl')){
+                let iconfont = icon.replace('isShowIcon', 'isShowIcon d-none');
+                icon = '<img src="'+this.item_button.imageUrl+'" onerror="this.onerror=null;$(this).addClass(\'d-none\');$(this).next().removeClass(\'d-none\');" style="'+this.styleIconDisable+'height:1rem;width:1rem;margin-bottom:3px;"></i> '+iconfont;
+                if(iconSetUrl!==""){
+                    icon = `<img ${iconSetFallBack} src="${iconSetUrl}"  style="${iconSetStyle};${this.styleIconDisable}height:1rem;width:1rem;margin-bottom:3px;"></i>`
+                }
+            }
+            let label = this.isShowLabel(buttonDescription)
+            this.button_content = '<button '+disabled+' type="button" style="'+this.styleAll+'padding: 3px 9px !important; border-radius: 5px !important;'+''+'" class="btn default">'+icon+'<span style="'+this.styleAll+'padding:0 5px;width:100%;">'+label+'</span></button>';
+        },
+        renderNormalButtonStyle(buttonDescription, fontIcon, disabled, iconSetUrl, iconSetStyle, iconSetFallBack){
+            this.styleButton = 'style=\''+this.styleButton+this.styleAll+"display:flex;'";
+            let icon = '<i class="isShowIcon '+fontIcon+'" aria-hidden="true" style="'+this.styleIconDisable+this.stylefontasome+'color:#00c5dc"></i> '
+            if(fontIcon==='none'){
+                icon = ''
+            }
+            if(this.item_button.hasOwnProperty('imageUrl')){
+                let iconfont = icon.replace('isShowIcon', 'isShowIcon d-none');
+                icon = '<img src="'+this.item_button.imageUrl+'" onerror="this.onerror=null;$(this).addClass(\'d-none\');$(this).next().removeClass(\'d-none\');" style="'+this.styleIconDisable+'height:1rem;width:1rem;margin-bottom:3px;"></i> '+iconfont;
+                if(iconSetUrl!==""){
+                    icon = `<img ${iconSetFallBack} src="${iconSetUrl}" style="${iconSetStyle};${this.styleIconDisable}height:1rem;width:1rem;margin-bottom:3px;"></i>`;
+                }
+            }
+            icon = this.isShowIcon(buttonDescription,icon)
+            let label = this.isShowLabel(buttonDescription)
+            this.button_content = '<button '+disabled+' type="button" class="btn default"'+this.styleButton+'>'+icon+'<span style="'+this.styleAll+'width:100%;overflow: hidden;text-overflow: ellipsis;padding:0 5px;"> '+label+' </span></button>';
+        },
         renderButtonContent(button_description, font_icon, disabled, showBIcon, contentBIcon, bgBIcon, txtBIcon, borderColorBIcon, shadowBIcon){
             let icon = "";
             let iconfont = "";
@@ -610,34 +642,11 @@ Vue.component('action-button', {
                     }
                 }
                 else{
-                    this.styleButton = 'style=\''+this.styleButton+this.styleAll+"display:flex;'";
-                    icon += '<i class="isShowIcon '+font_icon+'" aria-hidden="true" style="'+this.styleIconDisable+this.stylefontasome+'color:#00c5dc"></i> '
-                    if(font_icon==='none'){
-                        icon = ''
-                    }
-                    if(this.item_button.hasOwnProperty('imageUrl')){
-                        iconfont = icon.replace('isShowIcon', 'isShowIcon d-none');
-                        icon = '<img src="'+this.item_button.imageUrl+'" onerror="this.onerror=null;$(this).addClass(\'d-none\');$(this).next().removeClass(\'d-none\');" style="'+this.styleIconDisable+'height:1rem;width:1rem;margin-bottom:3px;"></i> '+iconfont;
-                        if(iconSetUrl!==""){
-                            icon = `<img ${iconSetFallBack} src="${iconSetUrl}" style="${iconSetStyle};${this.styleIconDisable}height:1rem;width:1rem;margin-bottom:3px;"></i>`;
-                        }
-                    }
-                    this.button_content = '<button '+disabled+' type="button" class="btn default"'+this.styleButton+'>'+(button_description.hasOwnProperty('show_icon') ? ((button_description.show_icon == true || button_description.show_icon == 'true') == true ? icon: '') :icon)+'<span style="'+this.styleAll+'width:100%;overflow: hidden;text-overflow: ellipsis;padding:0 5px;"> '+(button_description.hasOwnProperty('show_text') ? button_description.show_text == true ? this.item_button['label']: '' :this.item_button['label'])+' </span></button>';
+                    this.renderNormalButtonStyle(button_description, font_icon)
                 }
             }
             else{
-                icon='<i class="isShowIcon '+font_icon+'" aria-hidden="true" style="'+this.styleIconDisable+this.stylefontasome+'color:#00c5dc;padding:1px !important;"></i> ';
-                if(font_icon==='none'){
-                    icon = ''
-                }
-                if(this.item_button.hasOwnProperty('imageUrl')){
-                    iconfont = icon.replace('isShowIcon', 'isShowIcon d-none');
-                    icon = '<img src="'+this.item_button.imageUrl+'" onerror="this.onerror=null;$(this).addClass(\'d-none\');$(this).next().removeClass(\'d-none\');" style="'+this.styleIconDisable+'height:1rem;width:1rem;margin-bottom:3px;"></i> '+iconfont;
-                    if(iconSetUrl!==""){
-                        icon = `<img ${iconSetFallBack} src="${iconSetUrl}"  style="${iconSetStyle};${this.styleIconDisable}height:1rem;width:1rem;margin-bottom:3px;"></i>`
-                    }
-                }
-                this.button_content = '<button '+disabled+' type="button" style="'+this.styleAll+'padding: 3px 9px !important; border-radius: 5px !important;'+''+'" class="btn default">'+icon+'<span style="'+this.styleAll+'padding:0 5px;width:100%;">'+(button_description.hasOwnProperty('show_text') ? button_description.show_text == true ? this.item_button['label']: '' :this.item_button['label'])+'</span></button>';
+                this.renderNormalButton(button_description, font_icon)
             }
         },
         renderFloatButton(){
