@@ -531,7 +531,7 @@ Vue.component('action-button', {
         },
         isShowIcon(buttonDescription,icon){
             if(buttonDescription.hasOwnProperty('show_icon')){
-                if(buttonDescription?.show_icon == true || buttonDescription?.show_icon == 'true'){
+                if(buttonDescription?.show_icon === true || buttonDescription?.show_icon === 'true'){
                     return icon
                 }
                 return ""
