@@ -57,7 +57,7 @@
                 this.mymap.invalidateSize()
         },
         },
-        mounted: function () {    
+        mounted: function () {
             setTimeout(() => this.setupNavigationVisibility(), 10);
 
             let that = this;
@@ -156,7 +156,6 @@
                     }
 
                     L.control.layers(baseMaps).setPosition('bottomleft').addTo(mymap);
-                    // attributes = this.body_area.attributes;  
 
                     let markers = L.markerClusterGroup({ chunkedLoading: true });
                     this.markers = markers
@@ -311,40 +310,43 @@
                 
                     return url;
                 },
+                createBearingColumn(el, attributes, index, markerPath, bearingColumn, markers){
+                    if (markerPath && (!bearingColumn || bearingColumn === "")) {
+                        let icon = L.divIcon({
+                        iconSize:null,
+                            html:'<div class="map-label"><div class="map-label-content-marker-path"> '+el[attributes['title']]+' </div><img src="'+el[attributes['markerPath']]+'" height="30px" width="30px" /></div>'
+                        });     
+
+                        let marker = L.marker(L.latLng(el[attributes['latitude']], el[attributes['longitude']]),{icon:icon});
+                        marker.bindPopup(index.toString());
+                        markers.addLayer(marker)
+                    } else if (bearingColumn && (!markerPath || markerPath === "")) {
+                        let icon = L.divIcon({
+                            iconSize:null,
+                            html:'<div class="map-label"><div class="map-label-content-bearing"> '+el[attributes['title']]+' </div><div style="transform: rotate('+el[attributes['bearingColumn']]+'deg);"><img src="https://cdn.rtworkspace.com/plugins/webapp/images/bearing-icon.webp" height="50px"></div></div>'
+                        });     
+
+                        let marker = L.marker(L.latLng(el[attributes['latitude']], el[attributes['longitude']]),{icon:icon});
+                        marker.bindPopup(index.toString());
+                        markers.addLayer(marker)
+                    } else {
+                        let icon = L.divIcon({
+                        iconSize:null,
+                            html:'<div class="map-label"><div class="map-label-content-marker-path"> '+el[attributes['title']]+' </div><div style="transform: rotate('+el[attributes['bearingColumn']]+'deg);"><img src="https://cdn.rtworkspace.com/plugins/webapp/images/bearing-icon.webp" height="50px"></div><img src="'+el[attributes['markerPath']]+'" height="30px" width="30px" /></div>'
+                        });     
+
+                        let marker = L.marker(L.latLng(el[attributes['latitude']], el[attributes['longitude']]),{icon:icon});
+                        marker.bindPopup(index.toString());
+                        markers.addLayer(marker)
+                    }
+                },
                 createMarkerIcon(el, attributes, headerMarker,index, markers){
                     if(el[attributes['latitude']].toString().length > 0 && el[attributes['longitude']].toString().length > 0 ){
                         if (headerMarker === "show" || headerMarker === "") {
                             const markerPath = el[attributes['markerPath']];
                             const bearingColumn = el[attributes['bearingColumn']];
                             if (markerPath || bearingColumn) {
-                                if (markerPath && (!bearingColumn || bearingColumn === "")) {
-                                    let icon = L.divIcon({
-                                    iconSize:null,
-                                        html:'<div class="map-label"><div class="map-label-content-marker-path"> '+el[attributes['title']]+' </div><img src="'+el[attributes['markerPath']]+'" height="30px" width="30px" /></div>'
-                                    });     
-
-                                    let marker = L.marker(L.latLng(el[attributes['latitude']], el[attributes['longitude']]),{icon:icon});
-                                    marker.bindPopup(index.toString());
-                                    markers.addLayer(marker)
-                                } else if (bearingColumn && (!markerPath || markerPath === "")) {
-                                    let icon = L.divIcon({
-                                        iconSize:null,
-                                        html:'<div class="map-label"><div class="map-label-content-bearing"> '+el[attributes['title']]+' </div><div style="transform: rotate('+el[attributes['bearingColumn']]+'deg);"><img src="https://cdn.rtworkspace.com/plugins/webapp/images/bearing-icon.webp" height="50px"></div></div>'
-                                    });     
-
-                                    let marker = L.marker(L.latLng(el[attributes['latitude']], el[attributes['longitude']]),{icon:icon});
-                                    marker.bindPopup(index.toString());
-                                    markers.addLayer(marker)
-                                } else {
-                                    let icon = L.divIcon({
-                                    iconSize:null,
-                                        html:'<div class="map-label"><div class="map-label-content-marker-path"> '+el[attributes['title']]+' </div><div style="transform: rotate('+el[attributes['bearingColumn']]+'deg);"><img src="https://cdn.rtworkspace.com/plugins/webapp/images/bearing-icon.webp" height="50px"></div><img src="'+el[attributes['markerPath']]+'" height="30px" width="30px" /></div>'
-                                    });     
-
-                                    let marker = L.marker(L.latLng(el[attributes['latitude']], el[attributes['longitude']]),{icon:icon});
-                                    marker.bindPopup(index.toString());
-                                    markers.addLayer(marker)
-                                }
+                                this.createBearingColumn(el, attributes, index, markerPath, bearingColumn, markers)
                             } else {
                                 let icon = L.divIcon({
                                     iconSize:null,
