@@ -64,7 +64,21 @@
             if (window.navigator.geolocation) {
                 let getPosition = function (options) {
                     return new Promise(function (resolve, reject) {
-                    navigator.geolocation.getCurrentPosition(resolve, reject, options);
+                        // navigator.geolocation.getCurrentPosition(resolve, reject, options);
+                        navigator.permissions ?
+
+                        // Permission API is implemented
+                        navigator.permissions.query({
+                            name: 'geolocation'
+                        }).then(permission =>
+                            // is geolocation granted?
+                            permission.state === "granted"
+                            ? navigator.geolocation.getCurrentPosition(resolve, reject, options) 
+                            : resolve(null)
+                        ) :
+
+                        // Permission API was not implemented
+                        reject(new Error("Permission API is not supported"))
                     });
                 }
                 getPosition().then((position) => {
@@ -156,6 +170,7 @@
                     }
 
                     L.control.layers(baseMaps).setPosition('bottomleft').addTo(mymap);
+                    // attributes = this.body_area.attributes;  
 
                     let markers = L.markerClusterGroup({ chunkedLoading: true });
                     this.markers = markers
@@ -215,7 +230,7 @@
                         if(filter_query1[0]==""){
                             json=this.dataStore;
                         }else{
-                            json=this.dataStore.filter(function(item) { return eval(filter_query1[0])});
+                            json=this.dataStore.filter(function(item) { return eval("eval(filter_query1[0])")});
                         }
                         this.renderMarker(json)
                         let mymap = this.mymap
@@ -433,6 +448,18 @@
                     this.item_buttons = JSON.parse(button_replace_map);
                     this.handleDynamicButtons();
                 },
+                processTemplate(template, data) {
+                    for(let key in data) {
+                        if(data.hasOwnProperty(key) && data[key] != null) {
+                            template = template.replace(
+                                new RegExp('##'+key+'##','g'), 
+                                data[key].toString().replace(/[\r\n]+/g," ")
+                            );
+                        }
+                    }
+                    return template;
+                },
+
                 getAppScript() {
                     return `
                         <script>
@@ -462,6 +489,7 @@
                 openHtmlView(index) {
                     const el = this.list_items[index];
                     let content = '';
+                    let attributes = this.body_area.attributes;
 
                     if(attributes.hasOwnProperty('item_template')) {
                         let item_template = attributes['item_template'];
@@ -489,5 +517,6 @@
                     
                     $('.showPopup.'+this.id_random+' .content').html(content);
                 },
+
             },
     });
