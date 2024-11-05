@@ -402,9 +402,9 @@
                     button_replace_map = JSON.stringify(button_visible)
                     for(let key in this.list_item){
                         if(this.list_item.hasOwnProperty(key) && this.list_item[key] != null){
-                            button_replace_map = button_replace_map.toString().replace(new RegExp('"##'+key+'##"','g'),'"'+(this.list_item[key].toString().replace(/[\r\n]+/g," ").replace(/["]/g,'\\\"'))+'"');
-                            button_replace_map = button_replace_map.toString().replace(new RegExp('\'##'+key+'##\'','g'),"'"+(this.list_item[key].toString().replace(/[\r\n]+/g," ").replace(/["]/g,'\\\"'))+"'");
-                            button_replace_map = button_replace_map.toString().replace(new RegExp('##'+key+'##','g'),(this.list_item[key].toString().replace(/[\r\n]+/g," ").replace(/["]/g,'\\\"')));
+                            button_replace_map = button_replace_map.toString().replace(new RegExp('"##'+key+'##"','g'),'"'+(this.list_item[key].toString().replace(/[\r\n]+/g," ").replace(/"/g,'\\"'))+'"');
+                            button_replace_map = button_replace_map.toString().replace(new RegExp('\'##'+key+'##\'','g'),"'"+(this.list_item[key].toString().replace(/[\r\n]+/g," ").replace(/"/g,'\\"'))+"'");
+                            button_replace_map = button_replace_map.toString().replace(new RegExp('##'+key+'##','g'),(this.list_item[key].toString().replace(/[\r\n]+/g," ").replace(/"/g,'\\"')));
                         }
                     }
                     button_replace_map = button_replace_map.replace(/\\"'(.*?)'\\"/g,'\\"$1\\"')
@@ -426,7 +426,7 @@
                     }
                     button_replace_map = vm.jsonHolderData(button_replace_map,'buttonGroup')
                     if(button_replace_map.indexOf('##')>-1){
-                        button_replace_map = button_replace_map.replace(/\\\"##(.*?)##\\\"/g,"''");
+                        button_replace_map = button_replace_map.replace(/\\"##(.*?)##\\"/g,"''");
                         button_replace_map = button_replace_map.replace(/##(.*?)##/g,"''");
                     }
                     
