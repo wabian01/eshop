@@ -64,21 +64,7 @@
             if (window.navigator.geolocation) {
                 let getPosition = function (options) {
                     return new Promise(function (resolve, reject) {
-                        // navigator.geolocation.getCurrentPosition(resolve, reject, options);
-                        navigator.permissions ?
-
-                        // Permission API is implemented
-                        navigator.permissions.query({
-                            name: 'geolocation'
-                        }).then(permission =>
-                            // is geolocation granted?
-                            permission.state === "granted"
-                            ? navigator.geolocation.getCurrentPosition(resolve, reject, options) 
-                            : resolve(null)
-                        ) :
-
-                        // Permission API was not implemented
-                        reject(new Error("Permission API is not supported"))
+                        window.navigator.geolocation.getCurrentPosition(resolve, reject, options);
                     });
                 }
                 getPosition().then((position) => {
