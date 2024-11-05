@@ -30,7 +30,7 @@
             }    
         },
         created(){
-            var that = this
+            let that = this
             if(this.body_area.attributes.hasOwnProperty('filterConfig') && this.body_area.attributes.filterConfig.hasOwnProperty('quick')){
                 this.quickfilter = {...this.body_area.attributes.filterConfig.quick}
             }
@@ -45,7 +45,7 @@
         },
         watch: {
             item_search_string: function(item_search_string){
-            this.searchMap(item_search_string);
+               this.searchMap(item_search_string);
             },    
             item_filter_attributes: function(item_filter_attributes){
                 this.filterMapview(item_filter_attributes)
@@ -55,26 +55,10 @@
             },
             update_map(){
                 this.mymap.invalidateSize()
-            },
+        },
         },
         mounted: function () {    
-            setTimeout(function(){
-                if($("#task-modal-"+vm.activeTaskCode+" .search-button").is(':visible')){
-                    $("#task-modal-"+vm.activeTaskCode+' #map-navigation').hide();
-                }else{
-                    $("#task-modal-"+vm.activeTaskCode+' #map-navigation').show();;
-                }
-                if($(".autofit_subdetail .searchContent").is(':visible')){
-                    $(".autofit_subdetail #map-navigation").show();
-                }else{
-                    $(".autofit_subdetail #map-navigation").hide();;
-                }
-                if($("#task-modal-"+vm.activeTaskCode+' .modal-dialog').css('max-width')=="800px"){
-                    $("#task-modal-"+vm.activeTaskCode+' #map-navigation').css({'left':'46%'})
-                }else{
-                    $("#task-modal-"+vm.activeTaskCode+' #map-navigation').css({'left':'50%'})
-                }
-            }, 10);
+            setTimeout(() => this.setupNavigationVisibility(), 10);
 
             let that = this;
             if (window.navigator.geolocation) {
@@ -104,6 +88,23 @@
                 this.renderMarkerStart = false;
             },
             methods: {
+                setupNavigationVisibility(){
+                    if($("#task-modal-"+vm.activeTaskCode+" .search-button").is(':visible')){
+                        $("#task-modal-"+vm.activeTaskCode+' #map-navigation').hide();
+                    }else{
+                        $("#task-modal-"+vm.activeTaskCode+' #map-navigation').show();;
+                    }
+                    if($(".autofit_subdetail .searchContent").is(':visible')){
+                        $(".autofit_subdetail #map-navigation").show();
+                    }else{
+                        $(".autofit_subdetail #map-navigation").hide();;
+                    }
+                    if($("#task-modal-"+vm.activeTaskCode+' .modal-dialog').css('max-width')=="800px"){
+                        $("#task-modal-"+vm.activeTaskCode+' #map-navigation').css({'left':'46%'})
+                    }else{
+                        $("#task-modal-"+vm.activeTaskCode+' #map-navigation').css({'left':'50%'})
+                    }
+                },
                 renderMap(access,latitude,longitude,zoom){
                     let that = this
                     let mymap
@@ -121,12 +122,12 @@
                         L.marker([latitude, longitude],{icon: greenIcon1,zIndexOffset:-9999}).addTo(mymap)
                     }
                     
-                    let osm = L.tileLayer('http://{s}.google.com/vt/lyrs=m&x={x}&y={y}&z={z}', {
+                    let osm = L.tileLayer('https://{s}.google.com/vt/lyrs=m&x={x}&y={y}&z={z}', {
                         maxZoom: 22,
                         subdomains:['mt0','mt1','mt2','mt3']
                     }),
                 
-                    osm_de = L.tileLayer('http://{s}.google.com/vt/lyrs=s&x={x}&y={y}&z={z}', {
+                    osm_de = L.tileLayer('https://{s}.google.com/vt/lyrs=s&x={x}&y={y}&z={z}', {
                         maxZoom: 22,
                         subdomains:['mt0','mt1','mt2','mt3']
                     })
@@ -154,8 +155,8 @@
                         'Default': osm,
                     }
 
-                    let controlLayers = L.control.layers(baseMaps).setPosition('bottomleft').addTo(mymap);
-                    attributes = this.body_area.attributes;    
+                    L.control.layers(baseMaps).setPosition('bottomleft').addTo(mymap);
+
                     let markers = L.markerClusterGroup({ chunkedLoading: true });
                     this.markers = markers
                     mymap.attributionControl.addAttribution('RTA &copy; <a href= "https://rta.rtworkspace.com">rta.rtworkspace.com</a>');
@@ -174,23 +175,27 @@
                         $('#'+that.id_random+' .leaflet-bottom').css({'bottom':'0'})
                         $('#'+that.id_random+' .leaflet-top').css({'top':'0'})
                         $('.showPopup.'+that.id_random+' .content').empty()
-                    });;
-                    document.getElementById('map-navigation').onclick = function(e) {
-                        let lat = e.target.getAttribute('data-longitude');
-                        let long = e.target.getAttribute('data-latitude');
-                        if (lat && long) {
-                        
-                        mymap.flyTo([long,lat], 22, {
-                                animate: true,
-                            });
-                        }
-                    }
+                    });
+
+                    this.flyToLocation(mymap)
+
                     this.mymap = mymap
                     if(Object.keys(this.quickfilter).length>0 && this.quickfilter.firstEntrySelectedByDefault){
                         this.startfilter = true
                     }else{
                         this.startfilter = true
                         this.renderMarker(this.list_items)
+                    }
+                },
+                flyToLocation(mymap){
+                    document.getElementById('map-navigation').onclick = function(e) {
+                        let lat = e.target.getAttribute('data-longitude');
+                        let long = e.target.getAttribute('data-latitude');
+                        if (lat && long) {
+                            mymap.flyTo([long,lat], 22, {
+                                animate: true,
+                            });
+                        }
                     }
                 },
                 filterMapview:function(item_filter_attributes,check=false){
@@ -270,7 +275,7 @@
                 
                 },
                 renderGeoJSON(type,object){
-                    mymap = this.mymap
+                    let mymap = this.mymap
                     if(type === 'GeoJSON'){
                         if(typeof (object) == 'string'){
                             L.geoJSON(JSON.parse(object)).addTo(mymap);
@@ -283,36 +288,92 @@
                         })
                     }
                 },
+                processGeoJSONUrl(url) {
+                    if (!url) return url;
+                    
+                    Object.entries(vm.flatRuntimeAttributes).forEach(([key, value]) => {
+                        url = url.replace(
+                            new RegExp('##'+key+'##', 'g'),
+                            value.toString().replace(/[\r\n\t]+/g, " ")
+                        );
+                    });
+                    if(vm.current.parent){
+                        Object.entries(vm.current.parent).forEach(([key, value]) => {
+                            if (value !== null) {
+                                url = url.replace(
+                                    new RegExp('##'+key+'##', 'g'),
+                                    value.toString().replace(/[\r\n\t]+/g, " ")
+                                );
+                            }
+                        });
+                    }
+                
+                    return url;
+                },
+                createMarkerIcon(el, attributes, headerMarker,index, markers){
+                    if(el[attributes['latitude']].toString().length > 0 && el[attributes['longitude']].toString().length > 0 ){
+                        if (headerMarker === "show" || headerMarker === "") {
+                            const markerPath = el[attributes['markerPath']];
+                            const bearingColumn = el[attributes['bearingColumn']];
+                            if (markerPath || bearingColumn) {
+                                if (markerPath && (!bearingColumn || bearingColumn === "")) {
+                                    let icon = L.divIcon({
+                                    iconSize:null,
+                                        html:'<div class="map-label"><div class="map-label-content-marker-path"> '+el[attributes['title']]+' </div><img src="'+el[attributes['markerPath']]+'" height="30px" width="30px" /></div>'
+                                    });     
+
+                                    let marker = L.marker(L.latLng(el[attributes['latitude']], el[attributes['longitude']]),{icon:icon});
+                                    marker.bindPopup(index.toString());
+                                    markers.addLayer(marker)
+                                } else if (bearingColumn && (!markerPath || markerPath === "")) {
+                                    let icon = L.divIcon({
+                                        iconSize:null,
+                                        html:'<div class="map-label"><div class="map-label-content-bearing"> '+el[attributes['title']]+' </div><div style="transform: rotate('+el[attributes['bearingColumn']]+'deg);"><img src="https://cdn.rtworkspace.com/plugins/webapp/images/bearing-icon.webp" height="50px"></div></div>'
+                                    });     
+
+                                    let marker = L.marker(L.latLng(el[attributes['latitude']], el[attributes['longitude']]),{icon:icon});
+                                    marker.bindPopup(index.toString());
+                                    markers.addLayer(marker)
+                                } else {
+                                    let icon = L.divIcon({
+                                    iconSize:null,
+                                        html:'<div class="map-label"><div class="map-label-content-marker-path"> '+el[attributes['title']]+' </div><div style="transform: rotate('+el[attributes['bearingColumn']]+'deg);"><img src="https://cdn.rtworkspace.com/plugins/webapp/images/bearing-icon.webp" height="50px"></div><img src="'+el[attributes['markerPath']]+'" height="30px" width="30px" /></div>'
+                                    });     
+
+                                    let marker = L.marker(L.latLng(el[attributes['latitude']], el[attributes['longitude']]),{icon:icon});
+                                    marker.bindPopup(index.toString());
+                                    markers.addLayer(marker)
+                                }
+                            } else {
+                                let icon = L.divIcon({
+                                    iconSize:null,
+                                    html:'<div class="map-label"><div class="map-label-content"> '+el[attributes['title']]+' </div><div class="map-label-arrow"></div></div>'
+                                });     
+
+                                let marker = L.marker(L.latLng(el[attributes['latitude']], el[attributes['longitude']]),{icon:icon});
+                                marker.bindPopup(index.toString());
+                                markers.addLayer(marker)
+                            }
+                        } else {
+                            let marker = L.marker(L.latLng( el[attributes['latitude']], el[attributes['longitude']] ));
+                            marker.bindPopup(index.toString());
+                            markers.addLayer(marker)
+                        }  
+                    }
+                },
                 renderMarker(data){
                     let attributes = this.body_area.attributes;   
                     let that = this          
                     this.list_items = data
-                    markers = this.markers
-                    let headerMarker = undefined;
-                    mymap = this.mymap
-                    try {
-                        headerMarker = attributes.statusRules.headerMarker
-                    } catch (error) {}
+                    let markers = this.markers
+                    let headerMarker = attributes.statusRules?.headerMarker || "";
 
                     try {
-                        if(attributes.hasOwnProperty('geojson_url') && attributes.geojson_url != null && attributes.geojson_url != ''){
-                            for (var key in vm.flatRuntimeAttributes) {
-                                if (vm.flatRuntimeAttributes.hasOwnProperty(key)) {
-                                    attributes.geojson_url = attributes.geojson_url.replace(new RegExp('##'+key+'##','g'),vm.flatRuntimeAttributes[key].toString().replace(/[\r\n\t]+/g," "));
-                                    attributes.geojson_url = attributes.geojson_url.replace('"','\"');
-                                }
-                            }
-                            for (var key in vm.current.parent) {
-                                if (vm.current.parent.hasOwnProperty(key)) {
-                                    attributes.geojson_url = vm.current.parent[key] != null ? (attributes.geojson_url.replace(new RegExp('##'+key+'##','g'),vm.current.parent[key].toString().replace(/[\r\n\t]+/g," "))) : attributes.geojson_url;
-                                    attributes.geojson_url = attributes.geojson_url.replace('"','\"');
-                                }
-                            }     
-                            that.renderGeoJSON('GeoJSON_url',attributes.geojson_url)
+                        if (attributes?.geojson_url) {
+                            const processedUrl = this.processGeoJSONUrl(attributes.geojson_url);
+                            this.renderGeoJSON('GeoJSON_url', processedUrl);
                         }
-                    } catch (error) {
-                        
-                    }
+                    } catch (error) {}
 
                     data.forEach((el,index) => {
                         try {
@@ -328,55 +389,7 @@
                             if(attributes.hasOwnProperty('type')){
                                 that.renderGeoJSON(el[attributes.type],el[attributes.object])
                             }
-                            if(el[attributes['latitude']].toString().length > 0 && el[attributes['longitude']].toString().length > 0 ){
-                                if (headerMarker === "show" || headerMarker === "") {
-                                    const markerPath = el[attributes['markerPath']];
-                                    const bearingColumn = el[attributes['bearingColumn']];
-                                    if (markerPath || bearingColumn) {
-                                        if (markerPath && (!bearingColumn || bearingColumn === "")) {
-                                            let icon = L.divIcon({
-                                            iconSize:null,
-                                                html:'<div class="map-label"><div class="map-label-content-marker-path"> '+el[attributes['title']]+' </div><img src="'+el[attributes['markerPath']]+'" height="30px" width="30px" /></div>'
-                                            });     
-
-                                            let marker = L.marker(L.latLng(el[attributes['latitude']], el[attributes['longitude']]),{icon:icon});
-                                            marker.bindPopup(index.toString());
-                                            markers.addLayer(marker)
-                                        } else if (bearingColumn && (!markerPath || markerPath === "")) {
-                                            let icon = L.divIcon({
-                                                iconSize:null,
-                                                html:'<div class="map-label"><div class="map-label-content-bearing"> '+el[attributes['title']]+' </div><div style="transform: rotate('+el[attributes['bearingColumn']]+'deg);"><img src="https://cdn.rtworkspace.com/plugins/webapp/images/bearing-icon.webp" height="50px"></div></div>'
-                                            });     
-
-                                            let marker = L.marker(L.latLng(el[attributes['latitude']], el[attributes['longitude']]),{icon:icon});
-                                            marker.bindPopup(index.toString());
-                                            markers.addLayer(marker)
-                                        } else {
-                                            let icon = L.divIcon({
-                                            iconSize:null,
-                                                html:'<div class="map-label"><div class="map-label-content-marker-path"> '+el[attributes['title']]+' </div><div style="transform: rotate('+el[attributes['bearingColumn']]+'deg);"><img src="https://cdn.rtworkspace.com/plugins/webapp/images/bearing-icon.webp" height="50px"></div><img src="'+el[attributes['markerPath']]+'" height="30px" width="30px" /></div>'
-                                            });     
-
-                                            let marker = L.marker(L.latLng(el[attributes['latitude']], el[attributes['longitude']]),{icon:icon});
-                                            marker.bindPopup(index.toString());
-                                            markers.addLayer(marker)
-                                        }
-                                    } else {
-                                        let icon = L.divIcon({
-                                            iconSize:null,
-                                            html:'<div class="map-label"><div class="map-label-content"> '+el[attributes['title']]+' </div><div class="map-label-arrow"></div></div>'
-                                        });     
-
-                                        let marker = L.marker(L.latLng(el[attributes['latitude']], el[attributes['longitude']]),{icon:icon});
-                                        marker.bindPopup(index.toString());
-                                        markers.addLayer(marker)
-                                    }
-                                } else {
-                                    let marker = L.marker(L.latLng( el[attributes['latitude']], el[attributes['longitude']] ));
-                                    marker.bindPopup(index.toString());
-                                    markers.addLayer(marker)
-                                }  
-                            }
+                            that.createMarkerIcon(el, attributes, headerMarker,index, markers)
                         } catch (error) {
                             
                         }
@@ -387,7 +400,7 @@
                     let button_visible = JSON.parse(button_replace_map)
                     button_visible = this.handleButtonVisible(button_visible,this.list_item)
                     button_replace_map = JSON.stringify(button_visible)
-                    for(var key in this.list_item){
+                    for(let key in this.list_item){
                         if(this.list_item.hasOwnProperty(key) && this.list_item[key] != null){
                             button_replace_map = button_replace_map.toString().replace(new RegExp('"##'+key+'##"','g'),'"'+(this.list_item[key].toString().replace(/[\r\n]+/g," ").replace(/["]/g,'\\\"'))+'"');
                             button_replace_map = button_replace_map.toString().replace(new RegExp('\'##'+key+'##\'','g'),"'"+(this.list_item[key].toString().replace(/[\r\n]+/g," ").replace(/["]/g,'\\\"'))+"'");
@@ -395,18 +408,15 @@
                         }
                     }
                     button_replace_map = button_replace_map.replace(/\\"'(.*?)'\\"/g,'\\"$1\\"')
-                    for (var key in vm.flatRuntimeAttributes) {
+                    for (let key in vm.flatRuntimeAttributes) {
                         if (vm.flatRuntimeAttributes.hasOwnProperty(key)) {
                             button_replace_map = button_replace_map.replace(new RegExp('##'+key+'##','g'),vm.flatRuntimeAttributes[key].replace(/[\r\n]+/g," "));
-                            button_replace_map = button_replace_map.replace('"','\"');
                         }
                     }  
-                    for(var key in vm.current.parent){
+                    for(let key in vm.current.parent){
                         try {
                             button_replace_map = button_replace_map.replace(new RegExp('##'+key+'##','g'),vm.current.parent[key].replace(/[\r\n]+/g," "));
-                        } catch (error) {
-                        }
-                        button_replace_map = button_replace_map.replace('"','\"');
+                        } catch (error) {}
                     }
                     if(button_replace_map.indexOf('${getdata_dmobj')>-1){
                             button_replace_map = vm.getDataDmobj(button_replace_map)
@@ -423,57 +433,61 @@
                     this.item_buttons = JSON.parse(button_replace_map);
                     this.handleDynamicButtons();
                 },
-                openHtmlView(index){
-                    let el = this.list_items[index]
-                    let content = '';               
-                        if(attributes.hasOwnProperty('item_template')){
-                            let item_template = attributes['item_template'];
-                            for(let key in el){
-                                if(el.hasOwnProperty(key) && el[key]!=null){
-                                    item_template = item_template.replace(new RegExp('##'+key+'##','g'),el[key].toString().replace(/[\r\n]+/g," "));
-                                }
-                            }
-                            this.list_item = el;
-                            
-                            if(attributes.hasOwnProperty('item_buttons') && attributes.item_buttons.length>0){
-                                this.buttonData();
-                            }
+                getAppScript() {
+                    return `
+                        <script>
+                            class App{
+                                static callActionButton(json){
+                                    let moduleCode = '${this.object.moduleCode}';
+                                    let subModuleCode = '${this.object.subModuleCode}';
+                                    let componentCode = '${this.object.componentCode}';
+                                    let code = '${this.object.code}';
+                                    let rawComponentCode = '${this.object.rawComponentCode}';
+                                    window.parent.vm.callActionButton(json,moduleCode,subModuleCode,componentCode,code,rawComponentCode)
+                                }}  
+                        </script>`;
+                },
 
-                            if( attributes.hasOwnProperty('button_description') && 
-                                attributes.button_description != undefined && 
-                                attributes.button_description != null && 
-                                attributes.button_description != "" 
-                            ) {
-                                this.button_description = attributes.button_description;
-                            }
+                wrapContent(template, hasScript) {
+                    if(hasScript) {
+                        template = template.replaceAll(/"/g,'&quot;');
+                        if(template.indexOf('<script') > -1) {
+                            template += this.getAppScript();
+                        }
+                        return '<iframe srcdoc="'+template+'" marginheight="0" marginwidth="0" frameborder="0"" scrolling="auto"></iframe>';
+                    }
+                    return '<span><div>'+template+'</div></span>';
+                },
 
-                            if(item_template.indexOf('<script>') > -1){
-                                item_template = item_template.replaceAll(/["]/g,'&quot;')
-                                if(item_template.indexOf('<script')>-1){
-                                    let functionApp = `
-                                        <script>
-                                            class App{
-                                                static callActionButton(json){
-                                                    let moduleCode = '`+this.object.moduleCode+`';
-                                                    let subModuleCode = '`+this.object.subModuleCode+`';
-                                                    let componentCode = '`+this.object.componentCode+`';
-                                                    let code = '`+this.object.code+`';
-                                                    let rawComponentCode = '`+this.object.rawComponentCode+`';
-                                                    window.parent.vm.callActionButton(json,moduleCode,subModuleCode,componentCode,code,rawComponentCode)
-                                                }}  
-                                        <\/script>`
-                                    item_template = item_template + functionApp
-                                }
-                                content = '<iframe srcdoc="'+item_template+'" marginheight="0" marginwidth="0" frameborder="0"" scrolling="auto"></iframe>';
-                            }
-                            else{
-                                content = '<span>  <div> '+item_template+'</div></span>';
-                            }
+                openHtmlView(index) {
+                    const el = this.list_items[index];
+                    let content = '';
+
+                    if(attributes.hasOwnProperty('item_template')) {
+                        let item_template = attributes['item_template'];
+                        item_template = this.processTemplate(item_template, el);
+                        
+                        this.list_item = el;
+                        
+                        if(attributes.hasOwnProperty('item_buttons') && attributes.item_buttons.length > 0) {
+                            this.buttonData();
                         }
-                        else{
-                            content = el[attributes['description']]
+
+                        if(attributes.hasOwnProperty('button_description') && 
+                           attributes.button_description != undefined && 
+                           attributes.button_description != null && 
+                           attributes.button_description != "") {
+                            this.button_description = attributes.button_description;
                         }
-                        $('.showPopup.'+this.id_random+' .content').html(content)
+
+                        const hasScript = item_template.indexOf('<script>') > -1;
+                        
+                        content = this.wrapContent(item_template, hasScript);
+                    } else {
+                        content = el[attributes['description']];
+                    }
+                    
+                    $('.showPopup.'+this.id_random+' .content').html(content);
                 },
             },
     });
