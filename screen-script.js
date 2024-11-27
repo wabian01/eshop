@@ -419,7 +419,7 @@
             },
             checkIfSupportsTimestamp(){
                 if(this.checkDataRe.includes('__system_update_timestamp__')){
-                    this.getLastSyncTimestamp(this.list_data_object)
+                    this.timeStart = this.getLastSyncTimestamp(this.list_data_object)
                     this.initializeQueryObject()
                     this.checkForRemovals()
                 }else{
@@ -427,7 +427,7 @@
                 }
             },
             getLastSyncTimestamp(data){
-                this.timeStart = data.reduce((max, item) => {
+                return data.reduce((max, item) => {
                     const timestamp = item['__system_update_timestamp__'];
                     return timestamp > max ? timestamp : max;
                 }, "");
@@ -515,7 +515,8 @@
                         }else{
                             data  = jsonPath(data.aggregations, objectTem.removal_check_datapath);
                         } 
-                        if(Object.keys(data).length>0 && Object.keys(that.list_data_object).length>0){
+                        if(data.length>0 && that.list_data_object.length>0){
+                            that.timeRemove = that.getLastSyncTimestamp(data)
                             that.removeDuplicates(data)
                         }
                         if (that.refreshContent && that.object_temp.refresh_rate > 0) {
@@ -651,7 +652,7 @@
                 });
             },
             handleNewData(newData){
-                this.getLastSyncTimestamp(newData)
+                this.timeStart = this.getLastSyncTimestamp(newData)
                 if(this.object_temp.rule && this.object_temp.rule.length > 0 && typeof this.object_temp.rule === 'object'){
                     vm.configRule(newData,this.object_temp.rule)
                 }

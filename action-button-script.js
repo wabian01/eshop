@@ -24,61 +24,8 @@ Vue.component('action-button', {
     },
     watch:{
         tracking_id(tracking_id){
-            if(tracking_id === this.item_button.tracking_id && tracking_id!==''){
-                setTimeout(() => {
-                    vm.tracking_id_button = ''
-                }, 1000);
-                if(this.item_button.hasOwnProperty('override_ui_behavior')){
-                    if(this.item_button.override_ui_behavior.behavior === 'hide'){
-                        $('#'+this.randomID).hide()
-                        if(this.item_button.override_ui_behavior.hasOwnProperty('timeout')){
-                            vm.time_tracking_id[tracking_id] = {
-                                "time": (new Date()).getTime()
-                            }
-                            let time = this.item_button.override_ui_behavior.timeout * 1000
-                            setTimeout(() => {
-                                $('#'+this.randomID).show()
-                            }, time);
-                        }
-                    }else if(this.item_button.override_ui_behavior.behavior === 'disable'){
-                        this.status_tracking = true
-                        this.disabled = 'disabled'
-                        let $button = $('#'+this.randomID +' button')
-                        var $imgTag = $button.find('img');
-                        var $iTag = $button.find('i');
-                        let $pTag = $('#'+this.randomID).find('p');
-                        
-                        if ($imgTag.length > 0) {
-                            $imgTag.css('filter', 'contrast(0)');
-                        }
-
-                        if ($iTag.length > 0) {
-                            $iTag.css('color', '#808080d1 !important');
-                        }
-                        if ($pTag.length > 0) {
-                            $pTag.css('color', '#808080d1 !important');
-                        }
-                        if(this.item_button.override_ui_behavior.hasOwnProperty('timeout')){
-                            let time = this.item_button.override_ui_behavior.timeout * 1000
-                            vm.time_tracking_id[tracking_id] = {
-                                "time": (new Date()).getTime()
-                            }
-                            setTimeout(() => {
-                                this.status_tracking = false
-                                this.disabled = ""
-                                if ($imgTag.length > 0) {
-                                    $imgTag.css('filter', '');
-                                }
-                                if ($iTag.length > 0) {
-                                    $iTag.css('color', 'black');
-                                }
-                                if ($pTag.length > 0) {
-                                    $pTag.css('color', '');
-                                }
-                            }, time);
-                        }
-                    }
-                }
+            if(tracking_id && tracking_id === this.item_button.tracking_id && tracking_id !== ''){
+                this.handleTrackingId(tracking_id);
             }
         }
     },
@@ -197,6 +144,87 @@ Vue.component('action-button', {
         }
     },
     methods: {
+        handleTrackingId(tracking_id) {
+            if(this.$parent.$options.name === 'list-item' && this.item_button.shouldHideItem){
+                this.$parent.shouldHideItem();
+            }
+            this.resetTrackingIdButton();
+            if(this.item_button.hasOwnProperty('override_ui_behavior')){
+                this.handleOverrideUIBehavior(tracking_id);
+            }
+        },
+        resetTrackingIdButton() {
+            setTimeout(() => {
+                vm.tracking_id_button = '';
+            }, 1000);
+        },
+        handleOverrideUIBehavior(tracking_id) {
+            const behavior = this.item_button.override_ui_behavior.behavior;
+            if(behavior === 'hide'){
+                this.handleHideBehavior(tracking_id);
+            } else if(behavior === 'disable'){
+                this.handleDisableBehavior(tracking_id);
+            }
+        },
+        handleHideBehavior(tracking_id) {
+            $('#'+this.randomID).hide();
+            if(this.item_button.override_ui_behavior.hasOwnProperty('timeout')){
+                this.setTimeoutAndShow(tracking_id);
+            }
+        },
+        handleDisableBehavior(tracking_id) {
+            this.disableButton();
+            if(this.item_button.override_ui_behavior.hasOwnProperty('timeout')){
+                this.setTimeoutAndEnable(tracking_id);
+            }
+        },
+        setTimeoutAndShow(tracking_id) {
+            const time = this.item_button.override_ui_behavior.timeout * 1000;
+            vm.time_tracking_id[tracking_id] = {
+                "time": (new Date()).getTime()
+            };
+            setTimeout(() => {
+                $('#'+this.randomID).show();
+            }, time);
+        },
+        setTimeoutAndEnable(tracking_id) {
+            const time = this.item_button.override_ui_behavior.timeout * 1000;
+            vm.time_tracking_id[tracking_id] = {
+                "time": (new Date()).getTime()
+            };
+            setTimeout(() => {
+                this.enableButton();
+            }, time);
+        },
+        toggleButtonState(disable){
+            let $button = $('#' + this.randomID + ' button');
+            let $imgTag = $button.find('img');
+            let $iTag = $button.find('i');
+            let $pTag = $('#' + this.randomID).find('p');
+            if ($imgTag.length > 0) {
+                if(disable){
+                    $imgTag.addClass('ab-disable')
+                }else{
+                    $imgTag.removeClass('ab-disable')
+                }
+            }
+            if ($iTag.length > 0) {
+                $iTag.css('color', disable ? '#808080d1' : 'black');
+            }
+            if ($pTag.length > 0) {
+                $pTag.css('color', disable ? '#808080d1' : '');
+            }
+        },
+        disableButton() {
+            this.status_tracking = true;
+            this.disabled = 'disabled';
+            this.toggleButtonState(true);
+        },
+        enableButton() {
+            this.status_tracking = false;
+            this.disabled = "";
+            this.toggleButtonState(false);
+        },
         initializeButtonDescription(){
             let button_description = []
             if(this.body_area?.button_description){
@@ -506,7 +534,7 @@ Vue.component('action-button', {
             
             this.renderFloatButton()
         },
-        renderBigIcon(buttonDescription, fontIcon, disabled, iconSetUrl, iconSetStyle, iconSetFallBack){
+        renderBigIcon(buttonDescription, fontIcon, disabled, iconSetUrl){
             let icon = ""
             if(buttonDescription.hasOwnProperty('icon_color_background') && buttonDescription.icon_color_background != ""){
                 this.styleButton = 'style=\''+this.styleButton+" background-color:"+buttonDescription.icon_color_background+" !important;'"
@@ -521,9 +549,12 @@ Vue.component('action-button', {
             }
             if(this.item_button.hasOwnProperty('imageUrl')){
                 let iconfont = icon.replace('isShowIcon', 'isShowIcon d-none');
-                icon = '<img src="'+this.item_button.imageUrl+'" onerror="this.onerror=null;$(this).addClass(\'d-none\');$(this).next().removeClass(\'d-none\');" style="'+this.styleIconDisable+'width:1rem;"></i> '+iconfont;
+                let classDisable = this.addClassDisable()
+                icon = '<img class="'+classDisable+'" src="'+this.item_button.imageUrl+'" onerror="this.onerror=null;$(this).addClass(\'d-none\');$(this).next().removeClass(\'d-none\');" style="'+this.styleIconDisable+'width:1rem;"></i> '+iconfont;
                 if(iconSetUrl!==""){
-                    icon = `<img ${iconSetFallBack} src="${iconSetUrl}" style="${iconSetStyle};${this.styleIconDisable}width:1rem;"></i>`;
+                    icon = `<img class="${classDisable}" src="${iconSetUrl}" />`;
+                    let style = `${this.styleIconDisable}width:1rem;`
+                    icon = vm.handleIconSetAB(icon,style)
                 }
             }
             icon = this.isShowIcon(buttonDescription,icon)
@@ -548,22 +579,33 @@ Vue.component('action-button', {
             }
             return this.item_button['label']
         },
-        renderNormalButton(buttonDescription, fontIcon, disabled, iconSetUrl, iconSetStyle, iconSetFallBack){
+        addClassDisable(){
+            let classDisable = ''
+            if(this.styleIconDisable !== ''){
+                this.styleIconDisable = ""
+                classDisable = 'ab-disable'
+            }
+            return classDisable
+        },
+        renderNormalButton(buttonDescription, fontIcon, disabled, iconSetUrl){
             let icon='<i class="isShowIcon '+fontIcon+'" aria-hidden="true" style="'+this.styleIconDisable+this.stylefontasome+'color:#00c5dc;padding:1px !important;"></i> ';
             if(fontIcon==='none'){
                 icon = ''
             }
             if(this.item_button.hasOwnProperty('imageUrl')){
                 let iconfont = icon.replace('isShowIcon', 'isShowIcon d-none');
-                icon = '<img src="'+this.item_button.imageUrl+'" onerror="this.onerror=null;$(this).addClass(\'d-none\');$(this).next().removeClass(\'d-none\');" style="'+this.styleIconDisable+'height:1rem;width:1rem;margin-bottom:3px;"></i> '+iconfont;
+                let classDisable = this.addClassDisable()
+                icon = '<img class="'+classDisable+'" src="'+this.item_button.imageUrl+'" onerror="this.onerror=null;$(this).addClass(\'d-none\');$(this).next().removeClass(\'d-none\');" style="'+this.styleIconDisable+'height:1rem;width:1rem;margin-bottom:3px;"></i> '+iconfont;
                 if(iconSetUrl!==""){
-                    icon = `<img ${iconSetFallBack} src="${iconSetUrl}"  style="${iconSetStyle};${this.styleIconDisable}height:1rem;width:1rem;margin-bottom:3px;"></i>`
+                    icon = `<img class="${classDisable}" src="${iconSetUrl}"  />`
+                    let style = `${this.styleIconDisable}height:1rem;width:1rem;margin-bottom:3px;`
+                    icon = vm.handleIconSetAB(icon,style)
                 }
             }
             let label = this.isShowLabel(buttonDescription)
             this.button_content = '<button '+disabled+' type="button" style="'+this.styleAll+'padding: 3px 9px !important; border-radius: 5px !important;'+''+'" class="btn default">'+icon+'<span style="'+this.styleAll+'padding:0 5px;width:100%;">'+label+'</span></button>';
         },
-        renderNormalButtonStyle(buttonDescription, fontIcon, disabled, iconSetUrl, iconSetStyle, iconSetFallBack){
+        renderNormalButtonStyle(buttonDescription, fontIcon, disabled, iconSetUrl){
             this.styleButton = 'style=\''+this.styleButton+this.styleAll+"display:flex;'";
             let icon = '<i class="isShowIcon '+fontIcon+'" aria-hidden="true" style="'+this.styleIconDisable+this.stylefontasome+'color:#00c5dc"></i> '
             if(fontIcon==='none'){
@@ -571,9 +613,12 @@ Vue.component('action-button', {
             }
             if(this.item_button.hasOwnProperty('imageUrl')){
                 let iconfont = icon.replace('isShowIcon', 'isShowIcon d-none');
-                icon = '<img src="'+this.item_button.imageUrl+'" onerror="this.onerror=null;$(this).addClass(\'d-none\');$(this).next().removeClass(\'d-none\');" style="'+this.styleIconDisable+'height:1rem;width:1rem;margin-bottom:3px;"></i> '+iconfont;
+                let classDisable = this.addClassDisable()
+                icon = '<img class="'+classDisable+'" src="'+this.item_button.imageUrl+'" onerror="this.onerror=null;$(this).addClass(\'d-none\');$(this).next().removeClass(\'d-none\');" style="'+this.styleIconDisable+'height:1rem;width:1rem;margin-bottom:3px;"></i> '+iconfont;
                 if(iconSetUrl!==""){
-                    icon = `<img ${iconSetFallBack} src="${iconSetUrl}" style="${iconSetStyle};${this.styleIconDisable}height:1rem;width:1rem;margin-bottom:3px;"></i>`;
+                    icon = `<img class="${classDisable}" src="${iconSetUrl}" />`;
+                    let style = `${this.styleIconDisable}height:1rem;width:1rem;margin-bottom:3px;`
+                    icon = vm.handleIconSetAB(icon,style)
                 }
             }
             icon = this.isShowIcon(buttonDescription,icon)
@@ -618,7 +663,7 @@ Vue.component('action-button', {
             }
             return "";
         },
-        renderCustomButtom(button_description,font_icon, disabled, styleCustom, iconSetUrl, iconSetStyle, iconSetFallBack){
+        renderCustomButtom(button_description,font_icon, disabled, styleCustom, iconSetUrl){
             if (this.item_button.hasOwnProperty("badge_icon") && this.item_button.badge_icon !== "") {
                 this.styleButton = 'style=\''+this.styleButton+this.styleAll+"display:flex; position:relative;'";
             } else {
@@ -635,34 +680,35 @@ Vue.component('action-button', {
                     this.styleIcon += icon_size_more
                 
                 let iconfont = icon.replace('isShowIcon', 'isShowIcon d-none');
-                icon = '<img src="'+this.item_button.imageUrl+'" onerror="this.onerror=null;$(this).addClass(\'d-none\');$(this).next().removeClass(\'d-none\');" style="'+this.styleIconDisable+this.styleIcon+'margin-bottom:3px;"></i> '+iconfont;
+                let classDisable = this.addClassDisable()
+                icon = '<img class="'+classDisable+'" src="'+this.item_button.imageUrl+'" onerror="this.onerror=null;$(this).addClass(\'d-none\');$(this).next().removeClass(\'d-none\');" style="'+this.styleIconDisable+this.styleIcon+'margin-bottom:3px;"></i> '+iconfont;
                 if(iconSetUrl!==""){
-                    icon = `<img ${iconSetFallBack} src="${iconSetUrl}" style="${iconSetStyle};${this.styleIconDisable}${this.styleIcon}margin-bottom:3px;"></i>`;
+                    icon = `<img class="${classDisable}" src="${iconSetUrl}" />`;
+                    let style = `${this.styleIconDisable}${this.styleIcon}margin-bottom:3px;`
+                    icon = vm.handleIconSetAB(icon,style)
                 }
             }
             this.renderIconAlignment(button_description, icon, disabled, styleCustom)
         },
         renderButtonContent(button_description, font_icon, disabled, styleCustom){
             let iconSetUrl = "";
-            let iconSetStyle = "";
-            let iconSetFallBack = "";
             if (this.item_button?.imageUrl?.includes('rta://icon')) {
-                ({ iconSetUrl, iconSetStyle, iconSetFallBack } = vm.handleIconSetAB(this.item_button.imageUrl));
+                iconSetUrl = this.item_button.imageUrl
             }
            
             if(this.styleButton != ""){
                 if(this.isBigIcon != ""){ 
-                    this.renderBigIcon(button_description, font_icon, disabled, iconSetUrl, iconSetStyle, iconSetFallBack)
+                    this.renderBigIcon(button_description, font_icon, disabled, iconSetUrl)
                 }
                 else if(button_description.hasOwnProperty('type') && button_description.type === 'custom'){
-                    this.renderCustomButtom(button_description,font_icon, disabled, styleCustom, iconSetUrl, iconSetStyle, iconSetFallBack)
+                    this.renderCustomButtom(button_description,font_icon, disabled, styleCustom, iconSetUrl)
                 }
                 else{
-                    this.renderNormalButtonStyle(button_description, font_icon, disabled, iconSetUrl, iconSetStyle, iconSetFallBack)
+                    this.renderNormalButtonStyle(button_description, font_icon, disabled, iconSetUrl)
                 }
             }
             else{
-                this.renderNormalButton(button_description, font_icon, disabled, iconSetUrl, iconSetStyle, iconSetFallBack)
+                this.renderNormalButton(button_description, font_icon, disabled, iconSetUrl)
             }
         },
         renderFloatButton(){
@@ -1098,12 +1144,20 @@ Vue.component('action-button', {
                 toastr.error(translations["Screen definition not found"]);
             }
         },
+        shouldHideItem(){
+            let tracking_id = "shouldHideItem-" + randomnanoid()
+            this.item_button.tracking_id = tracking_id
+            return tracking_id
+        },
         opemForm(object_code,object){
             if(!vm.objects.hasOwnProperty(object_code)){
                 vm.objects[object_code]=object;
             }
             object.item_button = this.item_button;
             let tracking_id = ''
+            if(this.item_button.shouldHideItem){
+                tracking_id = this.shouldHideItem()
+            }
             if(this.item_button.hasOwnProperty('override_ui_behavior') && this.item_button.hasOwnProperty('tracking_id')){
                 tracking_id = this.item_button.tracking_id
             }
@@ -1293,25 +1347,8 @@ Vue.component('action-button', {
             if(action_button != null){
                 this.item_button = action_button;
             }
-            let objectFillForm = {}
-            let familyID = this.item_button['familyID']
-            for (key in vm.objects) {
-                if(vm.objects[key].hasOwnProperty('familyName')){
-                    if (vm.objects.hasOwnProperty(key) && vm.objects[key].type === "form" && vm.objects[key].familyName == familyID) {
-                        object = vm.objects[key]
-                        break
-                    }
-                }
+            let objectFillForm = this.findObjectFillForm();
 
-            }
-            if(objectFillForm == {}){
-                for (key in vm.objects) {
-                    if (vm.objects.hasOwnProperty(key) && vm.objects[key].type === "form" && vm.objects[key].formId.indexOf(familyID) !== -1 ) {
-                        objectFillForm = vm.objects[key]
-                        break
-                    }
-                }
-            }
             if(!objectFillForm.hasOwnProperty('screens')){
                 let object_code = "undefined-undefined-"+hash('form'+this.item_button['familyID']);
                 let form_object_code = this.task.object.code.split('-');
@@ -1325,29 +1362,59 @@ Vue.component('action-button', {
                     vm.objects[object_code]=objectFillForm;
                 }
             };
+
             objectFillForm.item_button = this.item_button;
-            let tracking_id = ''
-            if(this.item_button.hasOwnProperty('override_ui_behavior') && this.item_button.hasOwnProperty('tracking_id')){
-                tracking_id = this.item_button.tracking_id
-            }
-            objectFillForm.tracking_id = tracking_id
-            if (this.item_button.hasOwnProperty('dismissParent') && this.item_button.dismissParent === true) {
-                if(vm.listSreenTheme[vm.activeTaskCode]?.length>0){                        
-                    this.closeScreenTheme(vm.activeTaskCode)
-                }else{
-                    if(vm.activeTaskCode!==''){
-                        vm.closeTask(vm.tasks[vm.activeTaskCode])
-                    }
+            objectFillForm.tracking_id = this.getTrackingId();
+            
+            if (this.item_button.dismissParent) {
+                if (vm.listSreenTheme[vm.activeTaskCode]?.length > 0) {                        
+                    this.closeScreenTheme(vm.activeTaskCode);
+                } else if (vm.activeTaskCode !== '') {
+                    vm.closeTask(vm.tasks[vm.activeTaskCode]);
                 }
-                objectFillForm.dependView = vm.activeTaskCode; 
-                objectFillForm.dismissPr = false;
-            } else {
-                objectFillForm.dependView = vm.activeTaskCode; 
-                objectFillForm.dismissPr = false;
             }
+            objectFillForm.dependView = vm.activeTaskCode; 
+            objectFillForm.dismissPr = false;
+
             if(Object.keys(objectFillForm).length !== 0){
                 vm.openTask(objectFillForm,this.task.layout,this.task.subitem, this.task.comitem,null,null,null,null,[true,this.task]);
             }
+        },
+        findObjectFillForm() {
+            let familyID = this.item_button['familyID'];
+            let object = {}
+            for (let key in vm.objects) {
+                if (vm.objects[key].hasOwnProperty('familyName') && 
+                    vm.objects[key].type === "form" && 
+                    vm.objects[key].familyName == familyID) {
+                        object = vm.objects[key];
+                        break;
+                }
+            }
+            
+            if(object){
+                for (let key in vm.objects) {
+                    if (vm.objects[key].type === "form" && 
+                        vm.objects[key].formId.indexOf(familyID) !== -1) {
+                            object = vm.objects[key];
+                            break;
+                    }
+                }
+            }
+        
+            return object;
+        },
+        getTrackingId: function() {
+            if (this.item_button.shouldHideItem) {
+                return this.shouldHideItem();
+            }
+            
+            if (this.item_button.hasOwnProperty('override_ui_behavior') && 
+                this.item_button.hasOwnProperty('tracking_id')) {
+                return this.item_button.tracking_id;
+            }
+        
+            return '';
         },
         callCloudPhone: function(action_button) {
             let customData={
@@ -1965,25 +2032,11 @@ Vue.component('action-button', {
                                 $('#'+this.randomID).show()
                             }, timeremain);
                         }else if(this.item_button.override_ui_behavior.behavior === 'disable'){
-                            this.disabled == 'disabled'
+                            this.disabled = 'disabled'
                             this.styleIconDisable = 'filter: contrast(0);'
                             this.styleAll += 'color: #808080d1 !important;'
                             setTimeout(() => {
-                                let $button = $('#'+this.randomID +' button')
-                                let $imgTag = $button.find('img');
-                                let $iTag = $button.find('i');
-                                let $pTag = $('#'+this.randomID).find('p');
-                                this.status_tracking = false
-                                this.disabled = ""
-                                if ($imgTag.length > 0) {
-                                    $imgTag.css('filter', '');
-                                }
-                                if ($iTag.length > 0) {
-                                    $iTag.css('color', 'black');
-                                }
-                                if ($pTag.length > 0) {
-                                    $pTag.css('color','')
-                                }
+                               this.enableButton()
                             }, timeremain);
                         }else{
                             return
@@ -2003,5 +2056,5 @@ Vue.component('action-button', {
                 $('#task-icon-'+taskcode).remove();
             }, 200)
         },
-    }
+    },
 });
