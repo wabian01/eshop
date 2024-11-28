@@ -293,12 +293,13 @@
             },
             checkUrlIframe: function() {
                 this.loadURL = false
+                let domain = '*'
                 setTimeout(() => {
                     let frameEle = document.getElementById('url-' + this.id_random);
                     frameEle.contentWindow.postMessage({
                         function: 'on_init',
                         initPlatform: 'webapp'
-                    }, '*');
+                    }, domain);
                 }, 100);    
             },
             sortDataObject(data){
